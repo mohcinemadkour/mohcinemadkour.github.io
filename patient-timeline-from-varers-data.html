@@ -4,11 +4,11 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="Tags List">
-        <meta name="keywords" content="">
+        <meta name="description" content="Patient timeline from VARERS data Text: Topics: :">
+        <meta name="keywords" content="awesome, thats">
         <link rel="icon" href="/favicon.ico">
 
-        <title>Tags - Mohcine Madkour Blog</title>
+        <title> Patient timeline from VARERS data - Mohcine Madkour Blog</title>
 
         <!-- Stylesheets -->
         <link href="/theme/css/all.min.css" rel="stylesheet">
@@ -50,17 +50,23 @@
             <!-- /Static navbar -->
 
             <!-- Header -->
+    <!-- Header -->
     <div class="container header-wrapper">
         <div class="row">
               <div class="col-lg-12">
                   <div class="header-content">
-                      <h1 class="header-title text-uppercase">Tags</h1>
+                      <h1 class="header-title"> Patient timeline from VARERS data</h1>
+                      <p class="header-date">By <a href="/author/alexis-metaireau.html">Alexis Métaireau</a>, <a href="/author/conan-doyle.html">Conan Doyle</a>, Mon 09 July 2012, modified Tue 10 July 2012, in category <a href="/category/yeah.html">Yeah</a></p>
                       <div class="header-underline"></div>
-                      <p class="header-subtitle header-subtitle-homepage">Tags List</p>
+                      <div class="clearfix"></div>
+                      <p class="pull-right header-tags">
+                          <span class="glyphicon glyphicon-tags mr5" aria-hidden="true"></span>
+<a href="/tag/awesome.html">awesome</a>, <a href="/tag/thats.html">thats</a>                      </p>
                   </div>
               </div>
         </div>
     </div>
+    <!-- /Header -->
             <!-- /Header -->
 
         </div>
@@ -68,32 +74,73 @@
 
 
         <!-- Content -->
-    <div class="archive-container">
-        <div class="container content archive">
-            <h2><a href="/tags.html">Tags List</a></h2>
-            <dl class="dl-horizontal">
-            	<dt><span class="label label-default">2</span> articles tagged</dt>
-            	<dd><a href="/tag/awesome.html">awesome</a></dd>
-            	<dt><span class="label label-default">1</span> article tagged</dt>
-            	<dd><a href="/tag/awesome1.html">awesome1</a></dd>
-            	<dt><span class="label label-default">1</span> article tagged</dt>
-            	<dd><a href="/tag/kernel.html">kernel</a></dd>
-            	<dt><span class="label label-default">1</span> article tagged</dt>
-            	<dd><a href="/tag/pelican.html">pelican</a></dd>
-            	<dt><span class="label label-default">1</span> article tagged</dt>
-            	<dd><a href="/tag/publishing.html">publishing</a></dd>
-            	<dt><span class="label label-default">3</span> articles tagged</dt>
-            	<dd><a href="/tag/tag2.html">tag2</a></dd>
-            	<dt><span class="label label-default">1</span> article tagged</dt>
-            	<dd><a href="/tag/tag3.html">tag3</a></dd>
-            	<dt><span class="label label-default">1</span> article tagged</dt>
-            	<dd><a href="/tag/tag4.html">tag4</a></dd>
-            	<dt><span class="label label-default">3</span> articles tagged</dt>
-            	<dd><a href="/tag/thats.html">thats</a></dd>
-            	<dt><span class="label label-default">6</span> articles tagged</dt>
-            	<dd><a href="/tag/ubuntu.html">ubuntu</a></dd>
-            </dl>
-        </div>
+    <div class="container content">
+        
+
+
+    <h1>Patient timeline from VARERS data</h1>
+    <!-- <h2></h2> -->
+
+    <div data-ex-role="collection" data-ex-item-types="Item"></div>
+
+    <div data-ex-role="lens">
+      <div data-ex-content=".name"></div>
+    </div>
+    
+    <!--div id="options-wrapper"-->
+    
+      <div id="options">
+ <div id="cloud">
+	 <p class="topics">Text:</p>
+	<div data-ex-role="facet" data-ex-facet-class="TextSearch"></div>
+	 <p class="topics">Topics:</p>
+	<div data-ex-role="facet" data-ex-expression=".keywords" data-ex-facet-class="Cloud" data-ex-show-missing="false"></div>
+      </div>
+
+  	<div class="mode" data-ex-role="facet" data-ex-expression=".label" data-ex-show-missing="false" data-ex-height="150px"></div>
+	<div class="mode" data-ex-role="facet" data-ex-expression=".medicalevent" data-ex-show-missing="false" data-ex-height="150px"></div>
+	<div class="mode" data-ex-role="facet" data-ex-expression=".temporaltype" data-ex-show-missing="false" data-ex-height="150px"></div>
+    <div class="mode" data-ex-role="facet" data-ex-expression=".raison1" data-ex-show-missing="false" data-ex-height="150px"></div>
+	
+      </div>
+    <!--/div-->
+
+    <div id="secondRow">
+     
+
+
+      <div id="maps">
+	<div data-ex-role="viewPanel">
+  <!-- this is the timeline -->
+
+
+
+    <div data-ex-role="view" data-ex-view-class="Timeline" data-ex-start=".time" data-ex-end=".time2" data-ex-color-key=".cluster" data-ex-top-band-unit="month" data-ex-bottom-band-unit="year" data-ex-top-band-pixels-per-unit="90" data-ex-bottom-band-pixels-per-unit="400" &lt;div data-ex-role="lens">
+                    <span data-ex-content=".hour"></span>: <span data-ex-content=".label"></span>
+                </div>
+             </div>
+            
+
+
+
+	    <div data-ex-role="lens">
+	      <a class="hoverOver" data-ex-href-content=".label"><div data-ex-content=".time "></div></a>
+	      
+	    </div>
+	  
+	  <div data-ex-role="view" data-ex-label="List" data-ex-orders=".time" data-ex-possible-orders=".label,.time,.time2,.medicalevent,.temporaltype,.raison1"></div>
+	  <div data-ex-role="view" data-ex-label="Table" data-ex-view-class="Tabular" data-ex-columns=".label,.time,.time2,.medicalevent,.temporaltype,.raison1"></div>
+	</div>
+      </div>
+
+
+    </div>
+   
+
+  
+
+
+        
     </div>
         <!-- /Content --> 
 
