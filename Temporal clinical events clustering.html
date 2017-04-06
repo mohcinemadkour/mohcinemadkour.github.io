@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="Events in clinical narratives are naturally associated with medical trials, including surgery, vaccination, lab test, medication, medical procedure, and diagnosis. They are interrelated with many...">
+        <meta name="description" content="TEMPORAL CLUSTERING OF EVENT Events in clinical narratives are naturally associated with medical trials, including surgery, vaccination, lab test, medication, medical procedure, and diagnosis....">
         <meta name="keywords" content="data visualization, K-means, VAERS Reports">
         <link rel="icon" href="/favicon.ico">
 
@@ -75,8 +75,8 @@
 
         <!-- Content -->
     <div class="container content">
-        <p><strong>Events in clinical narratives are naturally associated with medical trials, including surgery, vaccination, lab test, medication, medical procedure, and diagnosis. They are interrelated with many temporal relations. The grouping of medical events onto temporal clusters is a key to applications such as longitudinal studies, clinical question answering, and information retrieval. However, it is difficult to define clinical event quantitatively or consistently in coarse time-bins (e.g. before vaccination or after admission). In this article, I developed the K-means classifier to enable labeling a sequence of medical events with predefined time-bins. The features set is based solely on temporal distance similarity between boundaries of events. The result of the solution is integrated with the <a href="https://timeline.knightlab.com/">KnightLab timeline JS tool</a>.</strong></p>
-<h1>TEMPORAL CLUSTERING OF EVENT</h1>
+        <h1>TEMPORAL CLUSTERING OF EVENT</h1>
+<p><strong>Events in clinical narratives are naturally associated with medical trials, including surgery, vaccination, lab test, medication, medical procedure, and diagnosis. They are interrelated with many temporal relations. The grouping of medical events onto temporal clusters is a key to applications such as longitudinal studies, clinical question answering, and information retrieval. However, it is difficult to define clinical event quantitatively or consistently in coarse time-bins (e.g. before vaccination or after admission). In this article, I developed the K-means classifier to enable labeling a sequence of medical events with predefined time-bins. The features set is based solely on temporal distance similarity between boundaries of events. The result of the solution is integrated with the <a href="https://timeline.knightlab.com/">KnightLab timeline JS tool</a>.</strong></p>
 <p>In this article I investigate the task of tagging a sequence of events using a clustering algorithm. For this purpose I assume that each medical note can be associated with a predefined set of coarse of times that I refer to as time bins. For our example of VAERS note, the potential time-bins are: “before vaccination”, “soon after vaccination”, and “way after vaccination”. The time-bin “before vaccination” is intended to capture past medical history of the patient including the medical state of the patient on time of vaccination; “soon after vaccination” captures medical events that occurred immediately after the vaccination; and “way after vaccination” captures medical events that occurred after an extended duration from the vaccination. The issue in clustering events in predefined time-bins is that the time duration of each timebin varies based on the patient. For instance, the coarse of time “soon
 after vaccination” could be the first few hours after or a few days
 after depending on the general conditions. For that I consider that
@@ -125,7 +125,7 @@ move any more.</p>
 <p>I visualize the results using the Exhibit dashboard
 solution. The timeline dashboard enables intuitive cluster analysis
 by user interactions. Also our visualization allows summarizing by
-the various types of events information. <img alt="Here is a screeshot of the visualization" src="/images/timeline.png">. Check out the <a href="http://htmlpreview.github.io/?https://github.com/mohcinemadkour/Event-Timeline/blob/master/index.html">visualization of clustered events</a></p>
+the various types of events information. <img alt="Here is a screeshot of the visualization" src="/images/timeline.png"> Check out the <a href="http://htmlpreview.github.io/?https://github.com/mohcinemadkour/Event-Timeline/blob/master/index.html">visualization of clustered events</a></p>
 
 
         
