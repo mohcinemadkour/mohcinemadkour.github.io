@@ -82,12 +82,12 @@
 </pre></div>
 
 
-<p><img alt="image" src="/images/barplot.png"></p>
+<p><img alt="image" src="/images/barplot.PNG"></p>
 <div class="highlight"><pre><span></span>   barplot(xtabs(~sex + Political04, data=pol), legend=c(&quot;Female&quot;,&quot;Male&quot;), beside=T)
 </pre></div>
 
 
-<p><img alt="image" src="/images/barplotNB.png"></p>
+<p><img alt="image" src="/images/barplotNB.PNG"></p>
 <h1>boxplot()</h1>
 <div class="highlight"><pre><span></span>data(iris)
 boxplot(iris$Sepal.Length)
@@ -97,7 +97,7 @@ boxplot(Sepal.Length ~ Species, data=iris, col=&quot;yellow&quot;, ylab=&quot;Se
 </pre></div>
 
 
-<p><img alt="image" src="/images/boxplot.png"></p>
+<p><img alt="image" src="/images/boxplot.PNG"></p>
 <h1>plot()</h1>
 <div class="highlight"><pre><span></span>data(faithful)
 plot(waiting~eruptions,data=faithful)
@@ -108,7 +108,7 @@ plot(waiting~eruptions,data=faithful,cex=.5,pch=19,col=&quot;blue&quot;)
 plot(waiting~eruptions, data=faithful, cex=.5, pch=19, col=&quot;blue&quot;, main=&quot;Old    Faithful Eruptions&quot;,
 ylab=&quot;Wait time between eruptions&quot;, xlab=&quot;Duration of eruption&quot;)
 
-![image](/images/plot.png)
+![image](/images/plot.PNG)
 </pre></div>
 
 
@@ -171,7 +171,10 @@ measurement10,0.9761,0.4355,0.8663,0.8107
 <p>Finally, we have our data in the “right” format in order to create our heat map, but before we get down to business, let us have a brief look at some options for customization.</p>
 <h2>Optional: Choosing custom color palettes and color breaks</h2>
 <p>Instead of using the default colors of the heatmap.2() function, I want to show you how to use the RColorBrewer package for creating our own color palettes. Here, we go with the most popular choice for heat maps: A color range from green over yellow to red.</p>
-<h2>my_palette &lt;- colorRampPalette(c("red", "yellow", "green"))(n = 299)</h2>
+<div class="highlight"><pre><span></span>    my_palette <span class="o">&lt;-</span> colorRampPalette<span class="p">(</span><span class="kt">c</span><span class="p">(</span><span class="s">&quot;red&quot;</span><span class="p">,</span> <span class="s">&quot;yellow&quot;</span><span class="p">,</span> <span class="s">&quot;green&quot;</span><span class="p">))(</span>n <span class="o">=</span> <span class="m">299</span><span class="p">)</span>
+</pre></div>
+
+
 <p>There are many different ways to specify colors in R. I find it most convenient to assign colors by their name. A nice overview of the different color names in R can be found at http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf</p>
 <p>The argument (n = 299) lets us define how many individuals colors we want to have in our palette. Obviously, the higher the number of individual colors, the smoother the transition will be; the number 299 should be sufficiently large enough for a smooth transition. By default, RColorBrewer will divide the colors evenly so that every color in our palette will be an interval of individual colors of similar size. However, sometimes we want to have a little skewed color range depending on the data we are analyzing. Let’s assume that our example data set consists of Pearson correlation coefficients (i.e., R values) ranging from –1 to 1, and we are particularly interested in samples that have a (relatively) high correlation: R values in the range between 0.8 to 1.0. We want to highlight these samples in our heat map by only showing values from 0.8 to 1 in green. In this case, we can define our color breaks “unevenly” by using the following code:</p>
 <div class="highlight"><pre><span></span>col_breaks = c(seq(-1,0,length=100), # for red
@@ -248,7 +251,7 @@ legend(&quot;topright&quot;,      # location of the legend on the heatmap plot
 </pre></div>
 
 
-<p>[The figure below shows how our modified heatmap would look like after we applied row categorization and provided a color legend:] (/images/heatmaps_in_r_categorizing.png)</p>
+<p><img alt="The figure below shows how our modified heatmap would look like after we applied row categorization and provided a color legend:" src="/images/heatmaps_in_r_categorizing.png"></p>
 
 
         
