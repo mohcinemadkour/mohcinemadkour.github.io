@@ -147,7 +147,7 @@ uniqueCombDf = sqlContext.sql(query)
 </pre></div>
 
 
-<h1>2.5 - Randomly split the data into a testing set (10% of the data), a cross validation set (10% of the data) a training set (80% of the data)</h1>
+<h2>2.5 - Randomly split the data into a testing set (10% of the data), a cross validation set (10% of the data) a training set (80% of the data)</h2>
 <div class="highlight"><pre><span></span>testDf, cvDf, trainDf = uniqueCombDf.randomSplit([.1,.1,.8])
 </pre></div>
 
