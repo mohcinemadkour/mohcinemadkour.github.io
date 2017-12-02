@@ -4,11 +4,11 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="Posts Archives">
-        <meta name="keywords" content="">
+        <meta name="description" content="Anaconda export PATH=&#34;/home/mohcine/anaconda2/bin:$PATH&#34; Spark: function snotebook () { SPARK_PATH=/home/mohcine/Sofwares/spark-2.2.0-bin-hadoop2.7 export PYSPARK_DRIVER_PYTHON=&#34;jupyter&#34; export...">
+        <meta name="keywords" content="Apache">
         <link rel="icon" href="/favicon.ico">
 
-        <title>Archives - mohcine's super blog</title>
+        <title>Install and cofigure Spark, Kafka, Cassandra, Zookeper - mohcine's super blog</title>
 
         <!-- Stylesheets -->
         <link href="/theme/css/all.min.css" rel="stylesheet">
@@ -30,7 +30,7 @@
     <body>
 
         <!-- Header -->
-    <div class="header-container" style="background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/images/test.jpg'); background-position: center; background-size: cover;">
+    <div class="header-container" style="background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('/images/valuation.jpg'); background-position: center; background-size: cover;">
 
             <!-- Static navbar -->
             <div class="container">
@@ -49,17 +49,23 @@
             <!-- /Static navbar -->
 
             <!-- Header -->
+    <!-- Header -->
     <div class="container header-wrapper">
         <div class="row">
               <div class="col-lg-12">
                   <div class="header-content">
-                      <h1 class="header-title text-uppercase">Archives</h1>
+                      <h1 class="header-title">Install and cofigure Spark, Kafka, Cassandra, Zookeper</h1>
+                      <p class="header-date">By <a href="/author/mohcine-madkour.html">Mohcine Madkour</a>, Thu 12 January 2017, in category <a href="/category/real-time.html">Real time</a></p>
                       <div class="header-underline"></div>
-                      <p class="header-subtitle header-subtitle-homepage">Archives for all posts</p>
+                      <div class="clearfix"></div>
+                      <p class="pull-right header-tags">
+                          <span class="glyphicon glyphicon-tags mr5" aria-hidden="true"></span>
+<a href="/tag/apache.html">Apache</a>                      </p>
                   </div>
               </div>
         </div>
     </div>
+    <!-- /Header -->
             <!-- /Header -->
 
         </div>
@@ -67,42 +73,72 @@
 
 
         <!-- Content -->
-    <div class="archive-container">
-        <div class="container content archive">
-            <h2><a href="/archives.html">Archives</a></h2>
-            <dl class="dl-horizontal">
-            	<dt>Thu 30 November 2017</dt>
-            	<dd><a href="/Easily keep gh-pages in sync with master.html">Easily keep gh-pages in sync with master</a></dd>
-            	<dt>Thu 13 April 2017</dt>
-            	<dd><a href="/Decison Tres and Random Forrest in R.html">Decison Tres and Random Forrest in R</a></dd>
-            	<dt>Sun 09 April 2017</dt>
-            	<dd><a href="/Cross Validation.html">The caret Package</a></dd>
-            	<dt>Sun 09 April 2017</dt>
-            	<dd><a href="/data valuation.html">Data Valuation</a></dd>
-            	<dt>Sun 09 April 2017</dt>
-            	<dd><a href="/sparkim.html">Alternating Least Square example with SPARK</a></dd>
-            	<dt>Sun 09 April 2017</dt>
-            	<dd><a href="/data science Curriculum.html">Data Science Curriculum</a></dd>
-            	<dt>Sun 09 April 2017</dt>
-            	<dd><a href="/data science in 2 minutes.html">Data science in 2 minutes</a></dd>
-            	<dt>Sat 08 April 2017</dt>
-            	<dd><a href="/DataTydying.html">Data Tydying in R</a></dd>
-            	<dt>Sat 08 April 2017</dt>
-            	<dd><a href="/RLeaflet.html">Leaflet for R</a></dd>
-            	<dt>Sat 08 April 2017</dt>
-            	<dd><a href="/Vis311R.html">An interactive visual of Houston 311 calls</a></dd>
-            	<dt>Sat 08 April 2017</dt>
-            	<dd><a href="/VisR.html">Basic Viusalization in R</a></dd>
-            	<dt>Sat 08 April 2017</dt>
-            	<dd><a href="/ggplot.html">"R Graphics with ggplot2"</a></dd>
-            	<dt>Thu 12 January 2017</dt>
-            	<dd><a href="/Apache.html">Install and cofigure Spark, Kafka, Cassandra, Zookeper</a></dd>
-            	<dt>Tue 09 February 2016</dt>
-            	<dd><a href="/RDF Triple API.html">RDF Parser API</a></dd>
-            	<dt>Wed 18 February 2015</dt>
-            	<dd><a href="/Temporal clinical events clustering.html">Timeline of vaccine temporal events from VAERS reports</a></dd>
-            </dl>
-        </div>
+    <div class="container content">
+        <h1>Anaconda</h1>
+<div class="highlight"><pre><span></span>export PATH=&quot;/home/mohcine/anaconda2/bin:$PATH&quot;
+</pre></div>
+
+
+<h1>Spark:</h1>
+<div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">snotebook</span> <span class="p">()</span>
+<span class="p">{</span>
+<span class="nx">SPARK_PATH</span><span class="o">=</span><span class="err">/home/mohcine/Sofwares/spark-2.2.0-bin-hadoop2.7</span>
+<span class="kr">export</span> <span class="nx">PYSPARK_DRIVER_PYTHON</span><span class="o">=</span><span class="s2">&quot;jupyter&quot;</span>
+<span class="kr">export</span> <span class="nx">PYSPARK_DRIVER_PYTHON_OPTS</span><span class="o">=</span><span class="s2">&quot;notebook&quot;</span>
+<span class="nx">$SPARK_PATH</span><span class="o">/</span><span class="nx">bin</span><span class="o">/</span><span class="nx">pyspark</span> <span class="o">--</span><span class="nx">master</span> <span class="nx">local</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h1>Zookeper:</h1>
+<div class="highlight"><pre><span></span>sudo apt-get install zookeeperd,   
+Check if it is running
+netstat -ant | grep :2181
+</pre></div>
+
+
+<h1>Kafka:</h1>
+<p>download kafka on the location : /opt</p>
+<div class="highlight"><pre><span></span>Start server: 
+sudo  /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
+</pre></div>
+
+
+<p>Start the Kafka server as a background process:</p>
+<div class="highlight"><pre><span></span>sudo  /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties  /tmp/kafka.log 2&gt;&amp;1 &amp;
+</pre></div>
+
+
+<p>Testing server</p>
+<div class="highlight"><pre><span></span>sudo /opt/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1  --partitions 1 --topic testing
+</pre></div>
+
+
+<p>Ask Zookeeper to list available topics on Apache Kafka</p>
+<div class="highlight"><pre><span></span>sudo /opt/kafka/bin/kafka-topics.sh --list --zookeeper localhost:2181
+</pre></div>
+
+
+<p>Publish a sample messages to Apache Kafka topic called testing by using the following producer command</p>
+<div class="highlight"><pre><span></span>sudo /opt/kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic testing
+</pre></div>
+
+
+<p>Use consumer command to check for messages on Apache Kafka Topic called testing</p>
+<div class="highlight"><pre><span></span>sudo /opt/kafka/bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic testing --from-beginning
+</pre></div>
+
+
+<h1>Cassandra:</h1>
+<div class="highlight"><pre><span></span>export CASSANDRA_HOME=/opt/apache-cassandra-3.11.1
+export PATH=$CASSANDRA_HOME/bin:$PATH
+    &gt;cd $CASSANDRA_HOME/bin
+    &gt;casandra
+    &gt;cqlsh
+</pre></div>
+
+
+        
     </div>
         <!-- /Content --> 
 
