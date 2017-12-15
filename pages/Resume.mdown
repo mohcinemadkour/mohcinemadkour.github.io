@@ -1,9 +1,0 @@
-Title: Resume 
-Date: 2016-02-18 16:00
-Category: Resume
-Tags: Resume
-Slug: Resume
-Author: Mohcine Madkour
-Illustration: background.jpg
-
-My [cv](Mohcine Madkour DS.docx)
