@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="For about a month now, I&#39;ve been working on a backend service in Scala. This service is simply a REST API: It fetches a string from redis, parses it as JSON, extracts some keys, serializes it as...">
+        <meta name="keywords" content="coursera, scala">
+        <link rel="icon" href="/favicon.ico">
+
+        <title>Thoughts on Scala - mohcine's super blog</title>
+
+        <!-- Stylesheets -->
+        <link href="/theme/css/all.min.css" rel="stylesheet">
+        <!-- /Stylesheets -->
+
+        <!-- RSS Feeds -->
+        <!-- /RSS Feeds -->
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+    </head>
+
+    <body>
+
+        <!-- Header -->
+    <div class="header-container gradient">
+
+            <!-- Static navbar -->
+            <div class="container">
+                <div class="header-nav">
+                    <div class="header-logo">
+                        <a class="pull-left" href="/"><img class="mr20" src="/image/logo.png" alt="logo">mohcine's super blog</a>
+                    </div>
+                    <div class="nav pull-right">
+                                <a href="/">Homepage</a>
+                                <a href="/categories.html">Categories</a>
+                            <a  href="/pages/about.html">About</a>
+                    </div>
+                </div>
+            </div>
+            <!-- /Static navbar -->
+
+            <!-- Header -->
+    <!-- Header -->
+    <div class="container header-wrapper">
+        <div class="row">
+              <div class="col-lg-12">
+                  <div class="header-content">
+                      <h1 class="header-title">Thoughts on Scala</h1>
+                      <p class="header-date">By <a href="/author/mohcine-madkour.html">mohcine madkour</a>, Wed 30 October 2013, in category <a href="/category/misc.html">Misc</a></p>
+                      <div class="header-underline"></div>
+                      <div class="clearfix"></div>
+                      <p class="pull-right header-tags">
+                          <span class="glyphicon glyphicon-tags mr5" aria-hidden="true"></span>
+<a href="/tag/coursera.html">coursera</a>, <a href="/tag/scala.html">scala</a>                      </p>
+                  </div>
+              </div>
+        </div>
+    </div>
+    <!-- /Header -->
+            <!-- /Header -->
+
+        </div>
+        <!-- /Header -->
+
+
+        <!-- Content -->
+    <div class="container content">
+        <p>For about a month now, I've been working on a backend service in Scala.
+This service is simply a REST API: It fetches a string from redis,
+parses it as JSON, extracts some keys, serializes it as JSON, and
+returns it. Pretty simple stuff. I've also just finished the Coursera
+class Functional Programming with Scala. I'm still a beginner to Scala,
+but here are some my thoughts on the language thus far.</p>
+<h3>JSON</h3>
+<p>After working with languages like Python and Javascript for a while, I
+got used to not having to worry about types too much. I didn't have to
+enforce strict data formats all the time, and enjoyed the fact that JSON and
+Python dictionaries were pretty similar. With Scala, I no longer have that
+pleasure. JSON serialization/deserialization was much more difficult to
+do. In Scala, there are way too many JSON libraries, with varying
+degrees of easiness. I started with Lift JSON, then moved to Play
+JSON, but usage was similar for both. To read JSON in Python, all I had
+to do was this:</p>
+<div class="highlight"><pre><span></span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)[</span><span class="s1">&#39;key1&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;key2&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<p>With Lift JSON, I had to do this:</p>
+<div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">listItem</span> <span class="k">=</span> <span class="o">(</span><span class="n">parse</span><span class="o">(</span><span class="n">jsonData</span><span class="o">)</span> <span class="o">\</span> <span class="s">&quot;key1&quot;</span><span class="o">).</span><span class="n">extract</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">String</span><span class="o">]]]</span>
+<span class="k">val</span> <span class="n">dataThatIWant</span> <span class="k">=</span> <span class="n">listItem</span><span class="o">(</span><span class="mi">0</span><span class="o">)(</span><span class="s">&quot;key2&quot;</span><span class="o">)</span>
+</pre></div>
+
+
+<p>And that was if <code>listItem</code> was a nice list of maps. If it wasn't, well,
+then I would have to create a case class for the items in the list, and
+maybe throw some Options in there. Yuck. The same thing applied to
+creating a JSON object - if I just wanted a simple Map with some more
+Maps and Lists, I would usually have to create some case classes. No
+more arbitrary dictionaries anymore, everything had to be well defined
+in advance.</p>
+<h3>Options</h3>
+<p>An option is simply a construct that can either have a value or be null.
+The usual way to handle options is to pattern match, but I found this to
+be too verbose in situations where I knew the value was present. I'm
+still not sure about the usefulness of options right now, but some
+people love them.</p>
+<h3>Functional Programming</h3>
+<p>I never really did true functional programming until now, but I have to
+say, after completing the Coursera class, I really enjoy FP. I had a lot
+of practice doing recursion, and now I can write recursive functions
+without blinking, whereas before I would have to think a little.
+Immutable variables was hard to work with at first, but once I got the
+hang of it I saw that everything could be done immutably. Higher order
+functions and comprehensions are all pretty intuitive (flatMap might be
+the only weird one).</p>
+<h3>Syntax</h3>
+<p>I'm not a big fan of optional dots and parentheses, since it sometimes
+makes the code hard to read. I have the same complaint about
+Coffeescript.</p>
+<p>Overall, I really like Scala and functional programming. There are some
+oddities, but nothing too crazy. To continue learning, I've signed up
+for the next class in the series - Principles of Reactive programming,
+taught by Martin Odersky again. It basically teaches the Typesafe stack,
+which is great since I'm already using the Play framework. I'm also
+reading Martin's <em>Programming in Scala</em>, and reading through
+various Scala projects on Github. Scala is a cool language, and
+infinitely more tolerable than Java.</p>
+
+
+        
+    </div>
+        <!-- /Content --> 
+
+        <!-- Footer -->
+        <div class="footer gradient-2">
+            <div class="container footer-container ">
+                <div class="row">
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Sitemap</div>
+                        <ul class="list-unstyled">
+                            <li><a href="/archives.html">Archives</a></li>
+                            <li><a href="/tags.html">Tags</a></li>
+                            <li><a href="/authors.html">Authors</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Social</div>
+                        <ul class="list-unstyled">
+                            <li><a href="#" target="_blank">You can add links in your config file</a></li>
+                            <li><a href="#" target="_blank">Another social link</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Links</div>
+                        <ul class="list-unstyled">
+                            <li><a href="http://getpelican.com/" target="_blank">Pelican</a></li>
+                            <li><a href="http://python.org/" target="_blank">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/" target="_blank">Jinja2</a></li>
+                            <li><a href="#" target="_blank">You can modify those links in your config file</a></li>
+                        </ul>
+                    </div> 
+                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                        <p class="pull-right text-right">
+                            <small><em>Proudly powered by <a href="http://docs.getpelican.com/" target="_blank">pelican</a></em></small><br/>
+                            <small><em>Theme and code by <a href="https://github.com/molivier" target="_blank">molivier</a></em></small><br/>
+                            <small>&copy; blogname 2015</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Footer -->
+    </body>
+</html>
