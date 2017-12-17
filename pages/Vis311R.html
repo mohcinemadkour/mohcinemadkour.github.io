@@ -4,11 +4,11 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="Selfish behaviors are reward driven and innate, wired deeply into the survival mechanisms of the primitive brain, and when consistently reinforced, they will run away to greed, with its associated...">
+        <meta name="description" content="An interactive visual of Houston 311 calls Background Houston receives 311 calls for non-emergency services from it&#39;s residents, businesses and visitors. The response time for these calls is...">
         <meta name="keywords" content="">
         <link rel="icon" href="http://localhost:8000/favicon.ico">
 
-        <title>Quote of the Day - A Pelican Blog</title>
+        <title>An interactive visual of Houston 311 calls - A Pelican Blog</title>
 
         <!-- Stylesheets -->
         <link href="http://localhost:8000/theme/css/all.min.css" rel="stylesheet">
@@ -30,7 +30,7 @@
     <body>
 
         <!-- Header -->
-    <div class="header-container" style="background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('http://localhost:8000/images/data-lake-background.png'); background-position: center; background-size: cover; ">
+    <div class="header-container" style="background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('http://localhost:8000/images/background.jpg'); background-position: center; background-size: cover; ">
 
             <!-- Static navbar -->
             <div class="container">
@@ -42,8 +42,8 @@
                                 <a href="http://localhost:8000pdfs/mohcine_madkour_cv.pdf">CV-Resume</a>
                                 <a href="http://localhost:8000/">Homepage</a>
                                 <a href="http://localhost:8000/categories.html">Categories</a>
-                            <a  class="active" href="http://localhost:8000/pages/Quote of the Day.html">Quote of the Day</a>
-                            <a  href="http://localhost:8000/pages/Vis311R.html">An interactive visual of Houston 311 calls</a>
+                            <a  href="http://localhost:8000/pages/Quote of the Day.html">Quote of the Day</a>
+                            <a  class="active" href="http://localhost:8000/pages/Vis311R.html">An interactive visual of Houston 311 calls</a>
                     </div>
                 </div>
             </div>
@@ -54,7 +54,7 @@
         <div class="row">
               <div class="col-lg-12">
                   <div class="header-content">
-                      <h1 class="header-title text-uppercase">Quote of the Day</h1>
+                      <h1 class="header-title text-uppercase">An interactive visual of Houston 311 calls</h1>
                       <div class="header-underline"></div>
                   </div>
               </div>
@@ -68,8 +68,50 @@
 
         <!-- Content -->
     <div class="container content">
-        <p>Selfish behaviors are reward driven and innate, wired deeply into the survival mechanisms of the primitive brain, and when consistently reinforced, they will run away to greed, with its associated craving for money, food, or power. On the other hand, the self restraint and the empathy for others that are so important in fostering physical and mental health are learned behaviors —largely functions of the new human cortex and thus culturally dependent. These social behaviors are fragile and learned by imitations much as we learn language.
-<em>~Peter Whybrow, American Mania</em></p>
+        <h1>An interactive visual of Houston 311 calls</h1>
+<p><strong>Background</strong></p>
+<p>Houston receives 311 calls for non-emergency services from it's residents, businesses and visitors. The response time for these calls is longer than those for emergency (911) calls. Accordingly the resources allocated to these services may not be as highly funded, resourced and/or prioritized as the emergency services. It is why the Houston authorities need to optimize the use and allocation of the resources available to service these calls.</p>
+<p>Help Houston city to optimize the use and allocation of the resources available to service 311 calls.</p>
+<p>Objective</p>
+<p>The goal of this visual analysis is to aid the NYC authorities in optimizing the use of the limited resources available to service 311 calls/requests. There are 3 dimensions chosen along which this optimization can be done, time, location and skill type.</p>
+<h1>barplot()</h1>
+<div class="highlight"><pre><span></span>    pol = read.csv(&quot;http://www.calvin.edu/~stob/data/csbv.csv&quot;)
+    barplot(table(pol$Political04), main=&quot;Political Leanings, Calvin Freshman 2004&quot;)
+    barplot(table(pol$Political04), horiz=T)
+    barplot(table(pol$Political04),col=c(&quot;red&quot;,&quot;green&quot;,&quot;blue&quot;,&quot;orange&quot;))
+    barplot(table(pol$Political04),col=c(&quot;red&quot;,&quot;green&quot;,&quot;blue&quot;,&quot;orange&quot;),names=c(&quot;Conservative&quot;,&quot;Far Right&quot;,&quot;Liberal&quot;,&quot;Centrist))
+</pre></div>
+
+
+<p><img alt="image" src="/images/barplot.png"></p>
+<div class="highlight"><pre><span></span>   barplot(xtabs(~sex + Political04, data=pol), legend=c(&quot;Female&quot;,&quot;Male&quot;), beside=T)
+</pre></div>
+
+
+<p><img alt="image" src="/images/barplotNB.png"></p>
+<h1>boxplot()</h1>
+<div class="highlight"><pre><span></span>data(iris)
+boxplot(iris$Sepal.Length)
+boxplot(iris$Sepal.Length, col=&quot;yellow&quot;)
+boxplot(Sepal.Length ~ Species, data=iris)
+boxplot(Sepal.Length ~ Species, data=iris, col=&quot;yellow&quot;, ylab=&quot;Sepal length&quot;,main=&quot;Iris Sepal Length by Species&quot;)
+</pre></div>
+
+
+<p><img alt="image" src="/images/boxplot.png"></p>
+<h1>plot()</h1>
+<div class="highlight"><pre><span></span>data(faithful)
+plot(waiting~eruptions,data=faithful)
+plot(waiting~eruptions,data=faithful,cex=.5)
+plot(waiting~eruptions,data=faithful,pch=6)
+plot(waiting~eruptions,data=faithful,pch=19)
+plot(waiting~eruptions,data=faithful,cex=.5,pch=19,col=&quot;blue&quot;)
+plot(waiting~eruptions, data=faithful, cex=.5, pch=19, col=&quot;blue&quot;, main=&quot;Old    Faithful Eruptions&quot;,
+ylab=&quot;Wait time between eruptions&quot;, xlab=&quot;Duration of eruption&quot;)
+</pre></div>
+
+
+<p><img alt="image" src="/images/plot.PNG"></p>
     </div>
         <!-- /Content --> 
 
