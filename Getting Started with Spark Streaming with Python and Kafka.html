@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Getting Started with Spark Streaming with Python and Kafka Last month I wrote a series of articles in which I looked at the use of Spark for performing data transformation and manipulation. This...">
+        <meta name="keywords" content="kafka, Spark">
+        <link rel="icon" href="https://mohcinemadkour.github.io/favicon.ico">
+
+        <title>Start Apache Kafka with kafka instance and apache kafka client - A Pelican Blog</title>
+
+        <!-- Stylesheets -->
+        <link href="https://mohcinemadkour.github.io/theme/css/all.min.css" rel="stylesheet">
+        <!-- /Stylesheets -->
+
+        <!-- RSS Feeds -->
+        <!-- /RSS Feeds -->
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+    </head>
+
+    <body>
+
+        <!-- Header -->
+    <div class="header-container" style="background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('https://mohcinemadkour.github.io/images/background.jpg'); background-position: center; background-size: cover;">
+
+            <!-- Static navbar -->
+            <div class="container">
+                <div class="header-nav">
+                    <div class="header-logo">
+                        <a class="pull-left" href="https://mohcinemadkour.github.io/"><img class="mr20" src="https://mohcinemadkour.github.io/images/logo.svg" alt="logo">A Pelican Blog</a>
+                    </div>
+                    <div class="nav pull-right">
+                                <a href="https://mohcinemadkour.github.io/pdfs/mohcine_madkour_cv.pdf">CV-Resume</a>
+                                <a href="https://mohcinemadkour.github.io/categories.html">Categories</a>
+                    </div>
+                </div>
+            </div>
+            <!-- /Static navbar -->
+
+            <!-- Header -->
+    <!-- Header -->
+    <div class="container header-wrapper">
+        <div class="row">
+              <div class="col-lg-12">
+                  <div class="header-content">
+                      <h1 class="header-title">Start Apache Kafka with kafka instance and apache kafka client</h1>
+                      <p class="header-date">By <a href="https://mohcinemadkour.github.io/author/mohcine-madkour.html">Mohcine Madkour</a>, Tue 26 December 2017, in category <a href="https://mohcinemadkour.github.io/category/kafka-spark-streaming.html">Kafka, spark streaming</a></p>
+                      <div class="header-underline"></div>
+                      <div class="clearfix"></div>
+                      <p class="pull-right header-tags">
+                          <span class="glyphicon glyphicon-tags mr5" aria-hidden="true"></span>
+<a href="https://mohcinemadkour.github.io/tag/kafka.html">kafka</a>, <a href="https://mohcinemadkour.github.io/tag/spark.html">Spark</a>                      </p>
+                  </div>
+              </div>
+        </div>
+    </div>
+    <!-- /Header -->
+            <!-- /Header -->
+
+        </div>
+        <!-- /Header -->
+
+
+        <!-- Content -->
+    <div class="container content">
+        <h1>Getting Started with Spark Streaming with Python and Kafka</h1>
+<p>Last month I wrote a <a href="https://www.rittmanmead.com/blog/2016/12/etl-offload-with-spark-and-amazon-emr-part-5/">series of articles</a> in which I looked at the use of Spark for performing data transformation and manipulation. This was in the context of replatforming an existing Oracle-based ETL and datawarehouse solution onto cheaper and more elastic alternatives. The processing that I wrote was very much batch-focussed; read a set of files from block storage ('disk'), process and enrich the data, and write it back to block storage.</p>
+<p>In this article I am going to look at <a href="http://spark.apache.org/streaming/">Spark Streaming</a>. This is one of several libraries that the <a href="http://spark.apache.org">Spark platform</a> provides (others include <a href="http://spark.apache.org/sql/">Spark SQL</a>, <a href="http://spark.apache.org/mllib/">Spark MLlib</a>, and <a href="http://spark.apache.org/graphx/">Spark GraphX</a>). Spark Streaming provides a way of processing "unbounded" data - commonly referred to as "streaming" data. It does this by breaking it up into microbatches, and supporting windowing capabilities for processing across multiple batches. </p>
+<p><img alt="" src="http://spark.apache.org/docs/latest/img/streaming-flow.png"></p>
+<p>(<a href="http://spark.apache.org/docs/latest/streaming-programming-guide.html">img src</a>)</p>
+<p>The use-case I'm going to put together is - almost inevitably for a generic unbounded data example - using Twitter, read from a Kafka topic.  We'll start simply, counting the number of tweets per user within each batch and doing some very simple string manipulations. After that we'll see how to do the same but over a period of time (windowing). In the next blog we'll extend this further into a more useful example, still based on Twitter but demonstrating how to satisfy some real-world requirements in the processing.</p>
+<p>I developed all of this code using Jupyter Notebooks. I've written before about how awesome notebooks are (as well as Jupyter, there's Apache Zeppelin). As well as providing a superb development environment in which the results of code can be seen, Jupyter gives the option to download a Notebook to [Markdown]](https://en.wikipedia.org/wiki/Markdown), on which this blog runs - so in fact what you're reading here comes natively from the notebook in which I developed the code. Pretty cool.</p>
+<p><img alt="" src="images/ssc01.png"> </p>
+<p>I used the docker image <a href="https://github.com/jupyter/docker-stacks/tree/master/all-spark-notebook">all-spark-notebook</a> to provide both Jupyter and the Spark runtime environment. The only external aspect was a Kafka cluster that I had already, with tweets from the live Twitter feed on a kafka topic imaginatively called <code>twitter</code>. </p>
+<h2>Preparing the Environment</h2>
+<p>We need to make sure that the packages we're going to use are available to Spark. Instead of downloading <code>jar</code> files and worrying about paths, we can instead use the <code>--packages</code> option and specify the group/artifact/version based on what's available on <a href="http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.apache.spark%22%20AND%20a%3A%22spark-streaming-kafka-0-8-assembly_2.11%22">Maven</a> and Spark will handle the downloading. We specify <code>PYSPARK_SUBMIT_ARGS</code> for this to get passed correctly when executing from within Jupyter. </p>
+<p>To run the code in Jupyter, you can put the cursor in each cell and press Shift-Enter to run it each cell at a time -- or you can use menu option <code>Kernel</code> -&gt; <code>Restart &amp; Run All</code>. When a cell is executing you'll see a <code>[*]</code> next to it, and once the execution is complete this changes to <code>[y]</code> where <code>y</code> is execution step number. Any output from that step will be shown immediately below it.</p>
+<p>To run the code standalone, you would download the <code>.py</code> from Jupyter, and execute it using </p>
+<div class="highlight"><pre><span></span>/usr/local/spark-2.0.2-bin-hadoop2.7/bin/spark-submit --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2 spark_code.py
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYSPARK_SUBMIT_ARGS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;--packages org.apache.spark:spark-streaming-kafka-0-10_2.11:2.0.2 pyspark-shell&#39;</span>
+</pre></div>
+
+
+<h3>Import dependencies</h3>
+<p>We need to import the necessary pySpark modules for Spark, Spark Streaming, and Spark Streaming with Kafka. We also need the python <code>json</code> module for parsing the inbound twitter data</p>
+<div class="highlight"><pre><span></span><span class="c1">#    Spark</span>
+<span class="kn">from</span> <span class="nn">pyspark</span> <span class="kn">import</span> <span class="n">SparkContext</span>
+<span class="c1">#    Spark Streaming</span>
+<span class="kn">from</span> <span class="nn">pyspark.streaming</span> <span class="kn">import</span> <span class="n">StreamingContext</span>
+<span class="c1">#    Kafka</span>
+<span class="kn">from</span> <span class="nn">pyspark.streaming.kafka</span> <span class="kn">import</span> <span class="n">KafkaUtils</span>
+<span class="c1">#    json parsing</span>
+<span class="kn">import</span> <span class="nn">json</span>
+</pre></div>
+
+
+<h3>Create Spark context</h3>
+<p>The Spark context is the primary object under which everything else is called. The <code>setLogLevel</code> call is optional, but saves a lot of noise on stdout that otherwise can swamp the actual outputs from the job. </p>
+<div class="highlight"><pre><span></span><span class="n">sc</span> <span class="o">=</span> <span class="n">SparkContext</span><span class="o">.</span><span class="n">getOrCreate</span><span class="p">()</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">setLogLevel</span><span class="p">(</span><span class="s2">&quot;WARN&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<h3>Create Streaming Context</h3>
+<p>We pass the Spark context (from above) along with the batch duration (here, 60 seconds). </p>
+<p>See the <a href="http://spark.apache.org/docs/latest/api/python/pyspark.streaming.html#pyspark.streaming.StreamingContext">API reference</a> and <a href="http://spark.apache.org/docs/latest/streaming-programming-guide.html#initializing-streamingcontext">programming guide</a> for more details. </p>
+<div class="highlight"><pre><span></span><span class="n">ssc</span> <span class="o">=</span> <span class="n">StreamingContext</span><span class="p">(</span><span class="n">sc</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">py4j</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">dir</span><span class="p">(</span><span class="n">py4j</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">java_import</span><span class="p">(</span><span class="n">gateway</span><span class="o">.</span><span class="n">jvm</span><span class="p">,</span> <span class="s2">&quot;org.apache.spark.sql.*&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Connect to Kafka</p>
+<p>Using the native Spark Streaming Kafka capabilities, we use the streaming context from above to connect to our Kafka cluster. The topic connected to is <code>twitter</code>, from consumer group <code>spark-streaming</code>. The latter is an arbitrary name that can be changed as required. </p>
+<p>For more information see the <a href="http://spark.apache.org/docs/latest/streaming-kafka-0-8-integration.html">documentation</a>.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyspark.streaming.kafka</span> <span class="kn">import</span> <span class="n">KafkaUtils</span>
+<span class="n">kafkaStream</span> <span class="o">=</span> <span class="n">KafkaUtils</span><span class="o">.</span><span class="n">createStream</span><span class="p">(</span><span class="n">ssc</span><span class="p">,</span> <span class="s1">&#39;cdh57-01-node-01.moffatt.me:2181&#39;</span><span class="p">,</span> <span class="s1">&#39;spark-streaming&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;twitter&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">})</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>________________________________________________________________________________________________
+
+  Spark Streaming&#39;s Kafka libraries not found in class path. Try one of the following.
+
+  1. Include the Kafka library and its dependencies with in the
+     spark-submit command as
+
+     $ bin/spark-submit --packages org.apache.spark:spark-streaming-kafka-0-8:2.2.0 ...
+
+  2. Download the JAR of the artifact from Maven Central http://search.maven.org/,
+     Group Id = org.apache.spark, Artifact Id = spark-streaming-kafka-0-8-assembly, Version = 2.2.0.
+     Then, include the jar in the spark-submit command as
+
+     $ bin/spark-submit --jars &lt;spark-streaming-kafka-0-8-assembly.jar&gt; ...
+
+________________________________________________________________________________________________
+
+
+
+
+
+---------------------------------------------------------------------------
+
+TypeError                                 Traceback (most recent call last)
+
+&lt;ipython-input-5-5c350be4f6a8&gt; in &lt;module&gt;()
+      1 from pyspark.streaming.kafka import KafkaUtils
+----&gt; 2 kafkaStream = KafkaUtils.createStream(ssc, &#39;cdh57-01-node-01.moffatt.me:2181&#39;, &#39;spark-streaming&#39;, {&#39;twitter&#39;:1})
+
+
+/home/mohcine/Sofwares/spark-2.2.0-bin-hadoop2.7/python/pyspark/streaming/kafka.pyc in createStream(ssc, zkQuorum, groupId, topics, kafkaParams, storageLevel, keyDecoder, valueDecoder)
+     67             raise TypeError(&quot;topics should be dict&quot;)
+     68         jlevel = ssc._sc._getJavaStorageLevel(storageLevel)
+---&gt; 69         helper = KafkaUtils._get_helper(ssc._sc)
+     70         jstream = helper.createStream(ssc._jssc, kafkaParams, topics, jlevel)
+     71         ser = PairDeserializer(NoOpSerializer(), NoOpSerializer())
+
+
+/home/mohcine/Sofwares/spark-2.2.0-bin-hadoop2.7/python/pyspark/streaming/kafka.pyc in _get_helper(sc)
+    193     def _get_helper(sc):
+    194         try:
+--&gt; 195             return sc._jvm.org.apache.spark.streaming.kafka.KafkaUtilsPythonHelper()
+    196         except TypeError as e:
+    197             if str(e) == &quot;&#39;JavaPackage&#39; object is not callable&quot;:
+
+
+TypeError: &#39;JavaPackage&#39; object is not callable
+</pre></div>
+
+
+<h2>Message Processing</h2>
+<h3>Parse the inbound message as json</h3>
+<p>The inbound stream is a <a href="http://spark.apache.org/docs/2.0.0/api/python/pyspark.streaming.html#pyspark.streaming.DStream"><code>DStream</code></a>, which supports various built-in <a href="http://spark.apache.org/docs/latest/streaming-programming-guide.html#transformations-on-dstreams">transformations</a> such as <code>map</code> which is used here to parse the inbound messages from their native JSON format. </p>
+<p>Note that this will fail horribly if the inbound message <em>isn't</em> valid JSON. </p>
+<div class="highlight"><pre><span></span><span class="n">parsed</span> <span class="o">=</span> <span class="n">kafkaStream</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</pre></div>
+
+
+<h3>Count number of tweets in the batch</h3>
+<p>The <a href="http://spark.apache.org/docs/2.0.0/api/python/pyspark.streaming.html#pyspark.streaming.DStream"><code>DStream</code></a> object provides native functions to count the number of messages in the batch, and to print them to the output: </p>
+<ul>
+<li><a href="http://spark.apache.org/docs/2.0.0/api/python/pyspark.streaming.html#pyspark.streaming.DStream.count"><code>count</code></a></li>
+<li><a href="http://spark.apache.org/docs/2.0.0/api/python/pyspark.streaming.html#pyspark.streaming.DStream.pprint"><code>pprint</code></a> </li>
+</ul>
+<p>We use the <code>map</code> function to add in some text explaining the value printed. </p>
+<p><em>Note that nothing gets written to output from the Spark Streaming context and descendent objects until the Spark Streaming Context is started, which happens later in the code</em></p>
+<p><em><em><code>pprint</code> by default only prints the first 10 values</em></em></p>
+<div class="highlight"><pre><span></span><span class="n">parsed</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="s1">&#39;Tweets in this batch: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">pprint</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Note that if you jump ahead and try to use Windowing at this point, for example to count the number of tweets in the last hour using the <code>countByWindow</code> function, it'll fail. This is because we've not set up the streaming context with a checkpoint directory yet. You'll get the error: <code>java.lang.IllegalArgumentException: requirement failed: The checkpoint directory has not been set. Please set it by StreamingContext.checkpoint().</code>. See later on in the blog for details about how to do this. </p>
+<h3>Extract Author name from each tweet</h3>
+<p>Tweets come through in a JSON structure, of which you can see an <a href="https://gist.github.com/rmoff/3968605712f437a1f37e7be52129cade">example here</a>. We're going to analyse tweets by author, which is accessible in the json structure at <code>user.screen_name</code>. </p>
+<p>The <a href="https://pythonconquerstheuniverse.wordpress.com/2011/08/29/lambda_tutorial/"><code>lambda</code></a> anonymous function is used to apply the <code>map</code> to each RDD within the DStream. The result is a DStream holding just the author's screenname for each tweet in the original DStream.</p>
+<div class="highlight"><pre><span></span><span class="n">authors_dstream</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">tweet</span><span class="p">:</span> <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;screen_name&#39;</span><span class="p">])</span>
+</pre></div>
+
+
+<h3>Count the number of tweets per author</h3>
+<p>With our authors DStream, we can now count them using the <code>countByValue</code> function. This is conceptually the same as this quasi-SQL statement: </p>
+<div class="highlight"><pre><span></span>SELECT   AUTHOR, COUNT(*)
+FROM     DSTREAM
+GROUP BY AUTHOR
+</pre></div>
+
+
+<p>_Using <code>countByValue</code> is a more legible way of doing the same thing that you'll see done in tutorials elsewhere with a map / reduceBy. _</p>
+<div class="highlight"><pre><span></span><span class="n">author_counts</span> <span class="o">=</span> <span class="n">authors_dstream</span><span class="o">.</span><span class="n">countByValue</span><span class="p">()</span>
+<span class="n">author_counts</span><span class="o">.</span><span class="n">pprint</span><span class="p">()</span>
+</pre></div>
+
+
+<h3>Sort the author count</h3>
+<p>If you try and use the <code>sortBy</code> function directly against the DStream you get an error: </p>
+<div class="highlight"><pre><span></span>&#39;TransformedDStream&#39; object has no attribute &#39;sortBy&#39;
+</pre></div>
+
+
+<p>This is because sort is not a built-in <a href="http://spark.apache.org/docs/2.0.0/api/python/pyspark.streaming.html#pyspark.streaming.DStream">DStream</a> function, we use the <a href="http://spark.apache.org/docs/latest/streaming-programming-guide.html#transform-operation"><code>transform</code></a> function to access <a href="http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.sortBy"><code>sortBy</code></a> from pySpark. </p>
+<p>To use <code>sortBy</code> you specify a lambda function to define the sort order. Here we're going to do it based on first the author name (index 0 of the RDD), and then of that order, by number of tweets (index 1 of the RDD). You'll note these index references being used in the <code>sortBy</code> lambda function <code>x[0]</code> and <code>x[1]</code>. Thanks to <a href="http://stackoverflow.com/a/41485394/350613">user6910411</a> on StackOverflow for a better way of doing this. </p>
+<p><em>Here I'm using <code>\</code> as line continuation characters to make the code more legible.</em></p>
+<div class="highlight"><pre><span></span><span class="n">author_counts_sorted_dstream</span> <span class="o">=</span> <span class="n">author_counts</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>\
+  <span class="p">(</span><span class="k">lambda</span> <span class="n">foo</span><span class="p">:</span><span class="n">foo</span>\
+   <span class="o">.</span><span class="n">sortBy</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:(</span> <span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]))))</span>
+<span class="c1">#   .sortBy(lambda x:(x[0].lower(), -x[1]))\</span>
+<span class="c1">#  ))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">author_counts_sorted_dstream</span><span class="o">.</span><span class="n">pprint</span><span class="p">()</span>
+</pre></div>
+
+
+<h3>Get top 5 authors by tweet count</h3>
+<p>To display just the top five authors, based on number of tweets in the batch period, we'll using the <a href="http://spark.apache.org/docs/2.0.2/api/python/pyspark.html#pyspark.RDD.take"><code>take</code></a> function. My first attempt at this failed with: </p>
+<div class="highlight"><pre><span></span>AttributeError: &#39;list&#39; object has no attribute &#39;_jrdd&#39;
+</pre></div>
+
+
+<p>Per my <a href="http://stackoverflow.com/questions/41483746/transformed-dstream-in-pyspark-gives-error-when-pprint-called-on-it">woes on StackOverflow</a> a <code>parallelize</code> is necessary to return the values into a DStream form.</p>
+<div class="highlight"><pre><span></span><span class="n">top_five_authors</span> <span class="o">=</span> <span class="n">author_counts_sorted_dstream</span><span class="o">.</span><span class="n">transform</span>\
+  <span class="p">(</span><span class="k">lambda</span> <span class="n">rdd</span><span class="p">:</span><span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span><span class="n">rdd</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">5</span><span class="p">)))</span>
+<span class="n">top_five_authors</span><span class="o">.</span><span class="n">pprint</span><span class="p">()</span>
+</pre></div>
+
+
+<h3>Get authors with more than one tweet, or whose username starts with 'a'</h3>
+<p>Let's get a bit more fancy now - filtering the resulting list of authors to only show the ones who have tweeted more than once in our batch window, or -arbitrarily- whose screenname begins with <code>rm</code>..</p>
+<div class="highlight"><pre><span></span><span class="n">filtered_authors</span> <span class="o">=</span> <span class="n">author_counts</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span>\
+                                                <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">1</span> \
+                                                <span class="ow">or</span> \
+                                                <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;rm&#39;</span><span class="p">))</span>
+</pre></div>
+
+
+<p>We'll print this list of authors matching the criteria, sorted by the number of tweets. Note how the sort is being done inline to the calling of the <code>pprint</code> function. Assigning variables and then <code>pprint</code>ing them as I've done above is only done for clarity. It also makes sense if you're going to subsequently reuse the derived stream variable (such as with the <code>author_counts</code> in this code). </p>
+<div class="highlight"><pre><span></span><span class="n">filtered_authors</span><span class="o">.</span><span class="n">transform</span>\
+  <span class="p">(</span><span class="k">lambda</span> <span class="n">rdd</span><span class="p">:</span><span class="n">rdd</span>\
+  <span class="o">.</span><span class="n">sortBy</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>\
+  <span class="o">.</span><span class="n">pprint</span><span class="p">()</span>
+</pre></div>
+
+
+<h3>List the most common words in the tweets</h3>
+<p>Every example has to have a version of wordcount, right? Here's an all-in-one with line continuations to make it clearer what's going on. It makes for tidier code, but it also makes it harder to debug...</p>
+<div class="highlight"><pre><span></span><span class="n">parsed</span><span class="o">.</span>\
+    <span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">tweet</span><span class="p">:</span><span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">))</span>\
+    <span class="o">.</span><span class="n">countByValue</span><span class="p">()</span>\
+    <span class="o">.</span><span class="n">transform</span>\
+      <span class="p">(</span><span class="k">lambda</span> <span class="n">rdd</span><span class="p">:</span><span class="n">rdd</span><span class="o">.</span><span class="n">sortBy</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>\
+    <span class="o">.</span><span class="n">pprint</span><span class="p">()</span>
+</pre></div>
+
+
+<h2>Start the streaming context</h2>
+<p>Having defined the streaming context, now we're ready to actually start it! When you run this cell, the program will start, and you'll see the result of all the <code>pprint</code> functions above appear in the output to this cell below. If you're running it outside of Jupyter (via <code>spark-submit</code>) then you'll see the output on stdout.</p>
+<p><em>I've added a <code>timeout</code> to deliberately cancel the execution after three minutes. In practice, you would not set this :)</em></p>
+<div class="highlight"><pre><span></span><span class="n">ssc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">ssc</span><span class="o">.</span><span class="n">awaitTermination</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">180</span><span class="p">)</span>
+</pre></div>
+
+
+<p>So there we have it, a very simple Spark Streaming application doing some basic processing against an inbound data stream from Kafka.</p>
+<h2>Windowed Stream Processing</h2>
+<p>Now let's have a look at how we can do windowed processing. This is where data is processed based on a 'window' which is a multiple of the batch duration that we worked with above. So instead of counting how many tweets there are every batch (say, 5 seconds), we could instead count how many there are per hour - an hour (/60 minutes/3600 seconds is the <em>window</em> interval). We can perform this count potentially every time the batch runs; how frequently we do the count is known as the <em>slide</em> interval.</p>
+<p><em><img alt="" src="http://spark.apache.org/docs/latest/img/streaming-dstream-window.png">
+Image credit, and more details about window processing, <a href="http://spark.apache.org/docs/latest/streaming-programming-guide.html#window-operations">here</a>.</em></p>
+<p>The first thing to do to enable windowed processing in Spark Streaming is to launch the Streaming Context with a <a href="http://spark.apache.org/docs/latest/streaming-programming-guide.html#checkpointing">checkpoint directory</a> configured. This is used to store information between batches if necessary, and also to recover from failures. You need to rework your code into the pattern <a href="http://spark.apache.org/docs/latest/streaming-programming-guide.html#how-to-configure-checkpointing">shown here</a>. All the code to be executed by the streaming context goes in a function - which makes it less easy to present in a step-by-step form in a notebook as I have above. </p>
+<h3>Reset the Environment</h3>
+<p>If you're running this code in the same session as above, first go to the Jupyter <strong>Kernel</strong> menu and select <strong>Restart</strong>.</p>
+<h3>Prepare the environment</h3>
+<p>These are the same steps as above. </p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PYSPARK_SUBMIT_ARGS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;--packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2 pyspark-shell&#39;</span>
+<span class="kn">from</span> <span class="nn">pyspark</span> <span class="kn">import</span> <span class="n">SparkContext</span>
+<span class="kn">from</span> <span class="nn">pyspark.streaming</span> <span class="kn">import</span> <span class="n">StreamingContext</span>
+<span class="kn">from</span> <span class="nn">pyspark.streaming.kafka</span> <span class="kn">import</span> <span class="n">KafkaUtils</span>
+<span class="kn">import</span> <span class="nn">json</span>
+</pre></div>
+
+
+<h3>Define the stream processing code</h3>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">createContext</span><span class="p">():</span>
+    <span class="n">sc</span> <span class="o">=</span> <span class="n">SparkContext</span><span class="p">(</span><span class="n">appName</span><span class="o">=</span><span class="s2">&quot;PythonSparkStreamingKafka_RM_02&quot;</span><span class="p">)</span>
+    <span class="n">sc</span><span class="o">.</span><span class="n">setLogLevel</span><span class="p">(</span><span class="s2">&quot;WARN&quot;</span><span class="p">)</span>
+    <span class="n">ssc</span> <span class="o">=</span> <span class="n">StreamingContext</span><span class="p">(</span><span class="n">sc</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+    <span class="c1"># Define Kafka Consumer</span>
+    <span class="n">kafkaStream</span> <span class="o">=</span> <span class="n">KafkaUtils</span><span class="o">.</span><span class="n">createStream</span><span class="p">(</span><span class="n">ssc</span><span class="p">,</span> <span class="s1">&#39;cdh57-01-node-01.moffatt.me:2181&#39;</span><span class="p">,</span> <span class="s1">&#39;spark-streaming2&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;twitter&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">})</span>
+
+    <span class="c1">## --- Processing</span>
+    <span class="c1"># Extract tweets</span>
+    <span class="n">parsed</span> <span class="o">=</span> <span class="n">kafkaStream</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="c1"># Count number of tweets in the batch</span>
+    <span class="n">count_this_batch</span> <span class="o">=</span> <span class="n">kafkaStream</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:(</span><span class="s1">&#39;Tweets this batch: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">x</span><span class="p">))</span>
+
+    <span class="c1"># Count by windowed time period</span>
+    <span class="n">count_windowed</span> <span class="o">=</span> <span class="n">kafkaStream</span><span class="o">.</span><span class="n">countByWindow</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:(</span><span class="s1">&#39;Tweets total (One minute rolling count): </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">x</span><span class="p">))</span>
+
+    <span class="c1"># Get authors</span>
+    <span class="n">authors_dstream</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">tweet</span><span class="p">:</span> <span class="n">tweet</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;screen_name&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Count each value and number of occurences </span>
+    <span class="n">count_values_this_batch</span> <span class="o">=</span> <span class="n">authors_dstream</span><span class="o">.</span><span class="n">countByValue</span><span class="p">()</span>\
+                                <span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="k">lambda</span> <span class="n">rdd</span><span class="p">:</span><span class="n">rdd</span>\
+                                  <span class="o">.</span><span class="n">sortBy</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>\
+                              <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="s2">&quot;Author counts this batch:</span><span class="se">\t</span><span class="s2">Value </span><span class="si">%s</span><span class="se">\t</span><span class="s2">Count </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="c1"># Count each value and number of occurences in the batch windowed</span>
+    <span class="n">count_values_windowed</span> <span class="o">=</span> <span class="n">authors_dstream</span><span class="o">.</span><span class="n">countByValueAndWindow</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>\
+                                <span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="k">lambda</span> <span class="n">rdd</span><span class="p">:</span><span class="n">rdd</span>\
+                                  <span class="o">.</span><span class="n">sortBy</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>\
+                            <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="s2">&quot;Author counts (One minute rolling):</span><span class="se">\t</span><span class="s2">Value </span><span class="si">%s</span><span class="se">\t</span><span class="s2">Count </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="c1"># Write total tweet counts to stdout</span>
+    <span class="c1"># Done with a union here instead of two separate pprint statements just to make it cleaner to display</span>
+    <span class="n">count_this_batch</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">count_windowed</span><span class="p">)</span><span class="o">.</span><span class="n">pprint</span><span class="p">()</span>
+
+    <span class="c1"># Write tweet author counts to stdout</span>
+    <span class="n">count_values_this_batch</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">count_values_windowed</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ssc</span>
+</pre></div>
+
+
+<h3>Launch the stream processing</h3>
+<p>This uses local disk to store the checkpoint data. In a Production deployment this would be on resilient storage such as HDFS.</p>
+<p>Note that, by design, if you restart this code using the same checkpoint folder, it will execute the <em>previous</em> code - so if you need to amend the code being executed, specify a different checkpoint folder.</p>
+<div class="highlight"><pre><span></span><span class="n">ssc</span> <span class="o">=</span> <span class="n">StreamingContext</span><span class="o">.</span><span class="n">getOrCreate</span><span class="p">(</span><span class="s1">&#39;/tmp/checkpoint_v06&#39;</span><span class="p">,</span><span class="k">lambda</span><span class="p">:</span> <span class="n">createContext</span><span class="p">())</span>
+<span class="n">ssc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">ssc</span><span class="o">.</span><span class="n">awaitTermination</span><span class="p">()</span>
+</pre></div>
+
+
+<p>You can see in the above output cell the full output from the job, but let's take some extracts and walk through them. </p>
+<h3>Total tweet counts</h3>
+<p>First, the total tweet counts. In the first slide window, they're the same, since we only have one batch of data so far: </p>
+<div class="highlight"><pre><span></span>-------------------------------------------
+Time: 2017-01-11 17:08:55
+-------------------------------------------
+Tweets this batch: 782
+Tweets total (One minute rolling count): 782
+</pre></div>
+
+
+<p>Five seconds later, we have 25 tweets in the current batch - giving us a total of 807 (782 + 25): </p>
+<div class="highlight"><pre><span></span>-------------------------------------------
+Time: 2017-01-11 17:09:00
+-------------------------------------------
+Tweets this batch: 25
+Tweets total (One minute rolling count): 807
+</pre></div>
+
+
+<p>Fast forward just over a minute and we see that the windowed count for a minute is not just going up - in some cases it goes down - since our window is now not simply the full duration of the inbound data stream, but is shifting along and giving a total count for (now - 60 seconds)</p>
+<div class="highlight"><pre><span></span>-------------------------------------------
+Time: 2017-01-11 17:09:50
+-------------------------------------------
+Tweets this batch: 28
+Tweets total (One minute rolling count): 1012
+
+-------------------------------------------
+Time: 2017-01-11 17:09:55
+-------------------------------------------
+Tweets this batch: 24
+Tweets total (One minute rolling count): 254
+</pre></div>
+
+
+<h3>Count by Author</h3>
+<p>In the first batch, as with the total tweets, the batch tally is the same as the windowed one: </p>
+<div class="highlight"><pre><span></span>-------------------------------------------
+Time: 2017-01-11 17:08:55
+-------------------------------------------
+Author counts this batch:   Value AnnaSabryan   Count 8
+Author counts this batch:   Value KHALILSAFADO  Count 7
+Author counts this batch:   Value socialvidpress    Count 6
+Author counts this batch:   Value SabSad_   Count 5
+Author counts this batch:   Value CooleeBravo   Count 5
+...
+
+-------------------------------------------
+Time: 2017-01-11 17:08:55
+-------------------------------------------
+Author counts (One minute rolling): Value AnnaSabryan   Count 8
+Author counts (One minute rolling): Value KHALILSAFADO  Count 7
+Author counts (One minute rolling): Value socialvidpress    Count 6
+Author counts (One minute rolling): Value SabSad_   Count 5
+Author counts (One minute rolling): Value CooleeBravo   Count 5
+</pre></div>
+
+
+<p>But notice in subsequent batches the rolling totals are accumulating for each author. Here we can see <code>KHALILSAFADO</code> (with a previous rolling total of 7, as above) has another tweet in this batch, giving a rolling total of 8: </p>
+<div class="highlight"><pre><span></span>-------------------------------------------
+Time: 2017-01-11 17:09:00
+-------------------------------------------
+Author counts this batch:   Value DawnExperience    Count 1
+Author counts this batch:   Value KHALILSAFADO  Count 1
+Author counts this batch:   Value Alchemister5  Count 1
+Author counts this batch:   Value uused2callme  Count 1
+Author counts this batch:   Value comfyjongin   Count 1
+...
+
+-------------------------------------------
+Time: 2017-01-11 17:09:00
+-------------------------------------------
+Author counts (One minute rolling): Value AnnaSabryan   Count 9
+Author counts (One minute rolling): Value KHALILSAFADO  Count 8
+Author counts (One minute rolling): Value socialvidpress    Count 6
+Author counts (One minute rolling): Value SabSad_   Count 5
+Author counts (One minute rolling): Value CooleeBravo   Count 5
+</pre></div>
+
+
+<h2>Summary</h2>
+<p>Processing unbounded data sets, or "stream processing", is a new way of looking at what has always been done as batch in the past. Whilst intra-day ETL and frequent batch executions have brought latencies down, they are still standalone executions with optional bespoke code in place to handle intra-batch accumulations. With Spark Streaming we have a framework that enables this processing to be done natively and with support as default for both within-batch and across-batch (windowing). </p>
+<p>Here I used Spark Streaming because of its native support for Python, a language that I am familiar with and is (in my view) more accessible to non-coders than Java or Scala. Jupyter Notebooks are a fantastic environment in which to prototype code, and for a local environment providing both Jupyter and Spark it all you can't beat the Docker image <a href="https://github.com/jupyter/docker-stacks/tree/master/all-spark-notebook">all-spark-notebook</a>. </p>
+<p>There are other stream processing frameworks and languages out there, including Apache Flink, Kafka Streams, and Apache Beam, to name but three. Apache Storm and Apache Samza are also relevant, but whilst were early to the party seem to crop up less frequently in stream processing discussions and literature nowadays. </p>
+<p>In the next blog we'll see how to extend this Spark Stremaing further with processing that includes: </p>
+<ul>
+<li>Matching tweet contents to predefined list of filter terms, and filtering out retweets</li>
+<li>Including only tweets that include URLs, and comparing those URLs to a whitelist of domains</li>
+<li>Sending tweets matching a given condition to a Kafka topic</li>
+<li>Keeping a tally of tweet counts per batch and over a longer period of time, as well as counts for terms matched within the tweets</li>
+</ul>
+
+
+    <div class="comments">
+        <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'leafyleap-2';
+                var disqus_identifier = 'Getting Started with Spark Streaming with Python and Kafka.html';
+                var disqus_url = 'https://mohcinemadkour.github.io/Getting Started with Spark Streaming with Python and Kafka.html';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+        <noscript>Please enable JavaScript to view the comments.</noscript>
+    </div>
+        
+    </div>
+        <!-- /Content --> 
+
+        <!-- Footer -->
+        <div class="footer gradient-2">
+            <div class="container footer-container ">
+                <div class="row">
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Sitemap</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://mohcinemadkour.github.io/archives.html">Archives</a></li>
+                            <li><a href="https://mohcinemadkour.github.io/tags.html">Tags</a></li>
+                            <li><a href="https://mohcinemadkour.github.io/authors.html">Authors</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Social</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.meetup.com/members/112481792//" target="_blank">meetup</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Links</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.linkedin.com/in/mohcine-madkour-83a642b2//" target="_blank">LinkedIn</a></li>
+                            <li><a href="https://github.com/mohcinemadkour/" target="_blank">Github</a></li>
+                        </ul>
+                    </div> 
+                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                        <p class="pull-right text-right">
+                            <small><em>Proudly powered by <a href="http://docs.getpelican.com/" target="_blank">pelican</a></em></small><br/>
+                            <small><em>Theme and code by <a href="https://github.com/molivier" target="_blank">molivier</a></em></small><br/>
+                            <small>&copy; leafyleap 2017</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Footer -->
+    </body>
+</html>
