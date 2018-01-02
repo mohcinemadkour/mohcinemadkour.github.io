@@ -8,7 +8,7 @@
         <meta name="keywords" content="kafka, Spark">
         <link rel="icon" href="https://mohcinemadkour.github.io/favicon.ico">
 
-        <title>Start Apache Kafka with kafka instance and apache kafka client - A Pelican Blog</title>
+        <title>Start Apache Kafka with kafka instance and apache kafka client -2 - A Pelican Blog</title>
 
         <!-- Stylesheets -->
         <link href="https://mohcinemadkour.github.io/theme/css/all.min.css" rel="stylesheet">
@@ -52,7 +52,7 @@
         <div class="row">
               <div class="col-lg-12">
                   <div class="header-content">
-                      <h1 class="header-title">Start Apache Kafka with kafka instance and apache kafka client</h1>
+                      <h1 class="header-title">Start Apache Kafka with kafka instance and apache kafka client -2</h1>
                       <p class="header-date">By <a href="https://mohcinemadkour.github.io/author/mohcine-madkour.html">Mohcine Madkour</a>, Tue 26 December 2017, in category <a href="https://mohcinemadkour.github.io/category/kafka-spark-streaming.html">Kafka, spark streaming</a></p>
                       <div class="header-underline"></div>
                       <div class="clearfix"></div>
@@ -75,7 +75,7 @@
         <h1>Getting Started with Spark Streaming with Python and Kafka</h1>
 <p>Last month I wrote a <a href="https://www.rittmanmead.com/blog/2016/12/etl-offload-with-spark-and-amazon-emr-part-5/">series of articles</a> in which I looked at the use of Spark for performing data transformation and manipulation. This was in the context of replatforming an existing Oracle-based ETL and datawarehouse solution onto cheaper and more elastic alternatives. The processing that I wrote was very much batch-focussed; read a set of files from block storage ('disk'), process and enrich the data, and write it back to block storage.</p>
 <p>In this article I am going to look at <a href="http://spark.apache.org/streaming/">Spark Streaming</a>. This is one of several libraries that the <a href="http://spark.apache.org">Spark platform</a> provides (others include <a href="http://spark.apache.org/sql/">Spark SQL</a>, <a href="http://spark.apache.org/mllib/">Spark MLlib</a>, and <a href="http://spark.apache.org/graphx/">Spark GraphX</a>). Spark Streaming provides a way of processing "unbounded" data - commonly referred to as "streaming" data. It does this by breaking it up into microbatches, and supporting windowing capabilities for processing across multiple batches. </p>
-<p><img alt="" src="http://spark.apache.org/docs/latest/img/streaming-flow.png"></p>
+<p><img alt="" src="/images/streaming-flow.png"></p>
 <p>(<a href="http://spark.apache.org/docs/latest/streaming-programming-guide.html">img src</a>)</p>
 <p>The use-case I'm going to put together is - almost inevitably for a generic unbounded data example - using Twitter, read from a Kafka topic.  We'll start simply, counting the number of tweets per user within each batch and doing some very simple string manipulations. After that we'll see how to do the same but over a period of time (windowing). In the next blog we'll extend this further into a more useful example, still based on Twitter but demonstrating how to satisfy some real-world requirements in the processing.</p>
 <p>I developed all of this code using Jupyter Notebooks. I've written before about how awesome notebooks are (as well as Jupyter, there's Apache Zeppelin). As well as providing a superb development environment in which the results of code can be seen, Jupyter gives the option to download a Notebook to [Markdown]](https://en.wikipedia.org/wiki/Markdown), on which this blog runs - so in fact what you're reading here comes natively from the notebook in which I developed the code. Pretty cool.</p>
@@ -304,7 +304,7 @@ GROUP BY AUTHOR
 <p>So there we have it, a very simple Spark Streaming application doing some basic processing against an inbound data stream from Kafka.</p>
 <h2>Windowed Stream Processing</h2>
 <p>Now let's have a look at how we can do windowed processing. This is where data is processed based on a 'window' which is a multiple of the batch duration that we worked with above. So instead of counting how many tweets there are every batch (say, 5 seconds), we could instead count how many there are per hour - an hour (/60 minutes/3600 seconds is the <em>window</em> interval). We can perform this count potentially every time the batch runs; how frequently we do the count is known as the <em>slide</em> interval.</p>
-<p><em><img alt="" src="http://spark.apache.org/docs/latest/img/streaming-dstream-window.png">
+<p><em><img alt="" src="/images/streaming-dstream-window.png">
 Image credit, and more details about window processing, <a href="http://spark.apache.org/docs/latest/streaming-programming-guide.html#window-operations">here</a>.</em></p>
 <p>The first thing to do to enable windowed processing in Spark Streaming is to launch the Streaming Context with a <a href="http://spark.apache.org/docs/latest/streaming-programming-guide.html#checkpointing">checkpoint directory</a> configured. This is used to store information between batches if necessary, and also to recover from failures. You need to rework your code into the pattern <a href="http://spark.apache.org/docs/latest/streaming-programming-guide.html#how-to-configure-checkpointing">shown here</a>. All the code to be executed by the streaming context goes in a function - which makes it less easy to present in a step-by-step form in a notebook as I have above. </p>
 <h3>Reset the Environment</h3>

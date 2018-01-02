@@ -4,11 +4,11 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="Taming Big Data with Apache Spark and Python - Hands On Background Apache Spark is one of the hottest technologies in big data today. Employers including Amazon, EBay, NASA JPL, and Yahoo all use...">
-        <meta name="keywords" content="Big Data, Spark">
+        <meta name="description" content="Converting Python to Spark You can&#39;t do I/Os the old fashion way; whatever dataset you&#39;re manipulating must be distributed; ie your log file should be on HDFS. So first step, opening the log file...">
+        <meta name="keywords" content="Spark">
         <link rel="icon" href="https://mohcinemadkour.github.io/favicon.ico">
 
-        <title>Taming Big Data with Apache Spark and Python - A Pelican Blog</title>
+        <title>Start Apache Spark : building application from Python - A Pelican Blog</title>
 
         <!-- Stylesheets -->
         <link href="https://mohcinemadkour.github.io/theme/css/all.min.css" rel="stylesheet">
@@ -52,13 +52,13 @@
         <div class="row">
               <div class="col-lg-12">
                   <div class="header-content">
-                      <h1 class="header-title">Taming Big Data with Apache Spark and Python</h1>
-                      <p class="header-date">By <a href="https://mohcinemadkour.github.io/author/mohcine-madkour.html">Mohcine madkour</a>, Sat 23 December 2017, in category <a href="https://mohcinemadkour.github.io/category/spark-big-data.html">Spark, big data</a></p>
+                      <h1 class="header-title">Start Apache Spark : building application from Python</h1>
+                      <p class="header-date">By <a href="https://mohcinemadkour.github.io/author/mohcine-madkour.html">Mohcine Madkour</a>, Fri 29 December 2017, in category <a href="https://mohcinemadkour.github.io/category/kafka-spark-streaming.html">Kafka, spark streaming</a></p>
                       <div class="header-underline"></div>
                       <div class="clearfix"></div>
                       <p class="pull-right header-tags">
                           <span class="glyphicon glyphicon-tags mr5" aria-hidden="true"></span>
-<a href="https://mohcinemadkour.github.io/tag/big-data.html">Big Data</a>, <a href="https://mohcinemadkour.github.io/tag/spark.html">Spark</a>                      </p>
+<a href="https://mohcinemadkour.github.io/tag/spark.html">Spark</a>                      </p>
                   </div>
               </div>
         </div>
@@ -72,20 +72,33 @@
 
         <!-- Content -->
     <div class="container content">
-        <h1>Taming Big Data with Apache Spark and Python - Hands On</h1>
-<p><strong>Background</strong></p>
-<p>Apache Spark is one of the hottest technologies in big data today. Employers including Amazon, EBay, NASA JPL, and Yahoo all use Spark to quickly extract meaning from massive data sets across a fault-tolerant Hadoop cluster.</p>
-<p>*<em> Apache Hadoop YARN</em></p>
-<p>The fundamental idea of YARN is to split up the functionalities of resource management and job scheduling/monitoring into separate daemons. The idea is to have a global ResourceManager (RM) and per-application ApplicationMaster (AM). An application is either a single job or a DAG of jobs.</p>
-<p><img alt="image" src="/images/plot.PNG"></p>
+        <h1>Converting Python to Spark</h1>
+<ol>
+<li>
+<p>You can't do I/Os the old fashion way; whatever dataset you're manipulating must be distributed; ie your log file should be on HDFS. So first step, opening the log file and creating a RDD would look something like this:</p>
+<blockquote>
+<blockquote>
+<p>Spark put files in HDFS
+</p>
+</blockquote>
+</blockquote>
+</li>
+<li>
+<p>You don't programmatically iterate on the data per say, instead you supply a function to process each value (lines in this case). So your code where you iterate on lines could be put inside a function:</p>
+<p>def virtualPortFunction(line):
+    #Do something, return output process of a line
+    virtualPortsSomething = lines.flatMap(lambda x: x.split(' ')) \
+                 .map(lambda x: virtualPortFunction(x))</p>
+</li>
+</ol>
 
 
     <div class="comments">
         <div id="disqus_thread"></div>
             <script type="text/javascript">
                 var disqus_shortname = 'leafyleap-2';
-                var disqus_identifier = 'SparkTuto.html';
-                var disqus_url = 'https://mohcinemadkour.github.io/SparkTuto.html';
+                var disqus_identifier = 'Spark Guide.html';
+                var disqus_url = 'https://mohcinemadkour.github.io/Spark Guide.html';
                 (function() {
                     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
                     dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
