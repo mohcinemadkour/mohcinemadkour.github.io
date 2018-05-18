@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Introduction Leaflet is one of the most popular open-source JavaScript libraries for interactive maps. It’s used by websites ranging from The New York Times and The Washington Post to GitHub and...">
+        <meta name="keywords" content="Data Visualization, R">
+        <link rel="icon" href="https://mohcinemadkour.github.io/favicon.ico">
+
+        <title>Leaflet for R - A Pelican Blog</title>
+
+        <!-- Stylesheets -->
+        <link href="https://mohcinemadkour.github.io/theme/css/all.min.css" rel="stylesheet">
+        <!-- /Stylesheets -->
+
+        <!-- RSS Feeds -->
+        <!-- /RSS Feeds -->
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+    </head>
+
+    <body>
+
+        <!-- Header -->
+    <div class="header-container" style="background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('https://mohcinemadkour.github.io/images/background.jpg'); background-position: center; background-size: cover;">
+
+            <!-- Static navbar -->
+            <div class="container">
+                <div class="header-nav">
+                    <div class="header-logo">
+                        <a class="pull-left" href="https://mohcinemadkour.github.io/"><img class="mr20" src="https://mohcinemadkour.github.io/images/logo.svg" alt="logo">A Pelican Blog</a>
+                    </div>
+                    <div class="nav pull-right">
+                                <a href="https://mohcinemadkour.github.io/pdfs/mohcine_madkour_cv.pdf">CV-Resume</a>
+                                <a href="https://mohcinemadkour.github.io/categories.html">Categories</a>
+                    </div>
+                </div>
+            </div>
+            <!-- /Static navbar -->
+
+            <!-- Header -->
+    <!-- Header -->
+    <div class="container header-wrapper">
+        <div class="row">
+              <div class="col-lg-12">
+                  <div class="header-content">
+                      <h1 class="header-title">Leaflet for R</h1>
+                      <p class="header-date">By <a href="https://mohcinemadkour.github.io/author/mohcine-madkour.html">Mohcine madkour</a>, Sat 08 April 2017, in category <a href="https://mohcinemadkour.github.io/category/r-leaflet.html">R, leaflet</a></p>
+                      <div class="header-underline"></div>
+                      <div class="clearfix"></div>
+                      <p class="pull-right header-tags">
+                          <span class="glyphicon glyphicon-tags mr5" aria-hidden="true"></span>
+<a href="https://mohcinemadkour.github.io/tag/data-visualization.html">Data Visualization</a>, <a href="https://mohcinemadkour.github.io/tag/r.html">R</a>                      </p>
+                  </div>
+              </div>
+        </div>
+    </div>
+    <!-- /Header -->
+            <!-- /Header -->
+
+        </div>
+        <!-- /Header -->
+
+
+        <!-- Content -->
+    <div class="container content">
+        <h1>Introduction</h1>
+<p>Leaflet is one of the most popular open-source JavaScript libraries for interactive maps. It’s used by websites ranging from The New York Times and The Washington Post to GitHub and Flickr, as well as GIS specialists like OpenStreetMap, Mapbox, and CartoDB.
+This R package makes it easy to integrate and control Leaflet maps in R.</p>
+<p>This R package makes it easy to integrate and control Leaflet maps in R.</p>
+<h1>Installation</h1>
+<p>To install this R package, run this command at your R prompt:</p>
+<div class="highlight"><pre><span></span>install.packages(&quot;leaflet&quot;)
+# to install the development version from Github, run
+# devtools::install_github(&quot;rstudio/leaflet&quot;)
+</pre></div>
+
+
+<p>Basic Usage</p>
+<p>You create a Leaflet map with these basic steps:</p>
+<p>1- Create a map widget by calling leaflet().
+2- Add layers (i.e., features) to the map by using layer functions (e.g.  addTiles, addMarkers, addPolygons) to modify the map widget.
+3- Repeat step 2 as desired.
+4- Print the map widget to display it.</p>
+<p>Here’s a basic example:</p>
+<div class="highlight"><pre><span></span><span class="kn">library</span><span class="p">(</span>leaflet<span class="p">)</span>
+<span class="kn">library</span><span class="p">(</span>dplyr<span class="p">)</span>
+m <span class="o">&lt;-</span> leaflet<span class="p">()</span> <span class="o">%&gt;%</span>
+  addTiles<span class="p">()</span> <span class="o">%&gt;%</span>  <span class="c1"># Add default OpenStreetMap map tiles</span>
+  addMarkers<span class="p">(</span>lng<span class="o">=</span><span class="m">174.768</span><span class="p">,</span> lat<span class="o">=</span><span class="m">-36.852</span><span class="p">,</span> popup<span class="o">=</span><span class="s">&quot;The birthplace of R&quot;</span><span class="p">)</span>
+m  <span class="c1"># Print the map</span>
+</pre></div>
+
+
+<h1>Leaflet Heat Maps</h1>
+<p>Create Map</p>
+<p>We start by creating a map of the location.</p>
+<div class="highlight"><pre><span></span><span class="kn">library</span><span class="p">(</span>rMaps<span class="p">)</span>
+L2 <span class="o">&lt;-</span> Leaflet<span class="o">$</span>new<span class="p">()</span>
+L2<span class="o">$</span>setView<span class="p">(</span><span class="kt">c</span><span class="p">(</span><span class="m">29.7632836</span><span class="p">,</span>  <span class="m">-95.3632715</span><span class="p">),</span> <span class="m">10</span><span class="p">)</span>
+L2<span class="o">$</span>tileLayer<span class="p">(</span>provider <span class="o">=</span> <span class="s">&quot;MapQuestOpen.OSM&quot;</span><span class="p">)</span>
+L2
+</pre></div>
+
+
+<h1>Get Data</h1>
+<p>We will use the crime dataset from the ggmap package that contains a tidied up version of Houston crime data from January 2010 to August 2010.</p>
+<div class="highlight"><pre><span></span>data(crime, package = &#39;ggmap&#39;)
+library(plyr)
+crime_dat = ddply(crime, .(lat, lon), summarise, count = length(address))
+crime_dat = toJSONArray2(na.omit(crime_dat), json = F, names = F)
+cat(rjson::toJSON(crime_dat[1:2]))
+
+[[27.5071143,-99.5055471,1],[29.4836146,-95.0618715,10]
+
+Add HeatMap
+</pre></div>
+
+
+<p>Now that we have the map and the data, the next step is to add the data to the map as a heatmap layer. Thanks to the Leaflet.heat plugin written by the Vladimir Agafonkin, the author of LeafletJS, this is really easy to do, with a little bit of custom javascript.</p>
+<h1>Add leaflet-heat plugin. Thanks to Vladimir Agafonkin</h1>
+<p>L2$addAssets(jshead = c(
+  "http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"
+))</p>
+<h1>Add javascript to modify underlying chart</h1>
+<p>L2$setTemplate(afterScript = sprintf("
+<script>
+  var addressPoints = %s
+  var heat = L.heatLayer(addressPoints).addTo(map)         <br>
+</script>
+", rjson::toJSON(crime_dat)
+))</p>
+<p>L2</p>
+
+
+    <div class="comments">
+        <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'leafyleap-2';
+                var disqus_identifier = 'RLeaflet.html';
+                var disqus_url = 'https://mohcinemadkour.github.io/RLeaflet.html';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+        <noscript>Please enable JavaScript to view the comments.</noscript>
+    </div>
+        
+    </div>
+        <!-- /Content --> 
+
+        <!-- Footer -->
+        <div class="footer gradient-2">
+            <div class="container footer-container ">
+                <div class="row">
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Sitemap</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://mohcinemadkour.github.io/archives.html">Archives</a></li>
+                            <li><a href="https://mohcinemadkour.github.io/tags.html">Tags</a></li>
+                            <li><a href="https://mohcinemadkour.github.io/authors.html">Authors</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Social</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.meetup.com/members/112481792//" target="_blank">meetup</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Links</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.linkedin.com/in/mohcine-madkour-83a642b2//" target="_blank">LinkedIn</a></li>
+                            <li><a href="https://github.com/mohcinemadkour/" target="_blank">Github</a></li>
+                        </ul>
+                    </div> 
+                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                        <p class="pull-right text-right">
+                            <small><em>Proudly powered by <a href="http://docs.getpelican.com/" target="_blank">pelican</a></em></small><br/>
+                            <small><em>Theme and code by <a href="https://github.com/molivier" target="_blank">molivier</a></em></small><br/>
+                            <small>&copy; leafyleap 2017</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Footer -->
+    </body>
+</html>

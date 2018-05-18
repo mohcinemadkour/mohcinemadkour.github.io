@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Machines, cores, executors, tasks, and receivers in Spark The subsequent sections of this article talk a lot about parallelism in Spark and in Kafka. You need at least a basic understanding of...">
+        <meta name="keywords" content="kafka, Spark">
+        <link rel="icon" href="https://mohcinemadkour.github.io/favicon.ico">
+
+        <title>Machines, cores, executors, tasks, and receivers in Spark - A Pelican Blog</title>
+
+        <!-- Stylesheets -->
+        <link href="https://mohcinemadkour.github.io/theme/css/all.min.css" rel="stylesheet">
+        <!-- /Stylesheets -->
+
+        <!-- RSS Feeds -->
+        <!-- /RSS Feeds -->
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+    </head>
+
+    <body>
+
+        <!-- Header -->
+    <div class="header-container" style="background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('https://mohcinemadkour.github.io/images/background.jpg'); background-position: center; background-size: cover;">
+
+            <!-- Static navbar -->
+            <div class="container">
+                <div class="header-nav">
+                    <div class="header-logo">
+                        <a class="pull-left" href="https://mohcinemadkour.github.io/"><img class="mr20" src="https://mohcinemadkour.github.io/images/logo.svg" alt="logo">A Pelican Blog</a>
+                    </div>
+                    <div class="nav pull-right">
+                                <a href="https://mohcinemadkour.github.io/pdfs/mohcine_madkour_cv.pdf">CV-Resume</a>
+                                <a href="https://mohcinemadkour.github.io/categories.html">Categories</a>
+                    </div>
+                </div>
+            </div>
+            <!-- /Static navbar -->
+
+            <!-- Header -->
+    <!-- Header -->
+    <div class="container header-wrapper">
+        <div class="row">
+              <div class="col-lg-12">
+                  <div class="header-content">
+                      <h1 class="header-title">Machines, cores, executors, tasks, and receivers in Spark</h1>
+                      <p class="header-date">By <a href="https://mohcinemadkour.github.io/author/mohcine-madkour.html">Mohcine Madkour</a>, Tue 26 December 2017, in category <a href="https://mohcinemadkour.github.io/category/kafka-spark-streaming.html">Kafka, spark streaming</a></p>
+                      <div class="header-underline"></div>
+                      <div class="clearfix"></div>
+                      <p class="pull-right header-tags">
+                          <span class="glyphicon glyphicon-tags mr5" aria-hidden="true"></span>
+<a href="https://mohcinemadkour.github.io/tag/kafka.html">kafka</a>, <a href="https://mohcinemadkour.github.io/tag/spark.html">Spark</a>                      </p>
+                  </div>
+              </div>
+        </div>
+    </div>
+    <!-- /Header -->
+            <!-- /Header -->
+
+        </div>
+        <!-- /Header -->
+
+
+        <!-- Content -->
+    <div class="container content">
+        <h1>Machines, cores, executors, tasks, and receivers in Spark</h1>
+<p>The subsequent sections of this article talk a lot about parallelism in Spark and in Kafka. You need at least a basic understanding of some Spark terminology to be able to follow the discussion in those sections.</p>
+<ul>
+<li>A Spark cluster contains 1+ worker nodes aka slave machines (simplified view; I exclude pieces like cluster managers here.)</li>
+<li>A worker node can run 1+ executors.</li>
+<li>An executor is a process launched for an application on a worker node, which runs tasks and keeps data in memory or disk storage across them. Each application has its own executors. An executor has a certain amount of cores aka “slots” available to run tasks assigned to it.</li>
+<li>A task is a unit of work that will be sent to one executor. That is, it runs (part of) the actual computation of your application. The SparkContext sends those tasks for the executors to run. Each task occupies one slot aka core in the parent executor.</li>
+<li>A receiver (API, docs) is run within an executor as a long-running task. Each receiver is responsible for exactly one so-called input DStream (e.g. an input stream for reading from Kafka), and each receiver – and thus input DStream – occupies one core/slot.</li>
+<li>An input DStream: an input DStream is a special DStream that connects Spark Streaming to external data sources for reading input data. For each external data source (e.g. Kafka) you need one such input DStream implementation. Once Spark Streaming is “connected” to an external data source via such input DStreams, any subsequent DStream transformations will create “normal” DStreams.</li>
+</ul>
+<p>In Spark’s execution model, each application gets its own executors, which stay up for the duration of the whole application and run 1+ tasks in multiple threads. This isolation approach is similar to Storm’s model of execution. This architecture becomes more complicated once you introduce cluster managers like YARN or Mesos, which I do not cover here. See Cluster Overview in the Spark docs for further details.</p>
+<h1>Primer on topics, partitions, and parallelism in Kafka</h1>
+<p>Kafka stores data in topics, with each topic consisting of a configurable number of partitions. The number of partitions of a topic is very important for performance considerations as this number is an upper bound on the consumer parallelism: if a topic has N partitions, then your application can only consume this topic with a maximum of N threads in parallel. (At least this is the case when you use Kafka’s built-in Scala/Java consumer API.)</p>
+<p>When I say “application” I should rather say consumer group in Kafka’s terminology. A consumer group, identified by a string of your choosing, is the cluster-wide identifier for a logical consumer application. All consumers that are part of the same consumer group share the burden of reading from a given Kafka topic, and only a maximum of N (= number of partitions) threads across all the consumers in the same group will be able to read from the topic. Any excess threads will sit idle.</p>
+<p>Multiple Kafka consumer groups can be run in parallel: Of course you can run multiple, independent logical consumer applications against the same Kafka topic. Here, each logical application will run its consumer threads under a unique consumer group id. Each application can then also use different read parallelisms (see below). When I am talking about the various ways to configure read parallelism in the following sections, then I am referring to the settings of a single one of these logical consumer applications. </p>
+<p>Here are some simplified examples.</p>
+<ul>
+<li>Your application uses the consumer group id “terran” to read from a Kafka topic “zerg.hydra” that has 10 partitions. If you configure your application to consume the topic with only 1 thread, then this single thread will read data from all 10 partitions.</li>
+<li>Same as above, but this time you configure 5 consumer threads. Here, each thread will read from 2 partitions.</li>
+<li>Same as above, but this time you configure 10 consumer threads. Here, each thread will read from a single partition.</li>
+<li>Same as above, but this time you configure 14 consumer threads. Here, 10 of the 14 threads will read from a single partition each, and the remaining 4 threads will be idle.</li>
+</ul>
+<p>Let’s introduce some real-world complexity in this simple picture – the rebalancing event in Kafka. Rebalancing is a lifecycle event in Kafka that occurs when consumers join or leave a consumer group (there are more conditions that trigger rebalancing but these are not important in this context; see my Kafka training deck for details on rebalancing).</p>
+<ul>
+<li>Your application uses the consumer group id “terran” and starts consuming with 1 thread. This thread will read from all 10 partitions. During runtime, you’ll increase the number of threads from 1 to 14. That is, there is suddenly a change of parallelism for the same consumer group. This triggers rebalancing in Kafka. Once rebalancing completes, you will have 10 of 14 threads consuming from a single partition each, and the 4 remaining threads will be idle. And as you might have guessed, the initial thread will now read from only one partition and will no longer see data from the other nine.</li>
+</ul>
+<p>We have now a basic understanding of topics, partitions, and the number of partitions as an upper bound for the parallelism when reading from Kafka. But what are the resulting implications for an application – such as a Spark Streaming job or Storm topology – that reads its input data from Kafka?</p>
+<p>1- Read parallelism: You typically want to read from all N partitions of a Kafka topic in parallel by consuming with N threads. And depending on the data volume you want to spread those threads across different NICs, which typically means across different machines. In Storm, this is achieved by setting the parallelism of the Kafka spout to N via TopologyBuilder#setSpout(). The Spark equivalent is a bit trickier, and I will describe how to do this in further detail below.
+2- Downstream processing parallelism: Once retrieved from Kafka you want to process the data in parallel. Depending on your use case this level of parallelism must be different from the read parallelism. If your use case is CPU-bound, for instance, you want to have many more processing threads than read threads; this is achieved by shuffling or “fanning out” the data via the network from the few read threads to the many processing threads. Hence you pay for the access to more cores with increased network communication, serialization overhead, etc. In Storm, you perform such a shuffling via a shuffle grouping from the Kafka spout to the next downstream bolt. The Spark equivalent is the repartition transformation on DStreams.</p>
+<p>The important takeaway is that it is possible – and often desired – to decouple the level of parallelisms for reading from Kafka and for processing the data once read. In the next sections I will describe the various options you have at your disposal to configure read parallelism and downstream processing parallelism in Spark Streaming.</p>
+<p>** Extracted from <a href="http://www.michael-noll.com/blog/2014/10/01/kafka-spark-streaming-integration-example-tutorial/">Michael G. Noll Blog</a></p>
+
+
+    <div class="comments">
+        <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'leafyleap-2';
+                var disqus_identifier = 'Machines, cores, executors, tasks, and receivers in Spark.html';
+                var disqus_url = 'https://mohcinemadkour.github.io/Machines, cores, executors, tasks, and receivers in Spark.html';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+        <noscript>Please enable JavaScript to view the comments.</noscript>
+    </div>
+        
+    </div>
+        <!-- /Content --> 
+
+        <!-- Footer -->
+        <div class="footer gradient-2">
+            <div class="container footer-container ">
+                <div class="row">
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Sitemap</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://mohcinemadkour.github.io/archives.html">Archives</a></li>
+                            <li><a href="https://mohcinemadkour.github.io/tags.html">Tags</a></li>
+                            <li><a href="https://mohcinemadkour.github.io/authors.html">Authors</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Social</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.meetup.com/members/112481792//" target="_blank">meetup</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Links</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.linkedin.com/in/mohcine-madkour-83a642b2//" target="_blank">LinkedIn</a></li>
+                            <li><a href="https://github.com/mohcinemadkour/" target="_blank">Github</a></li>
+                        </ul>
+                    </div> 
+                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                        <p class="pull-right text-right">
+                            <small><em>Proudly powered by <a href="http://docs.getpelican.com/" target="_blank">pelican</a></em></small><br/>
+                            <small><em>Theme and code by <a href="https://github.com/molivier" target="_blank">molivier</a></em></small><br/>
+                            <small>&copy; leafyleap 2017</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Footer -->
+    </body>
+</html>

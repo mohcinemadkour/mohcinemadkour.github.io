@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Temporal Clustering of Vaccine events Events in clinical narratives are naturally associated with medical trials, including surgery, vaccination, lab test, medication, medical procedure, and...">
+        <meta name="keywords" content="data visualization, K-means, VAERS Reports">
+        <link rel="icon" href="https://mohcinemadkour.github.io/favicon.ico">
+
+        <title>Timeline of vaccine temporal events from VAERS reports - A Pelican Blog</title>
+
+        <!-- Stylesheets -->
+        <link href="https://mohcinemadkour.github.io/theme/css/all.min.css" rel="stylesheet">
+        <!-- /Stylesheets -->
+
+        <!-- RSS Feeds -->
+        <!-- /RSS Feeds -->
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+    </head>
+
+    <body>
+
+        <!-- Header -->
+    <div class="header-container" style="background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('https://mohcinemadkour.github.io/images/background.jpg'); background-position: center; background-size: cover;">
+
+            <!-- Static navbar -->
+            <div class="container">
+                <div class="header-nav">
+                    <div class="header-logo">
+                        <a class="pull-left" href="https://mohcinemadkour.github.io/"><img class="mr20" src="https://mohcinemadkour.github.io/images/logo.svg" alt="logo">A Pelican Blog</a>
+                    </div>
+                    <div class="nav pull-right">
+                                <a href="https://mohcinemadkour.github.io/pdfs/mohcine_madkour_cv.pdf">CV-Resume</a>
+                                <a href="https://mohcinemadkour.github.io/categories.html">Categories</a>
+                    </div>
+                </div>
+            </div>
+            <!-- /Static navbar -->
+
+            <!-- Header -->
+    <!-- Header -->
+    <div class="container header-wrapper">
+        <div class="row">
+              <div class="col-lg-12">
+                  <div class="header-content">
+                      <h1 class="header-title">Timeline of vaccine temporal events from VAERS reports</h1>
+                      <p class="header-date">By <a href="https://mohcinemadkour.github.io/author/mohcine-madkour-jingcheng-du-hsing-yi-song-cui-tao.html">Mohcine Madkour, Jingcheng Du, Hsing-Yi Song, Cui Tao</a>, Wed 18 February 2015, in category <a href="https://mohcinemadkour.github.io/category/temporal-data.html">Temporal data</a></p>
+                      <div class="header-underline"></div>
+                      <div class="clearfix"></div>
+                      <p class="pull-right header-tags">
+                          <span class="glyphicon glyphicon-tags mr5" aria-hidden="true"></span>
+<a href="https://mohcinemadkour.github.io/tag/data-visualization.html">data visualization</a>, <a href="https://mohcinemadkour.github.io/tag/k-means.html">K-means</a>, <a href="https://mohcinemadkour.github.io/tag/vaers-reports.html">VAERS Reports</a>                      </p>
+                  </div>
+              </div>
+        </div>
+    </div>
+    <!-- /Header -->
+            <!-- /Header -->
+
+        </div>
+        <!-- /Header -->
+
+
+        <!-- Content -->
+    <div class="container content">
+        <h1>Temporal Clustering of Vaccine events</h1>
+<p><strong>Events in clinical narratives are naturally associated with medical trials, including surgery, vaccination, lab test, medication, medical procedure, and diagnosis. They are interrelated with many temporal relations. The grouping of medical events onto temporal clusters is a key to applications such as longitudinal studies, clinical question answering, and information retrieval. However, it is difficult to define clinical event quantitatively or consistently in coarse time-bins (e.g. before vaccination or after admission). In this article, I developed the K-means classifier to enable labeling a sequence of medical events with predefined time-bins. The features set is based solely on temporal distance similarity between boundaries of events. The result of the solution is integrated with the <a href="https://timeline.knightlab.com/">KnightLab timeline JS tool</a>.</strong></p>
+<p>In this article I investigate the task of tagging a sequence of events using a clustering algorithm. For this purpose I assume that each medical note can be associated with a predefined set of coarse of times that I refer to as time bins. For our example of VAERS note, the potential time-bins are: “before vaccination”, “soon after vaccination”, and “way after vaccination”. The time-bin “before vaccination” is intended to capture past medical history of the patient including the medical state of the patient on time of vaccination; “soon after vaccination” captures medical events that occurred immediately after the vaccination; and “way after vaccination” captures medical events that occurred after an extended duration from the vaccination. The issue in clustering events in predefined time-bins is that the time duration of each timebin varies based on the patient. For instance, the coarse of time “soon
+after vaccination” could be the first few hours after or a few days
+after depending on the general conditions. For that I consider that
+related events happen in relatively close proximity of time. I use a
+non-hierarchical clustering to classify the set of events. I consider
+the temporal distance between events as the measure of similarity
+between events of same clusters and dissimilarity between events of
+different clusters.</p>
+<h2>K-Means Clustering</h2>
+<p>K-means is one of the simplest algorithms for solving the
+clustering problem. Clustering is an unsupervised learning
+problem whereby I aim to group subsets of entities with one
+another based on a temporal distance similarity. The idea is to define
+k centroids for the k assumed clusters and to associate each point
+belonging to a given data set to the nearest center. A point represents
+the time instant of the event or the center of interval if its time
+interval event. When no point is pending, the first step is completed
+and an early group age is done. At this point I re-calculate k new
+centroids as barycenter of the clusters resulting from the previous
+step. After I have these k new centroids, I re-bind the same data
+set points to their nearest new center. A loop has been generated. As
+a result of this loop the k centers change their location step by step
+until no more changes are done or in other words centres do not
+move any more.</p>
+<h2>Timeline View</h2>
+<p>For data that relates to temporal events, the Timeline Widget adds an interesting dimension to your exhibit.</p>
+<p>The nobelists.js data file lists the years when the Nobelists won their prizes, so I can plot each one on a time line. To display timelines in Exhibit you need to include a separate utility, the Timeline widget. The Timeline widget is a bit bulky, so Exhibit doesn't include it by default. You have to include the time extension to Exhibit. Open the file nobelists.html, find the reference to exhibit-api.js and add the following script element after it:</p>
+<div class="highlight"><pre><span></span><span class="nt">&lt;div</span> <span class="na">data-ex-role=</span><span class="s">&quot;view&quot;</span><span class="nt">&gt;</span>
+    data-ex-view-class=&quot;Timeline&quot;  
+    data-ex-start=&quot;.time&quot; 
+    data-ex-end=&quot;.time2&quot; 
+    data-ex-color-key=&quot;.cluster&quot; 
+    data-ex-top-band-unit=&quot;month&quot; 
+    data-ex-bottom-band-unit=&quot;year&quot; 
+    data-ex-top-band-pixels-per-unit=&quot;90&quot; 
+    data-ex-bottom-band-pixels-per-unit=&quot;400&quot;
+        <span class="nt">&lt;div</span> <span class="na">data-ex-role=</span><span class="s">&quot;lens&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;span</span> <span class="na">data-ex-content=</span><span class="s">&quot;.hour&quot;</span><span class="nt">&gt;&lt;/span&gt;</span>: 
+                <span class="nt">&lt;span</span> <span class="na">data-ex-content=</span><span class="s">&quot;.label&quot;</span><span class="nt">&gt;&lt;/span&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</pre></div>
+
+
+<h2>Visualization</h2>
+<p>I visualize the results using the Exhibit dashboard
+solution. The timeline dashboard enables intuitive cluster analysis
+by user interactions. Also our visualization allows summarizing by
+the various types of events information. <img alt="Here is a screeshot of the visualization" src="/images/timeline.png"> Check out the <a href="http://htmlpreview.github.io/?https://github.com/mohcinemadkour/Event-Timeline/blob/master/index.html">visualization of clustered events</a></p>
+
+
+    <div class="comments">
+        <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'leafyleap-2';
+                var disqus_identifier = 'Temporal clinical events clustering.html';
+                var disqus_url = 'https://mohcinemadkour.github.io/Temporal clinical events clustering.html';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+        <noscript>Please enable JavaScript to view the comments.</noscript>
+    </div>
+        
+    </div>
+        <!-- /Content --> 
+
+        <!-- Footer -->
+        <div class="footer gradient-2">
+            <div class="container footer-container ">
+                <div class="row">
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Sitemap</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://mohcinemadkour.github.io/archives.html">Archives</a></li>
+                            <li><a href="https://mohcinemadkour.github.io/tags.html">Tags</a></li>
+                            <li><a href="https://mohcinemadkour.github.io/authors.html">Authors</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Social</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.meetup.com/members/112481792//" target="_blank">meetup</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Links</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.linkedin.com/in/mohcine-madkour-83a642b2//" target="_blank">LinkedIn</a></li>
+                            <li><a href="https://github.com/mohcinemadkour/" target="_blank">Github</a></li>
+                        </ul>
+                    </div> 
+                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                        <p class="pull-right text-right">
+                            <small><em>Proudly powered by <a href="http://docs.getpelican.com/" target="_blank">pelican</a></em></small><br/>
+                            <small><em>Theme and code by <a href="https://github.com/molivier" target="_blank">molivier</a></em></small><br/>
+                            <small>&copy; leafyleap 2017</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Footer -->
+    </body>
+</html>
