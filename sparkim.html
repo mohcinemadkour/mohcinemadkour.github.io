@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="The data This is a transnational data set which contains all the transactions occurring between 01/12/2010 and 09/12/2011 for a UK-based and registered non-store online retail. The company mainly...">
+        <meta name="keywords" content="machine learning, Spark">
+        <link rel="icon" href="https://mohcinemadkour.github.io/favicon.ico">
+
+        <title>Alternating Least Square example with SPARK - A Pelican Blog</title>
+
+        <!-- Stylesheets -->
+        <link href="https://mohcinemadkour.github.io/theme/css/all.min.css" rel="stylesheet">
+        <!-- /Stylesheets -->
+
+        <!-- RSS Feeds -->
+        <!-- /RSS Feeds -->
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+    </head>
+
+    <body>
+
+        <!-- Header -->
+    <div class="header-container" style="background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('https://mohcinemadkour.github.io/images/spark.jpeg'); background-position: center; background-size: cover;">
+
+            <!-- Static navbar -->
+            <div class="container">
+                <div class="header-nav">
+                    <div class="header-logo">
+                        <a class="pull-left" href="https://mohcinemadkour.github.io/"><img class="mr20" src="https://mohcinemadkour.github.io/images/logo.svg" alt="logo">A Pelican Blog</a>
+                    </div>
+                    <div class="nav pull-right">
+                                <a href="https://mohcinemadkour.github.io/pdfs/mohcine_madkour_cv.pdf">CV-Resume</a>
+                                <a href="https://mohcinemadkour.github.io/categories.html">Categories</a>
+                    </div>
+                </div>
+            </div>
+            <!-- /Static navbar -->
+
+            <!-- Header -->
+    <!-- Header -->
+    <div class="container header-wrapper">
+        <div class="row">
+              <div class="col-lg-12">
+                  <div class="header-content">
+                      <h1 class="header-title">Alternating Least Square example with SPARK</h1>
+                      <p class="header-date">By <a href="https://mohcinemadkour.github.io/author/mohcine-madkour.html">Mohcine Madkour</a>, Sun 09 April 2017, in category <a href="https://mohcinemadkour.github.io/category/temporal-data.html">Temporal data</a></p>
+                      <div class="header-underline"></div>
+                      <div class="clearfix"></div>
+                      <p class="pull-right header-tags">
+                          <span class="glyphicon glyphicon-tags mr5" aria-hidden="true"></span>
+<a href="https://mohcinemadkour.github.io/tag/machine-learning.html">machine learning</a>, <a href="https://mohcinemadkour.github.io/tag/spark.html">Spark</a>                      </p>
+                  </div>
+              </div>
+        </div>
+    </div>
+    <!-- /Header -->
+            <!-- /Header -->
+
+        </div>
+        <!-- /Header -->
+
+
+        <!-- Content -->
+    <div class="container content">
+        <h1>The data</h1>
+<p>This is a transnational data set which contains all the transactions occurring between 01/12/2010 and 09/12/2011 for a UK-based and registered non-store online retail. The company mainly sells unique all-occasion gifts. Many customers of the company are wholesalers.
+FullFile.png</p>
+<h1>ALS</h1>
+<p><img alt="image" src="/images/ALS.png"></p>
+<h1>Step 1 - Create an RDD from the CSV File</h1>
+<h2>1.1 - Download the data</h2>
+<div class="highlight"><pre><span></span>    #Download the data from github to the local directory
+    !rm &#39;OnlineRetail.csv.gz&#39; -f
+    !wget https://raw.githubusercontent.com/rosswlewis/RecommendationPoT/master/OnlineRetail.csv.gz
+</pre></div>
+
+
+<h2>1.2 - Put the csv into an RDD (at first, each row in the RDD is a string which correlates to a line in the csv) and show the first three lines.</h2>
+<ul>
+<li>Use the Spark context (sc) to get the list of possible methods. sc.<TAB></li>
+<li>Use the textFile() method<div class="highlight"><pre><span></span>loadRetailData = sc.textFile(&quot;OnlineRetail.csv.gz&quot;)
+loadRetailData.take(3)
+</pre></div>
+
+
+</li>
+</ul>
+<h1>Step 2 - Prepare and shape the data: "80% of a Data Scientists job"</h1>
+<h2>2.1 - Remove the header from the RDD and split the remaining lines by comma.</h2>
+<p>The header is the first line in the RDD -- use first() to obtain it.
+Use the filter() method to filter out all lines which are not equal to the header line.
+Map the split() method to the remaining lines to split on ","</p>
+<div class="highlight"><pre><span></span>header = loadRetailData.first()
+splitColumns = loadRetailData.filter(lambda line: line != header).map(lambda l: l.split(&quot;,&quot;))
+</pre></div>
+
+
+<h2>2.2 - Filter the remaining lines using <a href="https://docs.python.org/2.6/howto/regex.html">regular expressions</a></h2>
+<p>The original file at UCI's Machine Learning Repository has commas in the product description. Those have been removed to expediate the lab. Only keep rows that have a quantity greater than 0, a non-empty customerID, and a non-blank stock code after removing non-numeric characters.</p>
+<p>-Examine the header to determine which fields need to be used to filter the data.
+- Use the filter() method for the first two requirements. Note -- you may have to cast values.
+- Look at the <a href="https://docs.python.org/2.6/howto/regex.html">re.sub()</a> method</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="n">filteredRetailData</span> <span class="o">=</span> <span class="n">splitColumns</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;\D&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">l</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>2.3 - Map each line to a SQL Row and create a Dataframe from the result. Register the Dataframe as an SQL temp table.</h2>
+<p>Use the following for the Row column names: inv, stockCode, description, quant, invDate, price, custId, country. inv, stockCode, quant and custId should be integers.
+price is a float. description and country are strings (the default).</p>
+<p>Hint: When you replaced non-digit characters using the regular expression above, you replaced them in the context of a test. You'll have to do it again when creating the stockCode Row value. </p>
+<p>-We haven't used SQLContext or Row in this notebook, so you will have to import them from the pyspark.sql package and then create a SQLContext
+-You can create a Row using a map(). For example:
+example = myRDD.map(lambda x: Row(v1=x[1], v2=int(x[2]), v3=float(x[3]))
+Note how we set the column names this way
+-use createDataFrame() in your SQLContext. Then register the dataframe with registerTempTable()
+from pyspark.sql import SQLContext, Row
+sqlContext = SQLContext(sc)</p>
+<div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">pyspark.sql</span> <span class="kn">import</span> <span class="n">SQLContext</span><span class="p">,</span> <span class="n">Row</span>
+     <span class="n">sqlContext</span> <span class="o">=</span> <span class="n">SQLContext</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">pyspark.sql</span> <span class="kn">import</span> <span class="n">SQLContext</span><span class="p">,</span> <span class="n">Row</span>
+<span class="n">sqlContext</span> <span class="o">=</span> <span class="n">SQLContext</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
+<span class="n">retailRows</span> <span class="o">=</span> <span class="n">filteredRetailData</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="n">Row</span><span class="p">(</span><span class="n">inv</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">stockCode</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;\D&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="n">description</span><span class="o">=</span><span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">quant</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="n">invDate</span><span class="o">=</span><span class="n">l</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">price</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">5</span><span class="p">]),</span> <span class="n">custId</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">6</span><span class="p">]),</span> <span class="n">country</span><span class="o">=</span><span class="n">l</span><span class="p">[</span><span class="mi">7</span><span class="p">]))</span>
+<span class="n">retailDf</span> <span class="o">=</span> <span class="n">sqlContext</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">retailRows</span><span class="p">)</span>
+<span class="n">retailDf</span><span class="o">.</span><span class="n">registerTempTable</span><span class="p">(</span><span class="s2">&quot;retailPurchases&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>2.4 - Keep only the data we need (custId, stockCode, and rank)</h2>
+<p>The Alternating Least Squares algorithm requires three values. In this case, we're going to use the Customer ID (custId), stock code (stockCode) and a ranking value. In this situation there is not a ranking value within the data, so we will create one. We will set a value of 1 to indicate a purchase since these are all actual orders. Set that value to "purch".</p>
+<p>After doing the select, group by custId and stockCode. 
+- To add a fixed value within a select statement, use something like select x,y,1 as purch from z
+- - Use the group by statement to group results. To group by two values, separate them by commas (i.e. group by x,y)</p>
+<div class="highlight"><pre><span></span>query = &quot; SELECT custId, stockCode, 1 as purch FROM retailPurchases group by custId, stockCode&quot;
+uniqueCombDf = sqlContext.sql(query)
+</pre></div>
+
+
+<h2>2.5 - Randomly split the data into a testing set (10% of the data), a cross validation set (10% of the data) a training set (80% of the data)</h2>
+<div class="highlight"><pre><span></span>testDf, cvDf, trainDf = uniqueCombDf.randomSplit([.1,.1,.8])
+</pre></div>
+
+
+<h1>Step 3 - Build recommendation models</h1>
+<h2>3.1 - Use the training dataframe to train a model with Alternating Least Squares using the ALS class</h2>
+<p>ALS attempts to estimate the ratings matrix R as the product of two lower-rank matrices, X and Y, i.e. X * Yt = R. Typically these approximations are called ‘factor’ matrices. The general approach is iterative. During each iteration, one of the factor matrices is held constant, while the other is solved for using least squares. The newly-solved factor matrix is then held constant while solving for the other factor matrix.</p>
+<p>Latent Factors / rank
+    The number of columns in the user-feature and product-feature matricies
+Iterations / maxIter
+    The number of factorization runs</p>
+<p>To use the ALS class type:
+from pyspark.ml.recommendation import ALS</p>
+<p>When running ALS, we need to create two separate instances. For both instances userCol is custId, itemCol is stockCode and ratingCol is purch.</p>
+<p>For the first instance, use a rank of 15 and set iterations to 5.
+For the second instance, use a rank of 2 and set iterations to 10.
+Run fit() on both instances using the training dataframe.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyspark.ml.recommendation</span> <span class="kn">import</span> <span class="n">ALS</span>
+<span class="n">als1</span> <span class="o">=</span> <span class="n">ALS</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">maxIter</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">userCol</span><span class="o">=</span><span class="s2">&quot;custId&quot;</span><span class="p">,</span> <span class="n">itemCol</span><span class="o">=</span><span class="s2">&quot;stockCode&quot;</span><span class="p">,</span> <span class="n">ratingCol</span><span class="o">=</span><span class="s2">&quot;purch&quot;</span><span class="p">)</span>
+<span class="n">model1</span> <span class="o">=</span> <span class="n">als1</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">trainDf</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">pyspark.ml.recommendation</span> <span class="kn">import</span> <span class="n">ALS</span>
+<span class="n">als1</span> <span class="o">=</span> <span class="n">ALS</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">maxIter</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">userCol</span><span class="o">=</span><span class="s2">&quot;custId&quot;</span><span class="p">,</span> <span class="n">itemCol</span><span class="o">=</span><span class="s2">&quot;stockCode&quot;</span><span class="p">,</span> <span class="n">ratingCol</span><span class="o">=</span><span class="s2">&quot;purch&quot;</span><span class="p">)</span>
+<span class="n">model1</span> <span class="o">=</span> <span class="n">als1</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">trainDf</span><span class="p">)</span>
+<span class="n">als2</span> <span class="o">=</span> <span class="n">ALS</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">maxIter</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">userCol</span><span class="o">=</span><span class="s2">&quot;custId&quot;</span><span class="p">,</span> <span class="n">itemCol</span><span class="o">=</span><span class="s2">&quot;stockCode&quot;</span><span class="p">,</span> <span class="n">ratingCol</span><span class="o">=</span><span class="s2">&quot;purch&quot;</span><span class="p">)</span>
+<span class="n">model2</span> <span class="o">=</span> <span class="n">als2</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">trainDf</span><span class="p">)</span>
+</pre></div>
+
+
+<h1>Step 4 - Test the models</h1>
+<p>Use the models to predict what the user will rate a certain item. The closer our model is to 1 for an item a user has already purchased, the better.</p>
+<h2>4.1 - Evaluate the model with the cross validation dataframe by using the transform function.</h2>
+<p>Some of the users or purchases in the cross validation data may not have been in the training data. Let's remove the ones that aren't. To do this obtain all the the custId and stockCode values from the training data and filter out any lines with those values from the cross-validation data.</p>
+<p>-At the end, print out how many cross-validation lines we had at the start -- and the new number afterwords.
+-Use map() to return a specific value (i.e. foo = foo.map(lambda x: x.value)) and put them all in a set (i.e. foo1 = set(foo))
+-You need all the returned values (remember they might be spread all across the cluster!) so run collect() on the results of the map(). (i.e. foo1 = set(foo.collect()))
+- Use the filter() to filter out any values in the cross-validation dataframe which are in the stockCode or custId sets. Use toDF() to change the results to a dataframe.</p>
+<div class="highlight"><pre><span></span>customers = set(trainDf.rdd.map(lambda line: line.custId).collect())
+stock = set(trainDf.rdd.map(lambda line: line.stockCode).collect())
+filteredCvDf = cvDf.rdd.filter(lambda line: line.stockCode in stock and line.custId in customers).toDF()
+print cvDf.count()
+print filteredCvDf.count()
+</pre></div>
+
+
+<h2>Step 4.2 - Make Predictions using transform()</h2>
+<div class="highlight"><pre><span></span>predictions1 = model1.transform(filteredCvDf)
+predictions2 = model2.transform(filteredCvDf)
+</pre></div>
+
+
+<h2>4.3 - Calculate and print the Mean Squared Error. For all ratings, subtract the prediction from the actual purchase (1), square the result, and take the mean of all of the squared differences.</h2>
+<p>The lower the result number, the better the model.</p>
+<div class="highlight"><pre><span></span>meanSquaredError1 = predictions1.map(lambda line: (line.purch - line.prediction)**2).mean()
+meanSquaredError2 = predictions2.map(lambda line: (line.purch - line.prediction)**2).mean()
+print &#39;Mean squared error = %.4f for our first model&#39; % meanSquaredError1
+print &#39;Mean squared error = %.4f for our second model&#39; % meanSquaredError2
+</pre></div>
+
+
+<h2>4.4 - Confirm the model by testing it with the test data and the best hyperparameters found during cross-validation</h2>
+<p>Filter the test dataframe (testDf) the same way as the cross-validation dataframe. Then run the transform() and calculate the mean squared error. It should be the same as the value calcuated above.</p>
+<div class="highlight"><pre><span></span>filteredTestDf = testDf.rdd.filter(lambda line: line.stockCode in stock and line.custId in customers).toDF()
+predictions3 = model2.transform(filteredTestDf)
+meanSquaredError3 = predictions3.map(lambda line: (line.purch - line.prediction)**2).mean()
+print &#39;Mean squared error = %.4f for our best model&#39; % meanSquaredError3
+</pre></div>
+
+
+<h1>Step 5 - Implement the model</h1>
+<h2>5.1 - First, create a dataframe in which each row has the user id and an item id.</h2>
+<p>Use the Dataframe methods to create a Dataframe with a specific user and that user's purchased products.
+    First, use the Dataframe filter() to filter out all custId's but 15544.
+    Then use the select() to only return the custId column.
+    Now use distinct() to ensure we only have the single custId.
+    Do a join() with the distinct values from the stockCode column. </p>
+<div class="highlight"><pre><span></span>user = trainDf.filter(trainDf.custId == 15544)
+userCustId = user.select(&quot;custId&quot;)
+userCustIdDistinct = userCustId.distinct()
+stockCode = trainDf.select(&quot;stockCode&quot;)
+stockCodeDistinct = stockCode.distinct()
+userItems = userCustIdDistinct.join(stockCodeDistinct)
+</pre></div>
+
+
+<h2>5.2 - Use 'transform' to rate each item.</h2>
+<div class="highlight"><pre><span></span>bestRecsDf = model2.transform(userItems)
+bestRecsDf.first()
+</pre></div>
+
+
+<p>In order to print the top five recommendations, we need to sort() them in descending orde</p>
+<p><img alt="image" src="images/user.png"></p>
+<p>This user seems to have purchased a lot of childrens gifts and some holiday items. The recommendation engine we created suggested some items along these lines</p>
+
+
+    <div class="comments">
+        <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'leafyleap-2';
+                var disqus_identifier = 'sparkim.html';
+                var disqus_url = 'https://mohcinemadkour.github.io/sparkim.html';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+        <noscript>Please enable JavaScript to view the comments.</noscript>
+    </div>
+        
+    </div>
+        <!-- /Content --> 
+
+        <!-- Footer -->
+        <div class="footer gradient-2">
+            <div class="container footer-container ">
+                <div class="row">
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Sitemap</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://mohcinemadkour.github.io/archives.html">Archives</a></li>
+                            <li><a href="https://mohcinemadkour.github.io/tags.html">Tags</a></li>
+                            <li><a href="https://mohcinemadkour.github.io/authors.html">Authors</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Social</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.meetup.com/members/112481792//" target="_blank">meetup</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Links</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.linkedin.com/in/mohcine-madkour-83a642b2//" target="_blank">LinkedIn</a></li>
+                            <li><a href="https://github.com/mohcinemadkour/" target="_blank">Github</a></li>
+                        </ul>
+                    </div> 
+                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                        <p class="pull-right text-right">
+                            <small><em>Proudly powered by <a href="http://docs.getpelican.com/" target="_blank">pelican</a></em></small><br/>
+                            <small><em>Theme and code by <a href="https://github.com/molivier" target="_blank">molivier</a></em></small><br/>
+                            <small>&copy; leafyleap 2017</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Footer -->
+    </body>
+</html>

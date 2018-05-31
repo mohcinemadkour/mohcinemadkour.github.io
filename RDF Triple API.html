@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="RDF-Triple-API A simple API for extracting the RDF triple (subject, predicate, object) of any sentence. The parsed sentence is also returned in addition to the triple. The algorithm implemented is...">
+        <meta name="keywords" content="Semantic Wev">
+        <link rel="icon" href="https://mohcinemadkour.github.io/favicon.ico">
+
+        <title>RDF Parser API - A Pelican Blog</title>
+
+        <!-- Stylesheets -->
+        <link href="https://mohcinemadkour.github.io/theme/css/all.min.css" rel="stylesheet">
+        <!-- /Stylesheets -->
+
+        <!-- RSS Feeds -->
+        <!-- /RSS Feeds -->
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+    </head>
+
+    <body>
+
+        <!-- Header -->
+    <div class="header-container" style="background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('https://mohcinemadkour.github.io/images/rdf.png'); background-position: center; background-size: cover;">
+
+            <!-- Static navbar -->
+            <div class="container">
+                <div class="header-nav">
+                    <div class="header-logo">
+                        <a class="pull-left" href="https://mohcinemadkour.github.io/"><img class="mr20" src="https://mohcinemadkour.github.io/images/logo.svg" alt="logo">A Pelican Blog</a>
+                    </div>
+                    <div class="nav pull-right">
+                                <a href="https://mohcinemadkour.github.io/pdfs/mohcine_madkour_cv.pdf">CV-Resume</a>
+                                <a href="https://mohcinemadkour.github.io/categories.html">Categories</a>
+                    </div>
+                </div>
+            </div>
+            <!-- /Static navbar -->
+
+            <!-- Header -->
+    <!-- Header -->
+    <div class="container header-wrapper">
+        <div class="row">
+              <div class="col-lg-12">
+                  <div class="header-content">
+                      <h1 class="header-title">RDF Parser API</h1>
+                      <p class="header-date">By <a href="https://mohcinemadkour.github.io/author/mohcine-madkour.html">Mohcine madkour</a>, Tue 09 February 2016, in category <a href="https://mohcinemadkour.github.io/category/semantic-web.html">Semantic web</a></p>
+                      <div class="header-underline"></div>
+                      <div class="clearfix"></div>
+                      <p class="pull-right header-tags">
+                          <span class="glyphicon glyphicon-tags mr5" aria-hidden="true"></span>
+<a href="https://mohcinemadkour.github.io/tag/semantic-wev.html">Semantic Wev</a>                      </p>
+                  </div>
+              </div>
+        </div>
+    </div>
+    <!-- /Header -->
+            <!-- /Header -->
+
+        </div>
+        <!-- /Header -->
+
+
+        <!-- Content -->
+    <div class="container content">
+        <h1>RDF-Triple-API</h1>
+<p>A simple API for extracting the RDF triple (subject, predicate, object) of any sentence. The parsed sentence is also returned in addition to the triple.</p>
+<p>The algorithm implemented is taken from [this paper] (http://ailab.ijs.si/dunja/SiKDD2007/Papers/Rusu_Trippels.pdf) by Delia Rusu.</p>
+<p>The sentence is parsed using the [stanford parser] (http://nlp.stanford.edu/software/lex-parser.shtml)</p>
+<p>The endpoint for the api is http://www.newventify.com/rdf and has url parameter <code>sentence</code></p>
+<p>A complete request would look like the following: <a href="http://www.newventify.com/rdf?sentence=The man stood next to the refrigerator">http://www.newventify.com/rdf?sentence=The man stood next to the refrigerator</a> and will return</p>
+<p><code>{
+  "object": {
+    "POS": "NN", 
+    "Tree Attributes": [], 
+    "Word Attributes": [
+      [
+        "the", 
+        "DT"
+      ]
+    ], 
+    "word": "refrigerator"
+  }, 
+  "parse_tree": "Tree('ROOT', [Tree('S', [Tree('NP', [Tree('DT', ['The']), Tree('NN', ['man'])]), Tree('VP', [Tree('VBD', ['stood']), Tree('ADVP', [Tree('JJ', ['next'])]), Tree('PP', [Tree('TO', ['to']), Tree('NP', [Tree('DT', ['the']), Tree('NN', ['refrigerator'])])])])])])", 
+  "predicate": {
+    "POS": "VB", 
+    "Tree Attributes": [
+      "Tree('ADVP', [Tree('JJ', ['next'])])"
+    ], 
+    "Word Attributes": [], 
+    "word": "stood"
+  }, 
+  "rdf": [
+    "man", 
+    "stood", 
+    "refrigerator"
+  ], 
+  "sentence": "The man stood next to the refrigerator", 
+  "subject": {
+    "POS": "NN", 
+    "Tree Attributes": [], 
+    "Word Attributes": [
+      [
+        "The", 
+        "DT"
+      ]
+    ], 
+    "word": "man"
+  }
+}</code></p>
+<p><a href="https://github.com/mohcinemadkour/RDF-Triple-API/blob/master/rdf_triple.py">Check out the source code here</a></p>
+
+
+    <div class="comments">
+        <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'leafyleap-2';
+                var disqus_identifier = 'RDF Triple API.html';
+                var disqus_url = 'https://mohcinemadkour.github.io/RDF Triple API.html';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+        <noscript>Please enable JavaScript to view the comments.</noscript>
+    </div>
+        
+    </div>
+        <!-- /Content --> 
+
+        <!-- Footer -->
+        <div class="footer gradient-2">
+            <div class="container footer-container ">
+                <div class="row">
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Sitemap</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://mohcinemadkour.github.io/archives.html">Archives</a></li>
+                            <li><a href="https://mohcinemadkour.github.io/tags.html">Tags</a></li>
+                            <li><a href="https://mohcinemadkour.github.io/authors.html">Authors</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Social</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.meetup.com/members/112481792//" target="_blank">meetup</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Links</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.linkedin.com/in/mohcine-madkour-83a642b2//" target="_blank">LinkedIn</a></li>
+                            <li><a href="https://github.com/mohcinemadkour/" target="_blank">Github</a></li>
+                        </ul>
+                    </div> 
+                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                        <p class="pull-right text-right">
+                            <small><em>Proudly powered by <a href="http://docs.getpelican.com/" target="_blank">pelican</a></em></small><br/>
+                            <small><em>Theme and code by <a href="https://github.com/molivier" target="_blank">molivier</a></em></small><br/>
+                            <small>&copy; leafyleap 2017</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Footer -->
+    </body>
+</html>
