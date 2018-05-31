@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Start Apache Kafka with kafka instance and apache kafka client System Architecture There are a bunch of processes that we need to start to run our cluster : 1. Zookeeper : Which is used by Kafka...">
+        <meta name="keywords" content="Apache kafka">
+        <link rel="icon" href="https://mohcinemadkour.github.io/favicon.ico">
+
+        <title>Start Apache Kafka with kafka instance and apache kafka client - A Pelican Blog</title>
+
+        <!-- Stylesheets -->
+        <link href="https://mohcinemadkour.github.io/theme/css/all.min.css" rel="stylesheet">
+        <!-- /Stylesheets -->
+
+        <!-- RSS Feeds -->
+        <!-- /RSS Feeds -->
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+    </head>
+
+    <body>
+
+        <!-- Header -->
+    <div class="header-container" style="background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('https://mohcinemadkour.github.io/images/background.jpg'); background-position: center; background-size: cover;">
+
+            <!-- Static navbar -->
+            <div class="container">
+                <div class="header-nav">
+                    <div class="header-logo">
+                        <a class="pull-left" href="https://mohcinemadkour.github.io/"><img class="mr20" src="https://mohcinemadkour.github.io/images/logo.svg" alt="logo">A Pelican Blog</a>
+                    </div>
+                    <div class="nav pull-right">
+                                <a href="https://mohcinemadkour.github.io/pdfs/mohcine_madkour_cv.pdf">CV-Resume</a>
+                                <a href="https://mohcinemadkour.github.io/categories.html">Categories</a>
+                    </div>
+                </div>
+            </div>
+            <!-- /Static navbar -->
+
+            <!-- Header -->
+    <!-- Header -->
+    <div class="container header-wrapper">
+        <div class="row">
+              <div class="col-lg-12">
+                  <div class="header-content">
+                      <h1 class="header-title">Start Apache Kafka with kafka instance and apache kafka client</h1>
+                      <p class="header-date">By <a href="https://mohcinemadkour.github.io/author/mohcine-madkour.html">Mohcine Madkour</a>, Sat 23 December 2017, in category <a href="https://mohcinemadkour.github.io/category/hadoop-ecosystem.html">Hadoop ecosystem</a></p>
+                      <div class="header-underline"></div>
+                      <div class="clearfix"></div>
+                      <p class="pull-right header-tags">
+                          <span class="glyphicon glyphicon-tags mr5" aria-hidden="true"></span>
+<a href="https://mohcinemadkour.github.io/tag/apache-kafka.html">Apache kafka</a>                      </p>
+                  </div>
+              </div>
+        </div>
+    </div>
+    <!-- /Header -->
+            <!-- /Header -->
+
+        </div>
+        <!-- /Header -->
+
+
+        <!-- Content -->
+    <div class="container content">
+        <h1>Start Apache Kafka with kafka instance and apache kafka client</h1>
+<p><strong>System Architecture</strong>
+There are a bunch of processes that we need to start to run our cluster :
+1. Zookeeper : Which is used by Kafka to maintain state between the nodes of the cluster.
+2. Kafka brokers : The “pipes” in our pipeline, which store and emit data.
+3. Producers : That insert data into the cluster.
+4. Consumers : That read data from the cluster.</p>
+<p><img alt="Architecture" src="/images/basic_arch.svg"></p>
+<h2>Starting Zookeeper</h2>
+<p>Zookeeper is a key value store used to maintain server state. Kafka requires a Zookeeper server in order to run, so the first thing we need to do is start a Zookeeper instance.</p>
+<p>Inside the extracted kafka_2.11-1.0.0, you will conveniently find a bin/zookeeper-server-start.sh file (which is used to start the server), and a config/zookeeper.properties (which provides the default configuration for the zookeeper server to run)</p>
+<p>Start the server by running (inside the kafka folders root) :</p>
+<div class="highlight"><pre><span></span>~/Software/kafka_2.11-1.0.0/bin/zookeeper-server-start.sh config/zookeeper.properties
+</pre></div>
+
+
+<p>You should see a confirmation that the server has started.</p>
+<p>If you inspect the config/zookeeper.properties file, you should see the clientPort property set to 2181, which is the port that your zookeeper server is currently listening on.</p>
+<h2>Starting our brokers</h2>
+<p>Kafka brokers form the heart of the system, and act as the pipelines where our data is stored and distributed.</p>
+<p>Similar to how we started Zookeeper, there are two files that represent the file to start (bin/kafka-server-start.sh) and configure (config/server.properties) the broker server.</p>
+<p>Since we would like to showcase the distributed nature of kafka, let’s start up 3 brokers, as shown in the previous diagram.</p>
+<p>If you open the config/server.properties file, you will see a whole bunch of configuration that you, for the most part, do not have to worry about. There are, however, 3 properties, that have to be unique for each broker instance:</p>
+<div class="highlight"><pre><span></span>broker.id=0
+listeners=PLAINTEXT://:9092
+log.dirs=/tmp/kafka-logs
+</pre></div>
+
+
+<p>Since we will have 3 servers, it’s better to maintain 3 configuration files for each server. Copy the config/server.properties file and make 3 files for each server instance:</p>
+<div class="highlight"><pre><span></span>cp config/server.properties config/server.1.properties
+cp config/server.properties config/server.2.properties
+cp config/server.properties config/server.3.properties
+</pre></div>
+
+
+<p>Change the above 3 properties for each copy of the file so that they are all unique.</p>
+<p>server.1.properties</p>
+<div class="highlight"><pre><span></span>broker.id=1
+listeners=PLAINTEXT://:9093
+log.dirs=/tmp/kafka-logs1
+</pre></div>
+
+
+<p>server.2.properties</p>
+<p>broker.id=2
+listeners=PLAINTEXT://:9094
+log.dirs=/tmp/kafka-logs2</p>
+<p>server.3.properties</p>
+<div class="highlight"><pre><span></span>broker.id=3
+listeners=PLAINTEXT://:9095
+log.dirs=/tmp/kafka-logs3
+</pre></div>
+
+
+<p>Also, create the log directories that we configured:</p>
+<div class="highlight"><pre><span></span>mkdir /tmp/kafka-logs1
+mkdir /tmp/kafka-logs2
+mkdir /tmp/kafka-logs3
+</pre></div>
+
+
+<p>Finally, we can start the broker instances. Run the below three commands on different terminal sessions:</p>
+<div class="highlight"><pre><span></span>bin/kafka-server-start.sh config/server.1.properties
+
+bin/kafka-server-start.sh config/server.2.properties
+
+bin/kafka-server-start.sh config/server.3.properties
+</pre></div>
+
+
+<p>You should see a startup message when the brokers start successfully, as well as logs on the Zookeeper instance that tell you of a new connection with each broker.</p>
+<h2>Creating a topic</h2>
+<p>Before we can start putting data into your cluster, we need to create a topic to which the data will belong. To do this, run the command:</p>
+<div class="highlight"><pre><span></span>bin/kafka-topics.sh --create --topic my-kafka-topic --zookeeper localhost:2181 --partitions 3 --replication-factor 2
+</pre></div>
+
+
+<p>The paritions options lets you decide how many brokers you want your data to be split between. Since we set up 3 brokers, we can set this option to 3.</p>
+<p>The replication-factor describes how many copies of you data you want (in case one of the brokers goes down, you still have your data on the others).</p>
+<p>Once you create the topic, you should see a confirmation message.</p>
+<h2>The producer instance</h2>
+<p>The “producer” is the process that puts data into our Kafka cluster. The command line tools in the bin directory provide us with a console producer, that inputs data into the cluster every time your enter text into the console.</p>
+<p>To start the console producer, run the command:</p>
+<div class="highlight"><pre><span></span>bin/kafka-console-producer.sh --broker-list localhost:9093,localhost:9094,localhost:9095 --topic my-kafka-topic
+</pre></div>
+
+
+<p>The broker-list option points the producer to the addresses of the brokers that we just provisioned, and the topic option specifies the topic you want the data to come under.</p>
+<p>You should now see a command prompt, in which you can enter a bunch of text which gets inserted into the Kafka cluster you just created every time you hit enter.</p>
+<h2>Consumers</h2>
+<p>The only thing left to do is read data from the cluster.</p>
+<p>Run the command:</p>
+<div class="highlight"><pre><span></span>bin/kafka-console-consumer.sh --bootstrap-server localhost:9093 --topic my-kafka-topic --from-beginning
+</pre></div>
+
+
+<p>The bootstrap-server can be any one of the brokers in the cluster, and the topic should be the same as the topic under which you producers inserted data into the cluster.</p>
+<p>The from-beginning option tells the cluster that you want all the messages that it currently has with it, even messages that we put into it previously.</p>
+<p>When you run the above command, you should immediately see all the messages that you input using the producer, logged onto your console.</p>
+<p>Additionally, if you input anymore messages with the producer while the consumer is running, you should see it output into the console in real time.</p>
+<p>'''And in this way, Kafka acts sort of like a persistent message queue, saving the messages that were not yet read by the consumer, while passing on new messages as they come while the consumer is running'''</p>
+<h2>Messing things up</h2>
+<p>Now that we are all done setting up and running a Kafka cluster on our system, let’s test how persistent Kafka can be.</p>
+<p>Shut down one of the three brokers that you ran, and you should see that your cluster is still running fine. This means that Kafka is tolerant to some of its nodes failing.</p>
+<p>Try starting another consumer in a different terminal window:</p>
+<div class="highlight"><pre><span></span>bin/kafka-console-consumer.sh --bootstrap-server localhost:9093 --topic my-kafka-topic --from-beginning --group group2
+</pre></div>
+
+
+<p>The only thing we’ve added here is the group option, which differentiates one consumer from another. Once you start this, you should see all messages getting logged on the console from the beginning. Even though one of our brokers was shut down, our data was not lost. This is because the replication factor of 2 that we set earlier ensured that a copy of our data was present on multiple brokers.</p>
+<p>You can play around with your setup in many more ways. What happens if you take down another broker? What if you had 5 brokers and took 2 of them down? What if you changed the replication factor for your topic?</p>
+<p>The best way to know how resilient Kafka is, is to experiment with it yourself.</p>
+
+
+    <div class="comments">
+        <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'leafyleap-2';
+                var disqus_identifier = 'Kafka Intro.html';
+                var disqus_url = 'https://mohcinemadkour.github.io/Kafka Intro.html';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+        <noscript>Please enable JavaScript to view the comments.</noscript>
+    </div>
+        
+    </div>
+        <!-- /Content --> 
+
+        <!-- Footer -->
+        <div class="footer gradient-2">
+            <div class="container footer-container ">
+                <div class="row">
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Sitemap</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://mohcinemadkour.github.io/archives.html">Archives</a></li>
+                            <li><a href="https://mohcinemadkour.github.io/tags.html">Tags</a></li>
+                            <li><a href="https://mohcinemadkour.github.io/authors.html">Authors</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Social</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.meetup.com/members/112481792//" target="_blank">meetup</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                        <div class="footer-title">Links</div>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.linkedin.com/in/mohcine-madkour-83a642b2//" target="_blank">LinkedIn</a></li>
+                            <li><a href="https://github.com/mohcinemadkour/" target="_blank">Github</a></li>
+                        </ul>
+                    </div> 
+                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                        <p class="pull-right text-right">
+                            <small><em>Proudly powered by <a href="http://docs.getpelican.com/" target="_blank">pelican</a></em></small><br/>
+                            <small><em>Theme and code by <a href="https://github.com/molivier" target="_blank">molivier</a></em></small><br/>
+                            <small>&copy; leafyleap 2017</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Footer -->
+    </body>
+</html>
