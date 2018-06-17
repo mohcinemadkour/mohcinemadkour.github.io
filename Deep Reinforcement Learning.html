@@ -75,7 +75,7 @@
         <h1>What makes reinforcement learning different from other machine</h1>
 <h2>learning paradigms ? Learning by Doing?</h2>
 <p>There is no supervisor, only a reward signal, Feedback is delayed, not instantaneous. Time really matters (sequential, non i.i.d data). Agent’s actions affect the subsequent data it receives
-<a href="/images/supervised vs rl.png">supervised vs rl</a></p>
+![supervised vs rl](/images/supervised vs rl.png)</p>
 <h3>Rewards</h3>
 <p>A reward Rt is a scalar feedback signal, It indicates how well agent is doing at step t. The agent’s job is to maximise cumulative reward.Reinforcement learning is based on the reward hypothesis, which states that all goals can be described by the <strong>maximisation of expected cumulative reward</strong>. Examples of Rewards can be +ve reward for following desired trajectory and −ve reward for crashing, in <em>Fly stunt manoeuvres in a helicopter</em>. +/−ve reward for winning/losing a game in <em>Defeat the world champion at Backgammon</em>. +ve reward for each $ in bank in <em>Manage an investment portfolio. +ve reward for producing power</em>, and −ve reward for exceeding safety thresholds in Control a power station. +ve reward for forward motion, and −ve reward for falling over in <em>Make a humanoid robot walk</em>, and +/−ve reward for increasing/decreasing score in <em>Play many different Atari games better than humans</em>.</p>
 <h3>Sequential Decision Making</h3>
@@ -92,7 +92,7 @@ Two fundamental problems in sequential decision making
 <strong>The agent performs computations with its model (without any external interaction). 
 </strong>The agent improves its policy a.k.a. deliberation, reasoning, introspection, pondering, thought, search</p>
 <h2>Markov decision process: Fully Observable Environments</h2>
-<p><a href="/images/MDP.png">MDP</a>
+<p><img alt="MDP" src="/images/MDP.png">
 Fully Observable Environments: Agent state = environment state = information state</p>
 <h3>partially observable Markov decision process: Partially Observable Environments</h3>
 <p>Partial observability: agent indirectly observes environment. FOr example : A robot with camera vision isn’t told its absolute location, A trading agent only observes current prices, A poker playing agent only observes public cards. The agent state # environment state. The Agent must construct its own state representation :Complete history, Beliefs of environment state, Recurrent neural network</p>
@@ -117,7 +117,7 @@ Ras = E [Rt+1 |St = s, At = a]</p>
 <em>Actor Critic: Policy+ Value Function
 </em>Model Free: Policy and/or Value Function+ No Model
 *Model Based: Policy and/or Value Function+ Model
-<a href="/images/RLAgents.png">RL Agents</a></p>
+<img alt="RL Agents" src="/images/RLAgents.png"></p>
 <h2>Exploration and Exploitation</h2>
 <p>Reinforcement learning is like trial-and-error learning. The agent should discover a good policy from its experiences of the environment and Without losing too much reward along the way. The Exploration finds more information about the environment. The Exploitation exploits known information to maximise reward. It is usually important to explore as well as exploit.</p>
 <h2>Prediction and Control</h2>
@@ -126,22 +126,22 @@ Control: optimise the future Find the best policy</p>
 <h1>Types of reinforcement learning algorithms</h1>
 <p>RL algorithms that satisfy the <em>Markov property</em> are called the <em>Markov Decision Processes (MDP)</em>. The Markov property assumes that the current state is independent of the path that leads to that particular state. Hence, in Markovian problems a memoryless property of a stochastic process is assumed. In
 practice it means that the probability distribution of the future states depends only on the current state and not on the sequence of events that preceded. This is a useful property for stochastic processes as it allows for analysing the future by setting the present
-<a href="/images/fig1_rl.png">State Transition from state s to state s'</a>
+<img alt="State Transition from state s to state s'" src="/images/fig1_rl.png">
 An MDPs consist of state (s), action (a) sets and given any state and action to be taken, a transition probability function of each possible next state (s’) illustrated in figure 1. In addition, each taken action to arrive to the next state is rewarded giving each of all possible actions a reward value
 depending on the type of action. Each visited state is accredited by a value given to it according to a <strong>value function V(s)</strong> which represents how good it is for an agent to be in a given state. The value of a state s under a policy π is then denoted as Vπ(s) which in theory denotes the expected return when starting in state s and following a sequence of states to be visited according to the order defined in π thereafter. When this theorem is applied to a model-free control problem, the <strong>state-value function</strong> may
-not suffice as it does not show what action was taken for the state value to be acquired. Therefore, a similar function has been introduced representing an estimation of the value of each possible action in a state. This is described as the <strong>action-value function</strong> for policy π Qπ(s,a). Figure 2 illustrates an example of the relationship between the action-value function and the state-value function. In 2.a. the action-values are shown for each direction of the propagation, North, East, South, and West respectively. <strong>The state value function represents then the highest action-value possible in that state which is the action North in the example</strong>.<a href="/images/9a9b.png"></a></p>
+not suffice as it does not show what action was taken for the state value to be acquired. Therefore, a similar function has been introduced representing an estimation of the value of each possible action in a state. This is described as the <strong>action-value function</strong> for policy π Qπ(s,a). Figure 2 illustrates an example of the relationship between the action-value function and the state-value function. In 2.a. the action-values are shown for each direction of the propagation, North, East, South, and West respectively. <strong>The state value function represents then the highest action-value possible in that state which is the action North in the example</strong>.<img alt="" src="/images/9a9b.png"></p>
 <p>The optimal policy is denoted as the superscript asterisk to the action-value-function Q(s,a) and state value-function V(s). Formally, the optimal value function is then given by:
-<a href="/images/eq1.png">Eq1</a>
+<img alt="Eq1" src="/images/eq1.png">
 Where Q*(s,a) is given by:
-<a href="/images/eq2.png">Eq2</a>
+<img alt="Eq2" src="/images/eq2.png">
 Herein, T(s, a, s’) is the transition probability to the next state s’ given state s and action a. γ presents the discount factor which is usually smaller than 1 and is used to discount for earlier values in order to assign
 higher values for sooner rewards. This is necessary to converge the algorithm.
 Substituting equation 3 in 2 gives the Bellman equation:
-<a href="/images/eq3.png">Eq3</a>
+<img alt="Eq3" src="/images/eq3.png">
 These updates will be appended to the states that were visited resulting (after a significant number of iterations) in state values showing how good to be in that state. In order to be able to choose between the states to select a policy, <strong>as many states as possible need to be visited</strong> in order to converge to an accurate estimation of the state value. Acquiring the highest reward depends on these visited states and the reward accumulated. However, in order to discover more states and potentially higher rewards, the agent needs to take actions it has never taken before. This is referred to as the <strong>trade-off between exploitation and exploration</strong>. This trade-off could be achieved by setting a variable denoted as Epsilon (ε) which gives the extent of exploration versus exploitation. A fully exploiting policy is referred to as an
 epsilon-greedy policy and holds a value of 0 for ε. Correspondingly, a fully exploring policy gives a value of 1 to ε and is referred to as an epsilon-soft policy. The learning can therefore be tuned between these two extremes in order to allow for convergence towards an optimal value by occasionally exploring new states and actions.</p>
 <h1>Markovian environments and Non Markovian environments</h1>
-<p><a href="/images/fig1_rl.png">Markovian environments and Non Markovian environments</a></p>
+<p><img alt="Markovian environments and Non Markovian environments" src="/images/fig1_rl.png"></p>
 <h1>Classes of RL algorithms</h1>
 <p>RL knows three fundamental classes of methods for solving these learning problems:
 <em> Dynamic Programming (DP)
@@ -155,16 +155,16 @@ other hand, Temporal-Difference methods do also not require a model of the envir
 The choice between these two classes of model-free RL algorithms very much depends on the type of data set available. For continuous processes in which there are no fixed episodic transitions, Monte Carlo methods may not be the optimal solution as they average the return only at the end of each episode. TD algorithms might then be a better solution as they assign a reward incrementally over each state. This allows them to converge faster towards an optimal policy for large data sets with a large number state spaces.</p>
 <h1>Temporal-difference learning: On-policy and off-policy TD control</h1>
 <p>TD algorithms comprise two important RL classes of algorithms divided in Off-Policy and On-Policy TD control algorithm classes. The difference between the two lays in the policy that is learned from the simulation or set of experiences (data). On-Policy TD control algorithms are often referred to as <strong>SARSA algorithms</strong> in which the letters refer to the sequence of State, Action, Reward associated with the state transition, next State, next Action. This sequence is followed in each time-step and is used to update the action-value of these two states according:
-<a href="/images/eq4.png">Eq4</a>
+<img alt="Eq4" src="/images/eq4.png">
 Here, α represents the step-size parameter which functions as the exponentially moving average parameter. It is especially useful for non-stationary environments for weighting recent rewards more heavily than long-past ones. This could also be illustrated by rearranging the above equation to:
-<a href="/images/eq5.png">Eq5</a>
+<img alt="Eq5" src="/images/eq5.png">
 If α is a number smaller than one for non-stationary environments which indicates that recent updates weight more than previous ones. This transition happens after every nonterminal state. The Q (s t+1 ,a t+1 ) components of every terminal state is defined as zero. Hence, every terminal state has an update value of 0.</p>
 <p><strong>SARSA</strong> is called an on-policy algorithm because it updates the action-value-function according to the policy it is taking in every step. Therefore, it takes the epsilon-policy into account in order to arrive the
 optimal policy for a certain problem. Off-policy algorithms approximate the best possible policy even</p>
 <p><a href="Cliff.png">Cliff)</a></p>
 <p>when that policy is not taken by the agent. Hence, Off-Policy algorithms base the update of the state action-value function on the assumption of optimal behaviour without taking into account the epsilon policy (the chance to take a negative action). Figure 10 shows a suitable example given by Sutton and Barto (1998) and which illustrates the policy outcome differences between the two types of TD algorithms. The cliff represents states with high negative reward. Since SARSA takes the epsilon policy into account, it learns that at some instances a non-optimal action will be taken which results in a high
 negative reward. Hence, it will learn to take the safe path rather than the optimal path. <strong>Q-learning algorithms</strong> on the other hand, will take the optimal path by which the highest total reward could be achieved. This is because it does not take the epsilon probability into account of taking an extremely negative action. This class of algorithms is denoted by the following equation:
-<a href="/images/eq6.png">Eq6</a>
+<img alt="Eq6" src="/images/eq6.png">
 This difference will inevitably influence the suitability for the type of application. </p>
 <h1>Markov Decision Processes</h1>
 <p>Markov decision processes formally describe an environment for reinforcement learning Where the environment is fully observable, i.e. The current state completely characterises the process. Almost all RL problems can be formalised as MDPs, e.g.Optimal control primarily deals with continuous MDPs, Partially observable problems can be converted into MDPs, Bandits are MDPs with one state</p>
@@ -179,14 +179,14 @@ Once the state is known, the history may be thrown away. i.e. The state is a suf
 probability is defined by P ss' = P[S t+1 = s'| S t = s]
 State transition matrix P defines transition probabilities from all
 states s to all successor states s 0 transition probabilities from all
-states s to all successor states s' <a href="/images/Screenshot from 2018-06-17 08-05-54.png">State Transition Matrix</a></p>
+states s to all successor states s' ![State Transition Matrix](/images/Screenshot from 2018-06-17 08-05-54.png)</p>
 <h2>Markov Process</h2>
 <p>A Markov process is a memoryless random process, i.e. a sequence
 of random states S 1 , S 2 , ... with the Markov property.
 Definition: A Markov Process (or Markov Chain) is a tuple <S, P>
 S is a (finite) set of states, P is a state transition probability matrix,
 P ss'= P [S t+1 = s'| St = s]</p>
-<p><a href="/images/Screenshot from 2018-06-17 08-16-27.png">Example</a></p>
+<p>![Example](/images/Screenshot from 2018-06-17 08-16-27.png)</p>
 <h2>Markov Reward Process</h2>
 <p>A Markov reward process is a Markov chain with values.
 Definition: A Markov Reward Process is a tuple <S, P, R, γ>
@@ -217,7 +217,7 @@ processes (i.e. γ = 1), e.g. if all sequences terminate.</p>
 <p>The value function v (s) gives the long-term value of state s
 Definition : The state value function v (s) of an MRP is the expected return
 starting from state s v (s) = E [G t | S t = s]
-<a href="/images/Screenshot from 2018-06-17 08-37-21.png"></a></p>
+![](/images/Screenshot from 2018-06-17 08-37-21.png)</p>
 <h1>Application</h1>
 <h2>Control a power station</h2>
 <h3>Reward</h3>
