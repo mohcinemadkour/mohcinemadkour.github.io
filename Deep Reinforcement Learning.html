@@ -94,7 +94,7 @@ Two fundamental problems in sequential decision making
 <h2>Markov decision process: Fully Observable Environments</h2>
 <p><img alt="MDP" src="/images/MDP.png">
 Fully Observable Environments: Agent state = environment state = information state</p>
-<h3>partially observable Markov decision process: Partially Observable Environments</h3>
+<h3>Partially Markov decision process: Partially Observable Environments</h3>
 <p>Partial observability: agent indirectly observes environment. FOr example : A robot with camera vision isn’t told its absolute location, A trading agent only observes current prices, A poker playing agent only observes public cards. The agent state # environment state. The Agent must construct its own state representation :Complete history, Beliefs of environment state, Recurrent neural network</p>
 <h1>Major Components of an RL Agent</h1>
 <p>An RL agent may include one or more of these components:
@@ -129,7 +129,7 @@ practice it means that the probability distribution of the future states depends
 <img alt="State Transition from state s to state s'" src="/images/fig1_rl.png">
 An MDPs consist of state (s), action (a) sets and given any state and action to be taken, a transition probability function of each possible next state (s’) illustrated in figure 1. In addition, each taken action to arrive to the next state is rewarded giving each of all possible actions a reward value
 depending on the type of action. Each visited state is accredited by a value given to it according to a <strong>value function V(s)</strong> which represents how good it is for an agent to be in a given state. The value of a state s under a policy π is then denoted as Vπ(s) which in theory denotes the expected return when starting in state s and following a sequence of states to be visited according to the order defined in π thereafter. When this theorem is applied to a model-free control problem, the <strong>state-value function</strong> may
-not suffice as it does not show what action was taken for the state value to be acquired. Therefore, a similar function has been introduced representing an estimation of the value of each possible action in a state. This is described as the <strong>action-value function</strong> for policy π Qπ(s,a). Figure 2 illustrates an example of the relationship between the action-value function and the state-value function. In 2.a. the action-values are shown for each direction of the propagation, North, East, South, and West respectively. <strong>The state value function represents then the highest action-value possible in that state which is the action North in the example</strong>.<img alt="" src="/images/9a9b.png"></p>
+not suffice as it does not show what action was taken for the state value to be acquired. Therefore, a similar function has been introduced representing an estimation of the value of each possible action in a state. This is described as the <strong>action-value function</strong> for policy π Qπ(s,a). Figure 2 illustrates an example of the relationship between the action-value function and the state-value function. In 2.a. the action-values are shown for each direction of the propagation, North, East, South, and West respectively. <strong>The state value function represents then the highest action-value possible in that state which is the action North in the example</strong>.![1a 1b](/images/Screenshot from 2018-06-15 15-54-43.png)</p>
 <p>The optimal policy is denoted as the superscript asterisk to the action-value-function Q(s,a) and state value-function V(s). Formally, the optimal value function is then given by:
 <img alt="Eq1" src="/images/eq1.png">
 Where Q*(s,a) is given by:
@@ -179,7 +179,8 @@ Once the state is known, the history may be thrown away. i.e. The state is a suf
 probability is defined by P ss' = P[S t+1 = s'| S t = s]
 State transition matrix P defines transition probabilities from all
 states s to all successor states s 0 transition probabilities from all
-states s to all successor states s' ![State Transition Matrix](/images/Screenshot from 2018-06-17 08-05-54.png)</p>
+states s to all successor states s' ![State Transition Matrix](/images/Screenshot from 2018-06-17 08-05-54.png)
+supervised vs rl.png</p>
 <h2>Markov Process</h2>
 <p>A Markov process is a memoryless random process, i.e. a sequence
 of random states S 1 , S 2 , ... with the Markov property.
@@ -197,7 +198,7 @@ R is a reward function, Rs = E [Rt+1 | S t = s]
 γ is a discount factor, γ ∈ [0, 1]</p>
 <h2>Return</h2>
 <p>Definition: The return G t is the total discounted reward from time-step t.
-<a href="images/Screenshot from 2018-06-17 08-21-18.png"></a>
+<a href="images/Screenshot from 2018-06-17 08-21-18.png">Return</a>
 The discount γ ∈ [0, 1] is the present value of future rewards
 The value of receiving reward R after k + 1 time-steps is γkR.
 This values immediate reward above delayed reward.
@@ -217,7 +218,7 @@ processes (i.e. γ = 1), e.g. if all sequences terminate.</p>
 <p>The value function v (s) gives the long-term value of state s
 Definition : The state value function v (s) of an MRP is the expected return
 starting from state s v (s) = E [G t | S t = s]
-![](/images/Screenshot from 2018-06-17 08-37-21.png)</p>
+![Value Function](/images/Screenshot from 2018-06-17 08-37-21.png)</p>
 <h1>Application</h1>
 <h2>Control a power station</h2>
 <h3>Reward</h3>
