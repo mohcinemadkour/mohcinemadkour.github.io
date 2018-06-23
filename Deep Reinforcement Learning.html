@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="What makes reinforcement learning different from other machine learning paradigms ? Learning by Doing? There is no supervisor, only a reward signal, Feedback is delayed, not instantaneous. Time...">
+        <meta name="description" content="What makes reinforcement learning different from other machine learning paradigms ? Learning by Doing? There is no supervisor, only a reward signal, Feedback is delayed, not instantaneous. Time ...">
         <meta name="keywords" content="Deep Reinforcement Learning">
         <link rel="icon" href="https://mohcinemadkour.github.io/favicon.ico">
 
@@ -75,7 +75,7 @@
         <h1>What makes reinforcement learning different from other machine</h1>
 <h2>learning paradigms ? Learning by Doing?</h2>
 <p>There is no supervisor, only a reward signal, Feedback is delayed, not instantaneous. Time really matters (sequential, non i.i.d data). Agent’s actions affect the subsequent data it receives
-![supervised vs rl](/images/supervised vs rl.png)</p>
+<img alt="supervised vs rl" src="/images/supervised_vs_rl.png"></p>
 <h3>Rewards</h3>
 <p>A reward Rt is a scalar feedback signal, It indicates how well agent is doing at step t. The agent’s job is to maximise cumulative reward.Reinforcement learning is based on the reward hypothesis, which states that all goals can be described by the <strong>maximisation of expected cumulative reward</strong>. Examples of Rewards can be +ve reward for following desired trajectory and −ve reward for crashing, in <em>Fly stunt manoeuvres in a helicopter</em>. +/−ve reward for winning/losing a game in <em>Defeat the world champion at Backgammon</em>. +ve reward for each $ in bank in <em>Manage an investment portfolio. +ve reward for producing power</em>, and −ve reward for exceeding safety thresholds in Control a power station. +ve reward for forward motion, and −ve reward for falling over in <em>Make a humanoid robot walk</em>, and +/−ve reward for increasing/decreasing score in <em>Play many different Atari games better than humans</em>.</p>
 <h3>Sequential Decision Making</h3>
@@ -129,7 +129,7 @@ practice it means that the probability distribution of the future states depends
 <img alt="State Transition from state s to state s'" src="/images/fig1_rl.png">
 An MDPs consist of state (s), action (a) sets and given any state and action to be taken, a transition probability function of each possible next state (s’) illustrated in figure 1. In addition, each taken action to arrive to the next state is rewarded giving each of all possible actions a reward value
 depending on the type of action. Each visited state is accredited by a value given to it according to a <strong>value function V(s)</strong> which represents how good it is for an agent to be in a given state. The value of a state s under a policy π is then denoted as Vπ(s) which in theory denotes the expected return when starting in state s and following a sequence of states to be visited according to the order defined in π thereafter. When this theorem is applied to a model-free control problem, the <strong>state-value function</strong> may
-not suffice as it does not show what action was taken for the state value to be acquired. Therefore, a similar function has been introduced representing an estimation of the value of each possible action in a state. This is described as the <strong>action-value function</strong> for policy π Qπ(s,a). Figure 2 illustrates an example of the relationship between the action-value function and the state-value function. In 2.a. the action-values are shown for each direction of the propagation, North, East, South, and West respectively. <strong>The state value function represents then the highest action-value possible in that state which is the action North in the example</strong>.![1a 1b](/images/Screenshot from 2018-06-15 15-54-43.png)</p>
+not suffice as it does not show what action was taken for the state value to be acquired. Therefore, a similar function has been introduced representing an estimation of the value of each possible action in a state. This is described as the <strong>action-value function</strong> for policy π Qπ(s,a). Figure 2 illustrates an example of the relationship between the action-value function and the state-value function. In 2.a. the action-values are shown for each direction of the propagation, North, East, South, and West respectively. <strong>The state value function represents then the highest action-value possible in that state which is the action North in the example</strong>.<img alt="1a 1b" src="/images/rl_fig2.png"></p>
 <p>The optimal policy is denoted as the superscript asterisk to the action-value-function Q(s,a) and state value-function V(s). Formally, the optimal value function is then given by:
 <img alt="Eq1" src="/images/eq1.png">
 Where Q*(s,a) is given by:
@@ -141,7 +141,7 @@ Substituting equation 3 in 2 gives the Bellman equation:
 These updates will be appended to the states that were visited resulting (after a significant number of iterations) in state values showing how good to be in that state. In order to be able to choose between the states to select a policy, <strong>as many states as possible need to be visited</strong> in order to converge to an accurate estimation of the state value. Acquiring the highest reward depends on these visited states and the reward accumulated. However, in order to discover more states and potentially higher rewards, the agent needs to take actions it has never taken before. This is referred to as the <strong>trade-off between exploitation and exploration</strong>. This trade-off could be achieved by setting a variable denoted as Epsilon (ε) which gives the extent of exploration versus exploitation. A fully exploiting policy is referred to as an
 epsilon-greedy policy and holds a value of 0 for ε. Correspondingly, a fully exploring policy gives a value of 1 to ε and is referred to as an epsilon-soft policy. The learning can therefore be tuned between these two extremes in order to allow for convergence towards an optimal value by occasionally exploring new states and actions.</p>
 <h1>Markovian environments and Non Markovian environments</h1>
-<p><img alt="Markovian environments and Non Markovian environments" src="/images/fig1_rl.png"></p>
+<p><img alt="Markovian environments and Non Markovian environments" src="/images/markov.png"></p>
 <h1>Classes of RL algorithms</h1>
 <p>RL knows three fundamental classes of methods for solving these learning problems:
 <em> Dynamic Programming (DP)
@@ -179,7 +179,7 @@ Once the state is known, the history may be thrown away. i.e. The state is a suf
 probability is defined by P ss' = P[S t+1 = s'| S t = s]
 State transition matrix P defines transition probabilities from all
 states s to all successor states s 0 transition probabilities from all
-states s to all successor states s' ![State Transition Matrix](/images/Screenshot from 2018-06-17 08-05-54.png)
+states s to all successor states s' <img alt="State Transition Matrix" src="/images/State_Transition_Matrix.png">
 supervised vs rl.png</p>
 <h2>Markov Process</h2>
 <p>A Markov process is a memoryless random process, i.e. a sequence
@@ -187,7 +187,7 @@ of random states S 1 , S 2 , ... with the Markov property.
 Definition: A Markov Process (or Markov Chain) is a tuple <S, P>
 S is a (finite) set of states, P is a state transition probability matrix,
 P ss'= P [S t+1 = s'| St = s]</p>
-<p>![Example](/images/Screenshot from 2018-06-17 08-16-27.png)</p>
+<p><img alt="Example" src="/images/markov_process.png"></p>
 <h2>Markov Reward Process</h2>
 <p>A Markov reward process is a Markov chain with values.
 Definition: A Markov Reward Process is a tuple <S, P, R, γ>
@@ -198,7 +198,7 @@ R is a reward function, Rs = E [Rt+1 | S t = s]
 γ is a discount factor, γ ∈ [0, 1]</p>
 <h2>Return</h2>
 <p>Definition: The return G t is the total discounted reward from time-step t.
-<a href="images/Screenshot from 2018-06-17 08-21-18.png">Return</a>
+<a href="images/return_eq.png">Return</a>
 The discount γ ∈ [0, 1] is the present value of future rewards
 The value of receiving reward R after k + 1 time-steps is γkR.
 This values immediate reward above delayed reward.

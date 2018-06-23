@@ -4,11 +4,11 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="RDF-Triple-API A simple API for extracting the RDF triple (subject, predicate, object) of any sentence. The parsed sentence is also returned in addition to the triple. The algorithm implemented is ...">
-        <meta name="keywords" content="Semantic Wev">
+        <meta name="description" content="https://marcobonzanini.com/2015/04/06/getting-started-with-neo4j-and-python/">
+        <meta name="keywords" content="Getting started with Neo4j and Python">
         <link rel="icon" href="https://mohcinemadkour.github.io/favicon.ico">
 
-        <title>RDF Parser API - A Pelican Blog</title>
+        <title>Recommender systems and knowledge graphs with Neo4j and Python - A Pelican Blog</title>
 
         <!-- Stylesheets -->
         <link href="https://mohcinemadkour.github.io/theme/css/all.min.css" rel="stylesheet">
@@ -30,7 +30,7 @@
     <body>
 
         <!-- Header -->
-    <div class="header-container" style="background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('https://mohcinemadkour.github.io/images/rdf.png'); background-position: center; background-size: cover;">
+    <div class="header-container" style="background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('https://mohcinemadkour.github.io/images/risk.png'); background-position: center; background-size: cover;">
 
             <!-- Static navbar -->
             <div class="container">
@@ -52,13 +52,13 @@
         <div class="row">
               <div class="col-lg-12">
                   <div class="header-content">
-                      <h1 class="header-title">RDF Parser API</h1>
-                      <p class="header-date">By <a href="https://mohcinemadkour.github.io/author/mohcine-madkour.html">Mohcine madkour</a>, Tue 09 February 2016, in category <a href="https://mohcinemadkour.github.io/category/semantic-web.html">Semantic web</a></p>
+                      <h1 class="header-title">Recommender systems and knowledge graphs with Neo4j and Python</h1>
+                      <p class="header-date">By <a href="https://mohcinemadkour.github.io/author/mohcine-madkour.html">Mohcine Madkour</a>, Sun 10 June 2018, in category <a href="https://mohcinemadkour.github.io/category/neo4j.html">Neo4j</a></p>
                       <div class="header-underline"></div>
                       <div class="clearfix"></div>
                       <p class="pull-right header-tags">
                           <span class="glyphicon glyphicon-tags mr5" aria-hidden="true"></span>
-<a href="https://mohcinemadkour.github.io/tag/semantic-wev.html">Semantic Wev</a>                      </p>
+<a href="https://mohcinemadkour.github.io/tag/getting-started-with-neo4j-and-python.html">Getting started with Neo4j and Python</a>                      </p>
                   </div>
               </div>
         </div>
@@ -72,60 +72,15 @@
 
         <!-- Content -->
     <div class="container content">
-        <h1>RDF-Triple-API</h1>
-<p>A simple API for extracting the RDF triple (subject, predicate, object) of any sentence. The parsed sentence is also returned in addition to the triple.</p>
-<p>The algorithm implemented is taken from [this paper] (http://ailab.ijs.si/dunja/SiKDD2007/Papers/Rusu_Trippels.pdf) by Delia Rusu.</p>
-<p>The sentence is parsed using the [stanford parser] (http://nlp.stanford.edu/software/lex-parser.shtml)</p>
-<p>The endpoint for the api is http://www.newventify.com/rdf and has url parameter <code>sentence</code></p>
-<p>A complete request would look like the following: <a href="http://www.newventify.com/rdf?sentence=The man stood next to the refrigerator">http://www.newventify.com/rdf?sentence=The man stood next to the refrigerator</a> and will return</p>
-<p><code>{
-  "object": {
-    "POS": "NN", 
-    "Tree Attributes": [], 
-    "Word Attributes": [
-      [
-        "the", 
-        "DT"
-      ]
-    ], 
-    "word": "refrigerator"
-  }, 
-  "parse_tree": "Tree('ROOT', [Tree('S', [Tree('NP', [Tree('DT', ['The']), Tree('NN', ['man'])]), Tree('VP', [Tree('VBD', ['stood']), Tree('ADVP', [Tree('JJ', ['next'])]), Tree('PP', [Tree('TO', ['to']), Tree('NP', [Tree('DT', ['the']), Tree('NN', ['refrigerator'])])])])])])", 
-  "predicate": {
-    "POS": "VB", 
-    "Tree Attributes": [
-      "Tree('ADVP', [Tree('JJ', ['next'])])"
-    ], 
-    "Word Attributes": [], 
-    "word": "stood"
-  }, 
-  "rdf": [
-    "man", 
-    "stood", 
-    "refrigerator"
-  ], 
-  "sentence": "The man stood next to the refrigerator", 
-  "subject": {
-    "POS": "NN", 
-    "Tree Attributes": [], 
-    "Word Attributes": [
-      [
-        "The", 
-        "DT"
-      ]
-    ], 
-    "word": "man"
-  }
-}</code></p>
-<p><a href="https://github.com/mohcinemadkour/RDF-Triple-API/blob/master/rdf_triple.py">Check out the source code here</a></p>
+        <p>https://marcobonzanini.com/2015/04/06/getting-started-with-neo4j-and-python/</p>
 
 
     <div class="comments">
         <div id="disqus_thread"></div>
             <script type="text/javascript">
                 var disqus_shortname = 'leafyleap-2';
-                var disqus_identifier = 'RDF Triple API.html';
-                var disqus_url = 'https://mohcinemadkour.github.io/RDF Triple API.html';
+                var disqus_identifier = 'Getting started with Neo4j and Python.html';
+                var disqus_url = 'https://mohcinemadkour.github.io/Getting started with Neo4j and Python.html';
                 (function() {
                     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
                     dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
