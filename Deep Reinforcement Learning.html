@@ -75,7 +75,7 @@
         <h1>What makes reinforcement learning different from other machine</h1>
 <h2>learning paradigms ? Learning by Doing?</h2>
 <p>There is no supervisor, only a reward signal, Feedback is delayed, not instantaneous. Time really matters (sequential, non i.i.d data). Agent’s actions affect the subsequent data it receives
-<img alt="supervised vs rl" src="/images/supervised_vs_rl.png"></p>
+<img alt="supervised vs rl" src="/images/dsrl.png"></p>
 <h3>Rewards</h3>
 <p>A reward Rt is a scalar feedback signal, It indicates how well agent is doing at step t. The agent’s job is to maximise cumulative reward.Reinforcement learning is based on the reward hypothesis, which states that all goals can be described by the <strong>maximisation of expected cumulative reward</strong>. Examples of Rewards can be +ve reward for following desired trajectory and −ve reward for crashing, in <em>Fly stunt manoeuvres in a helicopter</em>. +/−ve reward for winning/losing a game in <em>Defeat the world champion at Backgammon</em>. +ve reward for each $ in bank in <em>Manage an investment portfolio. +ve reward for producing power</em>, and −ve reward for exceeding safety thresholds in Control a power station. +ve reward for forward motion, and −ve reward for falling over in <em>Make a humanoid robot walk</em>, and +/−ve reward for increasing/decreasing score in <em>Play many different Atari games better than humans</em>.</p>
 <h3>Sequential Decision Making</h3>
@@ -198,7 +198,7 @@ R is a reward function, Rs = E [Rt+1 | S t = s]
 γ is a discount factor, γ ∈ [0, 1]</p>
 <h2>Return</h2>
 <p>Definition: The return G t is the total discounted reward from time-step t.
-<a href="images/return_eq.png">Return</a>
+<img alt="Return" src="images/return_eq.png">
 The discount γ ∈ [0, 1] is the present value of future rewards
 The value of receiving reward R after k + 1 time-steps is γkR.
 This values immediate reward above delayed reward.
