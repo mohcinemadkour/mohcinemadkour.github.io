@@ -82,8 +82,7 @@ Examples are numerous. For example a financial investment (may take months to ma
 Two fundamental problems in sequential decision making 
 <img alt="supervised vs rl" src="/images/dsrl.png"></p>
 <h2>Sequential Decision Making</h2>
-<p>The reinforcement learning id a Sequential Decision Making process. In general there is two types of environmnets: Fully Observable Environments which is recommended for Markov decision process in where the Agent state about the environmnet is identical with the environment state and with the information state; and the Partially Observable Environments in which the Partially Markov decision process can be applied. In this environment, the agent indirectly observes environment. The Agent must construct its own state representation whcih includes complete history, beliefs of environment state. The Recurrent neural network can be used in this case.
-<img alt="MDP" src="/images/MDP.png"></p>
+<p>The reinforcement learning id a Sequential Decision Making process. In general there is two types of environmnets: Fully Observable Environments which is recommended for Markov decision process in where the Agent state about the environmnet is identical with the environment state and with the information state; and the Partially Observable Environments in which the Partially Markov decision process can be applied. In this environment, the agent indirectly observes environment. The Agent must construct its own state representation whcih includes complete history, beliefs of environment state. The Recurrent neural network can be used in this case.</p>
 <h1>Components of an RL Agent</h1>
 <p>An RL agent may include one or more of these components: Policy: agent’s behaviour function, Value function: how good is each state and/or action, and Model: agent’s representation of the environment. The <strong>Policy</strong> is the agent’s behaviour. It is a map from state to action, e.g. We have two types : Deterministic policy: a = π(s) and Stochastic policy: π(a|s) = P[At = a|St = s]. The <strong>Value Function</strong> is a prediction of future reward. It is used to evaluate the goodness/badness of states And therefore to select between actions, e.g.]:<strong>vπ(s)</strong> = Eπ [Rt+1 + γRt+2 + γ2 Rt+3 + ... | St = s]. <strong>The model</strong> predicts what the environment will do next. The P predicts the next state, and the R predicts the next (immediate) reward.
 Pss'= P[St+1 = s | St = s, At = a], Ras = E [Rt+1 |St = s, At = a]</p>
@@ -132,64 +131,51 @@ The choice between these two classes of model-free RL algorithms very much depen
 Here, α represents the step-size parameter which functions as the exponentially moving average parameter. It is especially useful for non-stationary environments for weighting recent rewards more heavily than long-past ones. This could also be illustrated by rearranging the above equation to:
 <img alt="Eq5" src="/images/eq5.png">
 If α is a number smaller than one for non-stationary environments which indicates that recent updates weight more than previous ones. This transition happens after every nonterminal state. The Q (s t+1 ,a t+1 ) components of every terminal state is defined as zero. Hence, every terminal state has an update value of 0. <strong>SARSA</strong> is called an on-policy algorithm because it updates the action-value-function according to the policy it is taking in every step. Therefore, it takes the epsilon-policy into account in order to arrive the optimal policy for a certain problem. Off-policy algorithms approximate the best possible policy even
-<a href="/images/Cliff.png">Cliff)</a>
+<img alt="Cliff)" src="/images/cliff.png">
 when that policy is not taken by the agent. Hence, Off-Policy algorithms base the update of the state action-value function on the assumption of optimal behaviour without taking into account the epsilon policy (the chance to take a negative action). Figure 10 shows a suitable example given by Sutton and Barto (1998) and which illustrates the policy outcome differences between the two types of TD algorithms. The cliff represents states with high negative reward. Since SARSA takes the epsilon policy into account, it learns that at some instances a non-optimal action will be taken which results in a high
 negative reward. Hence, it will learn to take the safe path rather than the optimal path. <strong>Q-learning algorithms</strong> on the other hand, will take the optimal path by which the highest total reward could be achieved. This is because it does not take the epsilon probability into account of taking an extremely negative action. This class of algorithms is denoted by the following equation:
 <img alt="Eq6" src="/images/eq6.png">
 This difference will inevitably influence the suitability for the type of application. </p>
 <h1>Markov Decision Processes</h1>
-<p>Markov decision processes formally describe an environment for reinforcement learning Where the environment is fully observable, i.e. The current state completely characterises the process. Almost all RL problems can be formalised as MDPs, e.g.Optimal control primarily deals with continuous MDPs, Partially observable problems can be converted into MDPs, Bandits are MDPs with one state</p>
-<h2>Markov Property</h2>
-<p>"The future is independent of the past given the present”
-Definition: A state St is Markov if and only if
+<p>Markov decision processes formally describe an environment for reinforcement learning Where the environment is fully observable, i.e. The current state completely characterises the process.
+<img alt="MDP" src="/images/MDP.png">
+Almost all RL problems can be formalised as MDPs, e.g.Optimal control primarily deals with continuous MDPs, Partially observable problems can be converted into MDPs, Bandits are MDPs with one state
+The Markov Property states that "The future is independent of the past given the present” in other ways a state St is Markov if and only if
 P [S t+1 | S t ] = P [S t+1 | S 1 , ..., S t ]
-The state captures all relevant information from the history
-Once the state is known, the history may be thrown away. i.e. The state is a sufficient statistic of the future</p>
-<h2>State Transition Matrix</h2>
+The state captures all relevant information from the history and once the state is known, the history may be thrown away. i.e. The state is a sufficient statistic of the future.</p>
 <p>For a Markov state s and successor state s' , the state transition
-probability is defined by P ss' = P[S t+1 = s'| S t = s]
-State transition matrix P defines transition probabilities from all
-states s to all successor states s 0 transition probabilities from all
-states s to all successor states s' <img alt="State Transition Matrix" src="/images/State_Transition_Matrix.png">
-supervised vs rl.png</p>
-<h2>Markov Process</h2>
+probability is defined by Pss' = P[St+1 = s'| St = s]. The State transition matrix P defines transition probabilities from all states s to all successor states s' <img alt="State Transition Matrix" src="/images/State_Transition_Matrix.png">where each row of the matrix sums to 1</p>
 <p>A Markov process is a memoryless random process, i.e. a sequence
-of random states S 1 , S 2 , ... with the Markov property.
-Definition: A Markov Process (or Markov Chain) is a tuple <S, P>
-S is a (finite) set of states, P is a state transition probability matrix,
-P ss'= P [S t+1 = s'| St = s]
+of random states S1 , S2 , ... with the Markov property. Otherwise it is a tuple <S,P> with S is a (finite) set of states, P is a state transition probability matrix, Pss'= P [S t+1 = s'| St = s]
 <img alt="Example" src="/images/markov_process.png"></p>
-<h2>Markov Reward Process</h2>
 <p>A Markov reward process is a Markov chain with values.
 Definition: A Markov Reward Process is a tuple <S, P, R, γ>
 S is a finite set of states
 P is a state transition probability matrix,
-P ss'= P [S t+1 = s'| St = s]
-R is a reward function, Rs = E [Rt+1 | S t = s]
+P ss'= P [St+1 = s'| St = s]
+R is a reward function, Rs = E [Rt+1 | St = s]
 γ is a discount factor, γ ∈ [0, 1]</p>
-<h2>Return</h2>
-<p>Definition: The return G t is the total discounted reward from time-step t.
+<p>The return Gt is the total discounted reward from time-step t.
 <img alt="Return" src="images/return_eq.png">
 The discount γ ∈ [0, 1] is the present value of future rewards
 The value of receiving reward R after k + 1 time-steps is γkR.
 This values immediate reward above delayed reward.
 γ close to 0 leads to ”myopic” evaluation
 γ close to 1 leads to ”far-sighted” evaluation</p>
-<p>Most Markov reward and decision processes are discounted. Why?
-<em>Mathematically convenient to discount rewards
-</em>Avoids infinite returns in cyclic Markov processes
-<em>Uncertainty about the future may not be fully represented
-</em>If the reward is financial, immediate rewards may earn more
+<p>Most Markov reward and decision processes are discounted:
+<em> Mathematically convenient to discount rewards
+</em> Avoids infinite returns in cyclic Markov processes
+<em> Uncertainty about the future may not be fully represented
+</em> If the reward is financial, immediate rewards may earn more
 interest than delayed rewards
-<em>Animal/human behaviour shows preference for immediate
+<em> Animal/human behaviour shows preference for immediate
 reward
-</em>It is sometimes possible to use undiscounted Markov reward
+</em> It is sometimes possible to use undiscounted Markov reward
 processes (i.e. γ = 1), e.g. if all sequences terminate.</p>
-<h2>Value Function</h2>
 <p>The value function v (s) gives the long-term value of state s
 Definition : The state value function v (s) of an MRP is the expected return
 starting from state s v (s) = E [G t | S t = s]
-![Value Function](/images/Screenshot from 2018-06-17 08-37-21.png)</p>
+<img alt="Value Function" src="/images/Value_Function.png"></p>
 
 
     <div class="comments">
