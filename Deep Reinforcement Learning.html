@@ -83,7 +83,7 @@ Two fundamental problems in sequential decision making
 <img alt="supervised vs rl" src="/images/dsrl.png"></p>
 <h2>Sequential Decision Making</h2>
 <p>The reinforcement learning id a Sequential Decision Making process. In general there is two types of environmnets: Fully Observable Environments which is recommended for Markov decision process in where the Agent state about the environmnet is identical with the environment state and with the information state; and the Partially Observable Environments in which the Partially Markov decision process can be applied. In this environment, the agent indirectly observes environment. The Agent must construct its own state representation whcih includes complete history, beliefs of environment state. The Recurrent neural network can be used in this case.</p>
-<h1>Components of an RL Agent</h1>
+<h2>Components of an RL Agent</h2>
 <p>An RL agent may include one or more of these components: Policy: agent’s behaviour function, Value function: how good is each state and/or action, and Model: agent’s representation of the environment. The <strong>Policy</strong> is the agent’s behaviour. It is a map from state to action, e.g. We have two types : Deterministic policy: a = π(s) and Stochastic policy: π(a|s) = P[At = a|St = s]. The <strong>Value Function</strong> is a prediction of future reward. It is used to evaluate the goodness/badness of states And therefore to select between actions, e.g.]:<strong>vπ(s)</strong> = Eπ [Rt+1 + γRt+2 + γ2 Rt+3 + ... | St = s]. <strong>The model</strong> predicts what the environment will do next. The P predicts the next state, and the R predicts the next (immediate) reward.
 Pss'= P[St+1 = s | St = s, At = a], Ras = E [Rt+1 |St = s, At = a]</p>
 <h1>Types of reinforcement learning algorithms</h1>
@@ -104,7 +104,7 @@ Substituting equation 3 in 2 gives the Bellman equation:
 <img alt="Eq3" src="/images/eq3.png">
 These updates will be appended to the states that were visited resulting (after a significant number of iterations) in state values showing how good to be in that state. In order to be able to choose between the states to select a policy, <strong>as many states as possible need to be visited</strong> in order to converge to an accurate estimation of the state value. Acquiring the highest reward depends on these visited states and the reward accumulated. However, in order to discover more states and potentially higher rewards, the agent needs to take actions it has never taken before. This is referred to as the <strong>trade-off between exploitation and exploration</strong>. This trade-off could be achieved by setting a variable denoted as Epsilon (ε) which gives the extent of exploration versus exploitation. A fully exploiting policy is referred to as an
 epsilon-greedy policy and holds a value of 0 for ε. Correspondingly, a fully exploring policy gives a value of 1 to ε and is referred to as an epsilon-soft policy. The learning can therefore be tuned between these two extremes in order to allow for convergence towards an optimal value by occasionally exploring new states and actions.</p>
-<h1>Categorisies of RL agents</h1>
+<h2>Categorisies of RL agents</h2>
 <p>Reinforcement learning is like trial-and-error learning. The agent should discover a good policy from its experiences of the environment and Without losing too much reward along the way. The <strong>Exploration</strong> finds more information about the environment. The <strong>Exploitation</strong> exploits known information to maximise reward. It is usually important to explore as well as exploit.
 An agent can evaluate the future Given a policy (<strong>Prediction</strong>) or optimise the future and find the best policy (<strong>Control</strong>)
 There is five types of agents:
@@ -114,7 +114,7 @@ There is five types of agents:
 </em> Model Free: Policy and/or Value Function+ No Model
 * Model Based: Policy and/or Value Function+ Model
 <img alt="RL Agents" src="/images/RLAgents.png"></p>
-<h1>Classes of RL algorithms</h1>
+<h2>Classes of RL algorithms</h2>
 <p>RL knows three fundamental classes of methods for solving these learning problems:
 <em> Dynamic Programming (DP)
 </em> Monte Carlo methods
@@ -125,7 +125,7 @@ of the (simulated) interaction with the environment. In comparison with DP metho
 of an episode, that the value estimation and policies are updated. Hence, it is based on averages of complete returns of the value functions of each state. This class of algorithms does not exploit Markov property described before and is therefore more efficient in <strong>non-Markovian environments</strong>. On the
 other hand, Temporal-Difference methods do also not require a model of the environment but are like DP solving for incrementing step-by-step rather than episode-by-episode. Hence, TD methods exploit the Markovian property and perform usually better in Markovian environments.
 The choice between these two classes of model-free RL algorithms very much depends on the type of data set available. For continuous processes in which there are no fixed episodic transitions, Monte Carlo methods may not be the optimal solution as they average the return only at the end of each episode. TD algorithms might then be a better solution as they assign a reward incrementally over each state. This allows them to converge faster towards an optimal policy for large data sets with a large number state spaces.</p>
-<h1>Temporal-difference learning: On-policy and off-policy TD control</h1>
+<h2>Temporal-difference learning: On-policy and off-policy TD control</h2>
 <p>TD algorithms comprise two important RL classes of algorithms divided in Off-Policy and On-Policy TD control algorithm classes. The difference between the two lays in the policy that is learned from the simulation or set of experiences (data). On-Policy TD control algorithms are often referred to as <strong>SARSA algorithms</strong> in which the letters refer to the sequence of State, Action, Reward associated with the state transition, next State, next Action. This sequence is followed in each time-step and is used to update the action-value of these two states according:
 <img alt="Eq4" src="/images/eq4.png">
 Here, α represents the step-size parameter which functions as the exponentially moving average parameter. It is especially useful for non-stationary environments for weighting recent rewards more heavily than long-past ones. This could also be illustrated by rearranging the above equation to:
@@ -156,7 +156,7 @@ P ss'= P [St+1 = s'| St = s]
 R is a reward function, Rs = E [Rt+1 | St = s]
 γ is a discount factor, γ ∈ [0, 1]</p>
 <p>The return Gt is the total discounted reward from time-step t.
-<img alt="Return" src="images/return_eq.png">
+G t = Rt+1 + γRt+2 + ...
 The discount γ ∈ [0, 1] is the present value of future rewards
 The value of receiving reward R after k + 1 time-steps is γkR.
 This values immediate reward above delayed reward.
