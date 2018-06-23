@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="What makes reinforcement learning different from other machine learning paradigms ? Learning by Doing? There is no supervisor, only a reward signal, Feedback is delayed, not instantaneous. Time ...">
+        <meta name="description" content="Introduction to reinforcement learning The learning paradigm It&#39;s kind of learning by doing, there is no supervisor, but only a reward signal. The Feedback is also delayed and not instantaneous. ...">
         <meta name="keywords" content="Deep Reinforcement Learning">
         <link rel="icon" href="https://mohcinemadkour.github.io/favicon.ico">
 
@@ -72,60 +72,25 @@
 
         <!-- Content -->
     <div class="container content">
-        <h1>What makes reinforcement learning different from other machine</h1>
-<h2>learning paradigms ? Learning by Doing?</h2>
-<p>There is no supervisor, only a reward signal, Feedback is delayed, not instantaneous. Time really matters (sequential, non i.i.d data). Agent’s actions affect the subsequent data it receives
-<img alt="supervised vs rl" src="/images/dsrl.png"></p>
-<h3>Rewards</h3>
-<p>A reward Rt is a scalar feedback signal, It indicates how well agent is doing at step t. The agent’s job is to maximise cumulative reward.Reinforcement learning is based on the reward hypothesis, which states that all goals can be described by the <strong>maximisation of expected cumulative reward</strong>. Examples of Rewards can be +ve reward for following desired trajectory and −ve reward for crashing, in <em>Fly stunt manoeuvres in a helicopter</em>. +/−ve reward for winning/losing a game in <em>Defeat the world champion at Backgammon</em>. +ve reward for each $ in bank in <em>Manage an investment portfolio. +ve reward for producing power</em>, and −ve reward for exceeding safety thresholds in Control a power station. +ve reward for forward motion, and −ve reward for falling over in <em>Make a humanoid robot walk</em>, and +/−ve reward for increasing/decreasing score in <em>Play many different Atari games better than humans</em>.</p>
-<h3>Sequential Decision Making</h3>
-<p>Goal: select actions to maximise total future reward. The actions may have long term consequences, and the Reward may be delayed. SOmetimes It may be better to sacrifice immediate reward to gain more long-term reward
-Examples are numerous, A financial investment (may take months to mature),
-Refuelling a helicopter (might prevent a crash in several hours), Blocking opponent moves (might help winning chances many moves from now)
+        <h1>Introduction to reinforcement learning</h1>
+<h2>The learning paradigm</h2>
+<p>It's kind of learning by doing, there is no supervisor, but only a reward signal. The Feedback is also delayed and not instantaneous. In this kind of learning the time really matters also the agent’s actions affect the subsequent data it receives
+A reward Rt is a scalar feedback signal, It indicates how well agent is doing at step t. The agent’s job is to maximise cumulative reward. Reinforcement learning is based on the reward hypothesis, which states that all goals can be described by the <strong>Maximisation of expected cumulative reward</strong>. 
+Examples of Rewards can be +ve reward for following desired trajectory and −ve reward for crashing.
+The goal is to select actions to maximise total future reward. The actions may have long term consequences, and the reward may be delayed. Sometimes It may be better to sacrifice immediate reward to gain more long-term reward
+Examples are numerous. For example a financial investment (may take months to mature), and Refuelling a helicopter (might prevent a crash in several hours)
 Two fundamental problems in sequential decision making 
-*Reinforcement Learning:
-<strong>The environment is initially unknown. 
-</strong>The agent interacts with the environment
-<strong>The agent improves its policy
-*Planning: 
-</strong>A model of the environment is known. 
-<strong>The agent performs computations with its model (without any external interaction). 
-</strong>The agent improves its policy a.k.a. deliberation, reasoning, introspection, pondering, thought, search</p>
-<h2>Markov decision process: Fully Observable Environments</h2>
-<p><img alt="MDP" src="/images/MDP.png">
-Fully Observable Environments: Agent state = environment state = information state</p>
-<h3>Partially Markov decision process: Partially Observable Environments</h3>
-<p>Partial observability: agent indirectly observes environment. FOr example : A robot with camera vision isn’t told its absolute location, A trading agent only observes current prices, A poker playing agent only observes public cards. The agent state # environment state. The Agent must construct its own state representation :Complete history, Beliefs of environment state, Recurrent neural network</p>
-<h1>Major Components of an RL Agent</h1>
-<p>An RL agent may include one or more of these components:
-<em>Policy: agent’s behaviour function
-</em>Value function: how good is each state and/or action
-*Model: agent’s representation of the environment</p>
-<h2>Policy</h2>
-<p>A policy is the agent’s behaviour. It is a map from state to action, e.g. We have two types : Deterministic policy: a = π(s) and Stochastic policy: π(a|s) = P[At = a|St = s]</p>
-<h2>Value Function</h2>
-<p>The value function is a prediction of future reward. It is used to evaluate the goodness/badness of states And therefore to select between actions, e.g.]:
-vπ(s) = E π [Rt+1 + γRt+2 + γ2 Rt+3 + ... | S t = s]</p>
-<h2>Model</h2>
-<p>A model predicts what the environment will do next. P predicts the next state
-R predicts the next (immediate) reward, e.g.
-Pss'= P[S t+1 = s | S t = s, A t = a]
-Ras = E [Rt+1 |St = s, At = a]</p>
-<h2>Categorizing RL agents</h2>
-<p><em>Value Based: No Policy (Implicit)+ Value Function
-</em>Policy Based: Policy + No Value Function
-<em>Actor Critic: Policy+ Value Function
-</em>Model Free: Policy and/or Value Function+ No Model
-*Model Based: Policy and/or Value Function+ Model
-<img alt="RL Agents" src="/images/RLAgents.png"></p>
-<h2>Exploration and Exploitation</h2>
-<p>Reinforcement learning is like trial-and-error learning. The agent should discover a good policy from its experiences of the environment and Without losing too much reward along the way. The Exploration finds more information about the environment. The Exploitation exploits known information to maximise reward. It is usually important to explore as well as exploit.</p>
-<h2>Prediction and Control</h2>
-<p>Prediction: evaluate the future Given a policy
-Control: optimise the future Find the best policy</p>
+<img alt="supervised vs rl" src="/images/dsrl.png"></p>
+<h2>Sequential Decision Making</h2>
+<p>The reinforcement learning id a Sequential Decision Making process. In general there is two types of environmnets: Fully Observable Environments which is recommended for Markov decision process in where the Agent state about the environmnet is identical with the environment state and with the information state; and the Partially Observable Environments in which the Partially Markov decision process can be applied. In this environment, the agent indirectly observes environment. The Agent must construct its own state representation whcih includes complete history, beliefs of environment state. The Recurrent neural network can be used in this case.
+<img alt="MDP" src="/images/MDP.png"></p>
+<h1>Components of an RL Agent</h1>
+<p>An RL agent may include one or more of these components: Policy: agent’s behaviour function, Value function: how good is each state and/or action, and Model: agent’s representation of the environment. The <strong>Policy</strong> is the agent’s behaviour. It is a map from state to action, e.g. We have two types : Deterministic policy: a = π(s) and Stochastic policy: π(a|s) = P[At = a|St = s]. The <strong>Value Function</strong> is a prediction of future reward. It is used to evaluate the goodness/badness of states And therefore to select between actions, e.g.]:<strong>vπ(s)</strong> = Eπ [Rt+1 + γRt+2 + γ2 Rt+3 + ... | St = s]. <strong>The model</strong> predicts what the environment will do next. The P predicts the next state, and the R predicts the next (immediate) reward.
+Pss'= P[St+1 = s | St = s, At = a], Ras = E [Rt+1 |St = s, At = a]</p>
 <h1>Types of reinforcement learning algorithms</h1>
-<p>RL algorithms that satisfy the <em>Markov property</em> are called the <em>Markov Decision Processes (MDP)</em>. The Markov property assumes that the current state is independent of the path that leads to that particular state. Hence, in Markovian problems a memoryless property of a stochastic process is assumed. In
-practice it means that the probability distribution of the future states depends only on the current state and not on the sequence of events that preceded. This is a useful property for stochastic processes as it allows for analysing the future by setting the present
+<p>RL algorithms that satisfy the <em>Markov property</em> are called the <em>Markov Decision Processes (MDP)</em>. The Markov property assumes that the current state is independent of the path that leads to that particular state. 
+<img alt="Markovian environments and Non Markovian environments" src="/images/markov.png">
+Hence, in Markovian problems a memoryless property of a stochastic process is assumed. In practice it means that the probability distribution of the future states depends only on the current state and not on the sequence of events that preceded. This is a useful property for stochastic processes as it allows for analysing the future by setting the present
 <img alt="State Transition from state s to state s'" src="/images/fig1_rl.png">
 An MDPs consist of state (s), action (a) sets and given any state and action to be taken, a transition probability function of each possible next state (s’) illustrated in figure 1. In addition, each taken action to arrive to the next state is rewarded giving each of all possible actions a reward value
 depending on the type of action. Each visited state is accredited by a value given to it according to a <strong>value function V(s)</strong> which represents how good it is for an agent to be in a given state. The value of a state s under a policy π is then denoted as Vπ(s) which in theory denotes the expected return when starting in state s and following a sequence of states to be visited according to the order defined in π thereafter. When this theorem is applied to a model-free control problem, the <strong>state-value function</strong> may
@@ -140,8 +105,16 @@ Substituting equation 3 in 2 gives the Bellman equation:
 <img alt="Eq3" src="/images/eq3.png">
 These updates will be appended to the states that were visited resulting (after a significant number of iterations) in state values showing how good to be in that state. In order to be able to choose between the states to select a policy, <strong>as many states as possible need to be visited</strong> in order to converge to an accurate estimation of the state value. Acquiring the highest reward depends on these visited states and the reward accumulated. However, in order to discover more states and potentially higher rewards, the agent needs to take actions it has never taken before. This is referred to as the <strong>trade-off between exploitation and exploration</strong>. This trade-off could be achieved by setting a variable denoted as Epsilon (ε) which gives the extent of exploration versus exploitation. A fully exploiting policy is referred to as an
 epsilon-greedy policy and holds a value of 0 for ε. Correspondingly, a fully exploring policy gives a value of 1 to ε and is referred to as an epsilon-soft policy. The learning can therefore be tuned between these two extremes in order to allow for convergence towards an optimal value by occasionally exploring new states and actions.</p>
-<h1>Markovian environments and Non Markovian environments</h1>
-<p><img alt="Markovian environments and Non Markovian environments" src="/images/markov.png"></p>
+<h1>Categorisies of RL agents</h1>
+<p>Reinforcement learning is like trial-and-error learning. The agent should discover a good policy from its experiences of the environment and Without losing too much reward along the way. The <strong>Exploration</strong> finds more information about the environment. The <strong>Exploitation</strong> exploits known information to maximise reward. It is usually important to explore as well as exploit.
+An agent can evaluate the future Given a policy (<strong>Prediction</strong>) or optimise the future and find the best policy (<strong>Control</strong>)
+There is five types of agents:
+<em> Value Based: No Policy (Implicit)+ Value Function
+</em> Policy Based: Policy + No Value Function
+<em> Actor Critic: Policy+ Value Function
+</em> Model Free: Policy and/or Value Function+ No Model
+* Model Based: Policy and/or Value Function+ Model
+<img alt="RL Agents" src="/images/RLAgents.png"></p>
 <h1>Classes of RL algorithms</h1>
 <p>RL knows three fundamental classes of methods for solving these learning problems:
 <em> Dynamic Programming (DP)
@@ -158,11 +131,9 @@ The choice between these two classes of model-free RL algorithms very much depen
 <img alt="Eq4" src="/images/eq4.png">
 Here, α represents the step-size parameter which functions as the exponentially moving average parameter. It is especially useful for non-stationary environments for weighting recent rewards more heavily than long-past ones. This could also be illustrated by rearranging the above equation to:
 <img alt="Eq5" src="/images/eq5.png">
-If α is a number smaller than one for non-stationary environments which indicates that recent updates weight more than previous ones. This transition happens after every nonterminal state. The Q (s t+1 ,a t+1 ) components of every terminal state is defined as zero. Hence, every terminal state has an update value of 0.</p>
-<p><strong>SARSA</strong> is called an on-policy algorithm because it updates the action-value-function according to the policy it is taking in every step. Therefore, it takes the epsilon-policy into account in order to arrive the
-optimal policy for a certain problem. Off-policy algorithms approximate the best possible policy even</p>
-<p><a href="Cliff.png">Cliff)</a></p>
-<p>when that policy is not taken by the agent. Hence, Off-Policy algorithms base the update of the state action-value function on the assumption of optimal behaviour without taking into account the epsilon policy (the chance to take a negative action). Figure 10 shows a suitable example given by Sutton and Barto (1998) and which illustrates the policy outcome differences between the two types of TD algorithms. The cliff represents states with high negative reward. Since SARSA takes the epsilon policy into account, it learns that at some instances a non-optimal action will be taken which results in a high
+If α is a number smaller than one for non-stationary environments which indicates that recent updates weight more than previous ones. This transition happens after every nonterminal state. The Q (s t+1 ,a t+1 ) components of every terminal state is defined as zero. Hence, every terminal state has an update value of 0. <strong>SARSA</strong> is called an on-policy algorithm because it updates the action-value-function according to the policy it is taking in every step. Therefore, it takes the epsilon-policy into account in order to arrive the optimal policy for a certain problem. Off-policy algorithms approximate the best possible policy even
+<a href="/images/Cliff.png">Cliff)</a>
+when that policy is not taken by the agent. Hence, Off-Policy algorithms base the update of the state action-value function on the assumption of optimal behaviour without taking into account the epsilon policy (the chance to take a negative action). Figure 10 shows a suitable example given by Sutton and Barto (1998) and which illustrates the policy outcome differences between the two types of TD algorithms. The cliff represents states with high negative reward. Since SARSA takes the epsilon policy into account, it learns that at some instances a non-optimal action will be taken which results in a high
 negative reward. Hence, it will learn to take the safe path rather than the optimal path. <strong>Q-learning algorithms</strong> on the other hand, will take the optimal path by which the highest total reward could be achieved. This is because it does not take the epsilon probability into account of taking an extremely negative action. This class of algorithms is denoted by the following equation:
 <img alt="Eq6" src="/images/eq6.png">
 This difference will inevitably influence the suitability for the type of application. </p>
@@ -186,8 +157,8 @@ supervised vs rl.png</p>
 of random states S 1 , S 2 , ... with the Markov property.
 Definition: A Markov Process (or Markov Chain) is a tuple <S, P>
 S is a (finite) set of states, P is a state transition probability matrix,
-P ss'= P [S t+1 = s'| St = s]</p>
-<p><img alt="Example" src="/images/markov_process.png"></p>
+P ss'= P [S t+1 = s'| St = s]
+<img alt="Example" src="/images/markov_process.png"></p>
 <h2>Markov Reward Process</h2>
 <p>A Markov reward process is a Markov chain with values.
 Definition: A Markov Reward Process is a tuple <S, P, R, γ>
@@ -219,11 +190,6 @@ processes (i.e. γ = 1), e.g. if all sequences terminate.</p>
 Definition : The state value function v (s) of an MRP is the expected return
 starting from state s v (s) = E [G t | S t = s]
 ![Value Function](/images/Screenshot from 2018-06-17 08-37-21.png)</p>
-<h1>Application</h1>
-<h2>Control a power station</h2>
-<h3>Reward</h3>
-<p>+ve reward for producing power
-−ve reward for exceeding safety thresholds</p>
 
 
     <div class="comments">
