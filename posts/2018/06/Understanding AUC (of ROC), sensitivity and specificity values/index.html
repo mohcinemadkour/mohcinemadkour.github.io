@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+
+
+        <title>Understanding AUC (of ROC), sensitivity and specificity values // Mohcine Madkour // Big Data Architectures and more</title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../../../theme/css/pure.css">
+    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+<div class="pure-g-r" id="layout">
+    <div class="sidebar sidebar-article pure-u">
+        <header class="header-article">
+            <hgroup>
+                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine Madkour">
+                </a>
+                <h2 class="article-info">Mohcine Madkour</h2>
+                <small class="about-author"></small>
+                <h5>Published</h5>
+                <p>Sat 09 June 2018</p>
+                <a href="/">&larr;Home</a>
+            </hgroup>
+        </header>
+    </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>Understanding AUC (of ROC), sensitivity and specificity values</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="../../../../tag/auc/">AUC</a>
+                                <a class="post-category" href="../../../../tag/sensitivity/">Sensitivity</a>
+                                <a class="post-category" href="../../../../tag/specificity/">Specificity</a>
+                        </p>
+                </header>
+            </section>
+            <h1>Understanding AUC (of ROC), sensitivity and specificity values</h1>
+<p>The ROC curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings. Each point of the ROC curve (i.e. threshold) corresponds to specific values of sensitivity and specificity. The area under the ROC curve (AUC) is a summary measure of performance, that indicates whether on average a true positive is ranked higher than a false positives. If model A has higher AUC than model B, model A is performing better on average, but there still could be specific areas of the ROC space where model B is better (i.e. thresholds for which sensitivity and specificity are higher for model B than A</p>
+<h2>Sensitivity (positive in disease)</h2>
+<p>Sensitivity is the ability of a test to correctly classify an individual as ′diseased′</p>
+<div class="highlight"><pre><span></span>Sensitivity = a / a+c
+= a (true positive) / a+c (true positive + false negative)
+= Probability of being test positive when disease present.
+</pre></div>
+
+
+<h2>Specificity (negative in health)</h2>
+<p>The ability of a test to correctly classify an individual as disease- free is called the test′s specificity</p>
+<div class="highlight"><pre><span></span>Specificity = d / b+d
+= d (true negative) / b+d (true negative + false positive)
+= Probability of being test negative when disease absent.
+</pre></div>
+
+
+<p>Sensitivity and specificity are inversely proportional, meaning that as the sensitivity increases, the specificity decreases and vice versa.</p>
+<h2>Positive Predictive Value (PPV)</h2>
+<p>It is the percentage of patients with a positive test who actually have the disease. </p>
+<div class="highlight"><pre><span></span>PPV: = a / a+b
+= a (true positive) / a+b (true positive + false positive)
+= Probability (patient having disease when test is positive)
+</pre></div>
+
+
+<h2>Negative Predictive Value (NPV)</h2>
+<p>It is the percentage of patients with a negative test who do not have the disease.</p>
+<div class="highlight"><pre><span></span>NPV:    =   d / c+d
+=   d (true negative) / c+d (false negative + true negative)
+=   Probability (patient not having disease when test is negative)
+</pre></div>
+
+
+<p>Positive and negative predictive values are directly related to the prevalence of the disease in the population. Assuming all other factors remain constant, the PPV will increase with increasing prevalence; and NPV decreases with increase in prevalence.
+<img alt=" Effect of disease prevalence on PPV and NPV" src="/images/PPV-NPV.jpeg"></p>
+<h1>Calculation of metric performance</h1>
+<p>Calculation of acc, ppv, npv, sen, spe, yod</p>
+<div class="highlight"><pre><span></span>def ROC_parameters(obser,score,thr):
+    #print obser,score,thr
+    temp=np.zeros(len(score))
+    #print thr;
+    temp[[ i for i, x in enumerate(score) if x &gt;= thr ]]= 1
+    p_ind=[ i for i, x in enumerate(obser) if x == 1 ]
+    n_ind = [ i for i, x in enumerate(obser) if x == 0 ]
+    TP = sum(temp[p_ind]==1)
+    FP = sum(temp[n_ind]==1)
+    TN =sum(temp[n_ind]==0)
+    FN = sum(temp[p_ind]==0)
+    acc = (float)(TP+TN)/len(temp)
+    #print TP,FP,TN,FN;
+    if TP+FP&gt;0:
+        ppv = (float)(TP)/(TP+FP)
+    else:
+        ppv=np.NaN
+    if TN+FN&gt;0:
+        npv = (float)(TN)/(TN+FN)
+    else:
+        npv=np.NaN
+    if TP+FN&gt;0:
+        sen = (float)(TP)/(TP+FN)
+    else:
+        sen=np.NaN
+    if TN+FP&gt;0:
+        spe = (float)(TN)/(TN+FP)
+    else:
+        spe=np.NaN
+    yod = (float)(sen+spe-1)
+    ls=list();
+    ls.append(acc)
+    ls.append(ppv)
+    ls.append(npv)
+    ls.append(sen)
+    ls.append(spe)
+    ls.append(yod)
+    return ls
+</pre></div>
+
+
+<h1>Calculate Metrics</h1>
+<div class="highlight"><pre><span></span>def calculate_metric<span class="p">(</span>outcome<span class="p">,</span> score<span class="p">)</span><span class="o">:</span>
+    obser <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>outcome<span class="p">))</span>
+    obser<span class="p">[[</span>i <span class="kr">for</span> i<span class="p">,</span> x <span class="kr">in</span> enumerate<span class="p">(</span>outcome<span class="p">)</span> <span class="kr">if</span> x <span class="o">==</span> <span class="m">1</span> <span class="p">]]</span> <span class="o">=</span> <span class="m">1</span> <span class="p">;</span>
+    obser <span class="o">=</span> <span class="p">[</span>float<span class="p">(</span>i<span class="p">)</span> <span class="kr">for</span> i <span class="kr">in</span> obser<span class="p">]</span>
+    score <span class="o">=</span> <span class="p">[</span>float<span class="p">(</span>i<span class="p">)</span> <span class="kr">for</span> i <span class="kr">in</span> score<span class="p">]</span>
+    prev <span class="o">=</span> <span class="kp">round</span><span class="p">(</span><span class="kp">sum</span><span class="p">(</span>obser<span class="p">)</span><span class="o">/</span>len<span class="p">(</span>obser<span class="p">),</span><span class="m">2</span><span class="p">)</span>
+    thres <span class="o">=</span> np.arange<span class="p">(</span><span class="m">0.01</span><span class="p">,</span><span class="m">1.01</span><span class="p">,</span><span class="m">0.01</span><span class="p">)</span><span class="c1">#(0.01,0.98,0.01)</span>
+    xval <span class="o">=</span> thres
+    acc <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    ppv <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    npv <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    sen <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    spe <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    yod <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    auc <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    <span class="kr">for</span> l <span class="kr">in</span> <span class="kp">range</span><span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span><span class="o">:</span>
+        plotdata <span class="o">=</span> ROC_parameters<span class="p">(</span>obser<span class="p">,</span>score<span class="p">,</span>thres<span class="p">[</span>l<span class="p">])</span>
+        acc<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">0</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
+        ppv<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">1</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
+        npv<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">2</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
+        sen<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">3</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
+        spe<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">4</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
+        yod<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">5</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
+        auc<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> roc_auc_score<span class="p">(</span>obser<span class="p">,</span> score<span class="p">)</span>
+    prev <span class="o">=</span> <span class="kp">round</span><span class="p">(</span><span class="kp">sum</span><span class="p">(</span>obser<span class="p">)</span><span class="o">/</span>len<span class="p">(</span>obser<span class="p">),</span><span class="m">2</span><span class="p">)</span>
+    <span class="c1">#roc_vals=np.zeros((length(spe),8))</span>
+    roc_vals<span class="o">=</span>pd.DataFrame<span class="p">(</span>index<span class="o">=</span><span class="kp">range</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">101</span><span class="p">),</span> columns<span class="o">=</span><span class="p">[[</span><span class="s">&quot;thres&quot;</span><span class="p">,</span><span class="s">&quot;acc&quot;</span><span class="p">,</span><span class="s">&quot;ppv&quot;</span><span class="p">,</span><span class="s">&quot;npv&quot;</span><span class="p">,</span><span class="s">&quot;specificity&quot;</span><span class="p">,</span><span class="s">&quot;sensitivity&quot;</span><span class="p">,</span><span class="s">&quot;yod_index&quot;</span><span class="p">,</span><span class="s">&quot;auc&quot;</span><span class="p">]])</span>
+    <span class="c1">#roc_vals &lt;- dacolnames(roc_vals) &lt;- c(&quot;thres&quot;,&quot;acc&quot;,&quot;ppv&quot;,&quot;npv&quot;,&quot;specificity&quot;,&quot;sensitivity&quot;,&quot;yod_index&quot;,&quot;auc&quot;)</span>
+    roc_vals<span class="p">[</span><span class="s">&#39;thres&#39;</span><span class="p">]</span><span class="o">=</span>thres
+    roc_vals<span class="p">[</span><span class="s">&#39;acc&#39;</span><span class="p">]</span><span class="o">=</span> acc
+    roc_vals<span class="p">[</span><span class="s">&#39;ppv&#39;</span><span class="p">]</span> <span class="o">=</span> ppv
+    roc_vals<span class="p">[</span><span class="s">&#39;npv&#39;</span><span class="p">]</span> <span class="o">=</span> npv
+    roc_vals<span class="p">[</span><span class="s">&#39;specificity&#39;</span><span class="p">]</span> <span class="o">=</span>spe
+    roc_vals<span class="p">[</span><span class="s">&#39;sensitivity&#39;</span><span class="p">]</span> <span class="o">=</span> sen
+    roc_vals<span class="p">[</span><span class="s">&#39;yod_index&#39;</span><span class="p">]</span> <span class="o">=</span> yod<span class="p">;</span>
+    roc_vals<span class="p">[</span><span class="s">&#39;auc&#39;</span><span class="p">]</span> <span class="o">=</span> auc<span class="p">;</span>
+    <span class="kr">return</span> roc_vals
+</pre></div>
+
+
+<h1>Confidence_lower, Confidence_upper</h1>
+<div class="highlight"><pre><span></span>def confidence_interval(panel):
+    vector = []
+    confidence_lower=panel[1].copy()
+    confidence_upper=panel[1].copy()
+    nr=len(panel[1].axes[0])
+    nc=len(panel[1].axes[1])
+    for ix in  range(0,nr):
+        for iy in range(0,nc):
+            vector = []
+            for k, df in panel.iteritems():
+                vector.append(df.iloc[ix,iy])
+            sorted_vector = np.array(vector)
+            sorted_vector.sort()
+            confidence_lower.iloc[ix,iy] = sorted_vector[int(0.05 * len(sorted_vector))]
+            confidence_upper.iloc[ix,iy] = sorted_vector[int(0.95 * len(sorted_vector))]
+    return confidence_lower, confidence_upper
+</pre></div>
+
+
+<h1>Boostraping: best_model_metric,panel_models</h1>
+<div class="highlight"><pre><span></span>def calculate_metric_boostrap(outcome, score):
+    d = []
+    for p in range(0,len(score)):
+        d.append((score[p]))
+    score=pd.Series(d)
+    n_bootstraps = 100
+    rng_seed = 42  # control reproducibility
+    scores_table = {} 
+    rng = np.random.RandomState(rng_seed)
+    for i in range(n_bootstraps):
+    # bootstrap by sampling with replacement on the prediction indices
+        indices = rng.random_integers(0, len(outcome) - 1, len(outcome))
+        if len(np.unique(outcome[indices])) &lt; 2:
+        # We need at least one positive and one negative sample for ROC AUC
+        # to be defined: reject the sample
+            continue
+        scores_table[i]= calculate_metric(outcome[indices], score[indices])
+
+    panel = pd.Panel(scores_table)
+    df=panel.mean(axis=0)
+    return df,panel
+</pre></div>
+
+
+<h1>Complete Example</h1>
+<div class="highlight"><pre><span></span>testdata=pd.read_csv(main_folder+&quot;/Val_Cohort/test_cohort_&quot;+riskname+&quot;.csv&quot;)
+devdata=pd.read_csv(main_folder+&quot;/Dev_Cohort/development_cohort_&quot;+riskname+&quot;.csv&quot;)
+ro.globalenv[&#39;r_df_cvcomp&#39;] = pandas2ri.py2ri(testdata)
+r_df_cvcomp=ro.r(&#39;r_df_cvcomp&#39;)
+pred_score_cvcomp=statsf.predict(best_model_cvcomp,r_df_cvcomp, type=&quot;response&quot;)
+pred_obser_cvcomp=testdata[&#39;outcome&#39;];
+best_model_metric,panel_models=cm.calculate_metric_boostrap(pred_obser_cvcomp,pred_score_cvcomp)
+confidence_lower, confidence_upper=cm.confidence_interval(panel_models)
+best_model_metric.to_csv(main_folder+&quot;/Prediction/Best_Model_Metrics/best_model_metric_&quot;+riskname+&quot;.csv&quot;)
+confidence_lower.to_csv(main_folder+&quot;/Prediction/Best_Model_Metrics/confidence_lower_&quot;+riskname+&quot;.csv&quot;)
+confidence_upper.to_csv(main_folder+&quot;/Prediction/Best_Model_Metrics/confidence_upper_&quot;+riskname+&quot;.csv&quot;)
+cutoff1_cvcomp=best_model_metric[&#39;thres&#39;].iloc[best_model_metric[&#39;yod_index&#39;].idxmax()-1]
+cutoff2_cvcomp=cu.cal_cutoff2(best_model_metric)
+with open(main_folder+&quot;/Prediction/Cutoffs/cutoffs_&quot;+riskname+&quot;.txt&quot;, &quot;w&quot;) as text_file: 
+    text_file.write(&quot;cutoff1: %s&quot; % cutoff1_cvcomp.astype(float)+&quot;\n&quot;+&quot;cutoff2: %s&quot; % cutoff2_cvcomp.astype(float)) 
+predicted_values_cvcomp =pd.DataFrame({&quot;prediction&quot;:pred_score_cvcomp}, index=range(0,len(pred_score_cvcomp)))
+predicted_values_cvcomp.loc[predicted_values_cvcomp.prediction &lt;= cutoff1_cvcomp, &#39;category&#39;] = &#39;low&#39; 
+predicted_values_cvcomp.loc[predicted_values_cvcomp.prediction &gt;cutoff2_cvcomp, &#39;category&#39;] = &#39;high&#39; 
+predicted_values_cvcomp.loc[(predicted_values_cvcomp.prediction &lt;=cutoff2_cvcomp) &amp; (predicted_values_cvcomp.prediction&gt;cutoff1_cvcomp), &#39;category&#39;] = &#39;moderate&#39; 
+predicted_values_cvcomp.to_csv(main_folder+&quot;/Val_Cohort/predicted_values_&quot;+riskname+&quot;.csv&quot;)
+</pre></div>
+
+
+<h1>Plot</h1>
+<h1>Example of Scoring Learners and Cohort</h1>
+<table>
+<thead>
+<tr>
+<th>Cohort Definition</th>
+<th>Cohort Size</th>
+<th>CVD Percent in Cohort</th>
+<th>Covariates in Learner/Model</th>
+<th>Method Type</th>
+<th>Method Sensitivity</th>
+<th>Method PPV</th>
+<th>Balanced Accuracy</th>
+<th>Method Accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ALL OF THEM (don't emulate</td>
+<td>369000</td>
+<td>0.80%</td>
+<td>"bmi</td>
+<td>numAge</td>
+<td>tchol</td>
+<td>sbp</td>
+<td>htn</td>
+<td>t2d"</td>
+</tr>
+<tr>
+<td>Age &gt; 55</td>
+<td>122792</td>
+<td>22.60%</td>
+<td>"numAge</td>
+<td>tchol</td>
+<td>htn</td>
+<td>gender"</td>
+<td>Logit</td>
+<td>0.16</td>
+</tr>
+<tr>
+<td>Age 20-40</td>
+<td>121130</td>
+<td>0.02%</td>
+<td>"tchol</td>
+<td>t2d</td>
+<td>smoking</td>
+<td>race"</td>
+<td>LDA</td>
+<td>0</td>
+</tr>
+<tr>
+<td>"htn == ""Y"""</td>
+<td>108510</td>
+<td>18.85%</td>
+<td>smoking</td>
+<td>Logit</td>
+<td>"""NA"""</td>
+<td>"""NA"""</td>
+<td>"""NA"" (is this weird?)"</td>
+<td></td>
+</tr>
+<tr>
+<td>"gender == ""F"" &amp; numAge &gt; 60"</td>
+<td>53929</td>
+<td>14.30%</td>
+<td>"tchol</td>
+<td>htn"</td>
+<td>Logit</td>
+<td>0</td>
+<td>NaN</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>Age 30-45</td>
+<td>99930</td>
+<td>"numAge</td>
+<td>race</td>
+<td>htn</td>
+<td>gender</td>
+<td>smoking"</td>
+<td>Logit</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Age &lt;= 40</td>
+<td>93980 train; 93981 test</td>
+<td>1.64%</td>
+<td>"numAge</td>
+<td>htn</td>
+<td>smoking</td>
+<td>treat</td>
+<td>t2d</td>
+<td>gender</td>
+</tr>
+<tr>
+<td>"gender == ""M"" &amp; numAge &gt; 60"</td>
+<td>36853</td>
+<td>30.75%</td>
+<td>"tchol</td>
+<td>htn"</td>
+<td>Logit</td>
+<td>0.28</td>
+<td>0.51</td>
+<td>0.58</td>
+</tr>
+<tr>
+<td>GENETICS</td>
+<td>66100</td>
+<td>2.40%</td>
+<td>"tchol</td>
+<td>rs8055236</td>
+<td>htn</td>
+<td>t2d</td>
+<td>smoking"</td>
+<td>lda</td>
+</tr>
+<tr>
+<td>age &lt; 55 &amp; age &gt; 35</td>
+<td>379272</td>
+<td>5.30%</td>
+<td>cvd ~ tchol + htn + t2d + bmi + rs8055236</td>
+<td>logit</td>
+<td>0</td>
+<td>nan</td>
+<td>0.5</td>
+<td></td>
+</tr>
+<tr>
+<td>age&gt;55</td>
+<td>logit</td>
+<td>0.22</td>
+<td>0.59</td>
+<td>0.6</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>GENETICS</td>
+<td>46217 train; 8157 test</td>
+<td>9.78%</td>
+<td>"cvd ~ numAge + htn + smoking</td>
+<td>+ treat + t2d + gender + bmi + tchol + sbp + rs10757278 + rs4665058 + rs8055236"</td>
+<td>SuperLearner</td>
+<td>0.9</td>
+<td>0.369</td>
+<td>0.8394</td>
+</tr>
+</tbody>
+</table>
+            <div class="hr"></div>
+            <a href="#" class="go-top">Go Top</a>
+<div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div><footer class="footer">
+    <p>&copy; Mohcine Madkour &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+</div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+
+
+        <title>An interactive visual of Houston 311 calls // Mohcine Madkour // Big Data Architectures and more</title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../../../theme/css/pure.css">
+    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+<div class="pure-g-r" id="layout">
+    <div class="sidebar sidebar-article pure-u">
+        <header class="header-article">
+            <hgroup>
+                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine madkour">
+                </a>
+                <h2 class="article-info">Mohcine madkour</h2>
+                <small class="about-author"></small>
+                <h5>Published</h5>
+                <p>Sat 08 April 2017</p>
+                <a href="/">&larr;Home</a>
+            </hgroup>
+        </header>
+    </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>An interactive visual of Houston 311 calls</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="../../../../tag/data-visualization/">Data Visualization</a>
+                                <a class="post-category" href="../../../../tag/r/">R</a>
+                                <a class="post-category" href="../../../../tag/houston/">Houston</a>
+                                <a class="post-category" href="../../../../tag/311-calls/">311 calls</a>
+                        </p>
+                </header>
+            </section>
+            <h1>An interactive visual of Houston 311 calls</h1>
+<p><strong>Background</strong></p>
+<p>Houston receives 311 calls for non-emergency services from it's residents, businesses and visitors. The response time for these calls is longer than those for emergency (911) calls. Accordingly the resources allocated to these services may not be as highly funded, resourced and/or prioritized as the emergency services. It is why the Houston authorities need to optimize the use and allocation of the resources available to service these calls.</p>
+<p>Help Houston city to optimize the use and allocation of the resources available to service 311 calls.</p>
+<p>Objective</p>
+<p>The goal of this visual analysis is to aid the NYC authorities in optimizing the use of the limited resources available to service 311 calls/requests. There are 3 dimensions chosen along which this optimization can be done, time, location and skill type.</p>
+<h1>barplot()</h1>
+<div class="highlight"><pre><span></span>    pol = read.csv(&quot;http://www.calvin.edu/~stob/data/csbv.csv&quot;)
+    barplot(table(pol$Political04), main=&quot;Political Leanings, Calvin Freshman 2004&quot;)
+    barplot(table(pol$Political04), horiz=T)
+    barplot(table(pol$Political04),col=c(&quot;red&quot;,&quot;green&quot;,&quot;blue&quot;,&quot;orange&quot;))
+    barplot(table(pol$Political04),col=c(&quot;red&quot;,&quot;green&quot;,&quot;blue&quot;,&quot;orange&quot;),names=c(&quot;Conservative&quot;,&quot;Far Right&quot;,&quot;Liberal&quot;,&quot;Centrist))
+</pre></div>
+
+
+<p><img alt="image" src="/images/barplot.png"></p>
+<div class="highlight"><pre><span></span>   barplot(xtabs(~sex + Political04, data=pol), legend=c(&quot;Female&quot;,&quot;Male&quot;), beside=T)
+</pre></div>
+
+
+<p><img alt="image" src="/images/barplotNB.png"></p>
+<h1>boxplot()</h1>
+<div class="highlight"><pre><span></span>data(iris)
+boxplot(iris$Sepal.Length)
+boxplot(iris$Sepal.Length, col=&quot;yellow&quot;)
+boxplot(Sepal.Length ~ Species, data=iris)
+boxplot(Sepal.Length ~ Species, data=iris, col=&quot;yellow&quot;, ylab=&quot;Sepal length&quot;,main=&quot;Iris Sepal Length by Species&quot;)
+</pre></div>
+
+
+<p><img alt="image" src="/images/boxplot.png"></p>
+<h1>plot()</h1>
+<div class="highlight"><pre><span></span>data(faithful)
+plot(waiting~eruptions,data=faithful)
+plot(waiting~eruptions,data=faithful,cex=.5)
+plot(waiting~eruptions,data=faithful,pch=6)
+plot(waiting~eruptions,data=faithful,pch=19)
+plot(waiting~eruptions,data=faithful,cex=.5,pch=19,col=&quot;blue&quot;)
+plot(waiting~eruptions, data=faithful, cex=.5, pch=19, col=&quot;blue&quot;, main=&quot;Old    Faithful Eruptions&quot;,
+ylab=&quot;Wait time between eruptions&quot;, xlab=&quot;Duration of eruption&quot;)
+</pre></div>
+
+
+<p><img alt="image" src="/images/plot.PNG"></p>
+            <div class="hr"></div>
+            <a href="#" class="go-top">Go Top</a>
+<div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div><footer class="footer">
+    <p>&copy; Mohcine Madkour &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+</div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>
