@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+
+
+
+
+        <title>Spark Streaming and Kafka Integration Guide for python // Mohcine Madkour // Big Data Architectures and more</title>
+
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../../../theme/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../../../theme/css/pure.css">
+    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
+    <link rel="stylesheet" href="../../../../theme/css/custom.css">
+
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+    <script src="//load.sumome.com/" data-sumo-site-id="4ce3990f4d6fb482b4d97fa9208bd2242f7bb8c711ce30290794390dbe7ed180" async></script>
+
+
+</head>
+
+<body>
+<div class="pure-g-r" id="layout">
+    <div class="sidebar sidebar-article pure-u">
+        <header class="header-article">
+            <hgroup>
+                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine Madkour">
+                </a>
+                <h2 class="article-info">Mohcine Madkour</h2>
+                <small class="about-author"></small>
+
+                <div>
+                <a href="https://twitter.com/AdilMouja" class="twitter-follow-button" data-show-count="false">
+                    Follow @AdilMouja
+                </a>
+                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+                </div>
+
+                <h5>Published</h5>
+                <p>Tue 26 December 2017</p>
+                <a href="/">&larr;Home</a>
+            </hgroup>
+        </header>
+    </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>Spark Streaming and Kafka Integration Guide for python</h1>
+                    <br>
+                    <p class="post-meta">
+                        // tags                             <a class="post-category" href="../../../../tag/kafka/">kafka</a>
+                            <a class="post-category" href="../../../../tag/spark/">Spark</a>
+                    </p>
+                </header>
+            </section>
+            <br>
+            <h1>Spark Streaming + Kafka Integration Guide for python</h1>
+<p>In this post I shed some light on the current state of Kafka integration in Spark Streaming AND how to configure Spark Streaming to receive data from Kafka. All this with the disclaimer that this happens to be my first experiment with Spark Streaming.</p>
+<p>First of all, Spark Streaming is a sub-project of Apache Spark. Spark is a batch processing platform similar to Apache Hadoop, and Spark Streaming is a real-time processing tool that runs on top of the Spark engine.</p>
+<p>There are two approaches to this - the old approach using Receivers and Kafka’s high-level API, and a new approach (introduced in Spark 1.3) without using Receivers. They have different programming models, performance characteristics, and semantics guarantees. Both approaches are considered stable APIs as of the current version of Spark (2.11-1.0.0).</p>
+<h2>Approach 1: Receiver-based Approach</h2>
+<p>This approach uses a Receiver to receive the data. The Receiver is implemented using the Kafka high-level consumer API. As with all receivers, the data received from Kafka through a Receiver is stored in Spark executors, and then jobs launched by Spark Streaming processes the data.</p>
+<p>However, under default configuration, this approach can lose data under failures (see receiver reliability. To ensure zero-data loss, you have to additionally enable Write Ahead Logs in Spark Streaming (introduced in Spark 1.2). This synchronously saves all the received Kafka data into write ahead logs on a distributed file system (e.g HDFS), so that all the data can be recovered on failure. See Deploying section in the streaming programming guide for more details on Write Ahead Logs.</p>
+<p>To use this approach in your streaming application,  First, In the streaming application code, import KafkaUtils and create an input DStream as follows.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyspark.streaming.kafka</span> <span class="kn">import</span> <span class="n">KafkaUtils</span>
+
+<span class="n">kafkaStream</span> <span class="o">=</span> <span class="n">KafkaUtils</span><span class="o">.</span><span class="n">createStream</span><span class="p">(</span><span class="n">streamingContext</span><span class="p">,</span> \
+ <span class="p">[</span><span class="n">ZK</span> <span class="n">quorum</span><span class="p">],</span> <span class="p">[</span><span class="n">consumer</span> <span class="n">group</span> <span class="nb">id</span><span class="p">],</span> <span class="p">[</span><span class="n">per</span><span class="o">-</span><span class="n">topic</span> <span class="n">number</span> <span class="n">of</span> <span class="n">Kafka</span> <span class="n">partitions</span> <span class="n">to</span> <span class="n">consume</span><span class="p">])</span>
+</pre></div>
+
+
+<p>By default, the Python API will decode Kafka data as UTF8 encoded strings. You can specify your custom decoding function to decode the byte arrays in Kafka records to any arbitrary data type as in this example</p>
+<div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd"> Counts words in UTF8 encoded, &#39;\n&#39; delimited text received from the network every second.</span>
+<span class="sd"> Usage: kafka_wordcount.py &lt;zk&gt; &lt;topic&gt;</span>
+<span class="sd"> To run this on your local machine, you need to setup Kafka and create a producer first, see</span>
+<span class="sd"> http://kafka.apache.org/documentation.html#quickstart</span>
+<span class="sd"> and then run the example</span>
+<span class="sd">    `$ bin/spark-submit --jars \</span>
+<span class="sd">      external/kafka-assembly/target/scala-*/spark-streaming-kafka-assembly-*.jar \</span>
+<span class="sd">      examples/src/main/python/streaming/kafka_wordcount.py \</span>
+<span class="sd">      localhost:2181 test`</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pyspark</span> <span class="kn">import</span> <span class="n">SparkContext</span>
+<span class="kn">from</span> <span class="nn">pyspark.streaming</span> <span class="kn">import</span> <span class="n">StreamingContext</span>
+<span class="kn">from</span> <span class="nn">pyspark.streaming.kafka</span> <span class="kn">import</span> <span class="n">KafkaUtils</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Usage: kafka_wordcount.py &lt;zk&gt; &lt;topic&gt;&quot;</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="nb">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">sc</span> <span class="o">=</span> <span class="n">SparkContext</span><span class="p">(</span><span class="n">appName</span><span class="o">=</span><span class="s2">&quot;PythonStreamingKafkaWordCount&quot;</span><span class="p">)</span>
+    <span class="n">ssc</span> <span class="o">=</span> <span class="n">StreamingContext</span><span class="p">(</span><span class="n">sc</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">zkQuorum</span><span class="p">,</span> <span class="n">topic</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">kvs</span> <span class="o">=</span> <span class="n">KafkaUtils</span><span class="o">.</span><span class="n">createStream</span><span class="p">(</span><span class="n">ssc</span><span class="p">,</span> <span class="n">zkQuorum</span><span class="p">,</span> <span class="s2">&quot;spark-streaming-consumer&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">topic</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">kvs</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">counts</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">line</span><span class="p">:</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">))</span> \
+        <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">word</span><span class="p">:</span> <span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> \
+        <span class="o">.</span><span class="n">reduceByKey</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">counts</span><span class="o">.</span><span class="n">pprint</span><span class="p">()</span>
+    <span class="n">ssc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">ssc</span><span class="o">.</span><span class="n">awaitTermination</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Deploying :  Run on terminal:</p>
+<div class="highlight"><pre><span></span>spark-submit --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.2.0 /home/mohcine/Spark_Streaming_kafka.py localhost:2182
+</pre></div>
+
+
+<h2>Approach 2: Direct Approach (No Receivers)</h2>
+<p>This new receiver-less “direct” approach has been introduced in Spark 1.3 to ensure stronger end-to-end guarantees. Instead of using receivers to receive data, this approach periodically queries Kafka for the latest offsets in each topic+partition, and accordingly defines the offset ranges to process in each batch. When the jobs to process the data are launched, Kafka’s simple consumer API is used to read the defined ranges of offsets from Kafka (similar to read files from a file system). Note that this feature was introduced in Spark 1.3 for the Scala and Java API, in Spark 1.4 for the Python API.</p>
+<p>This approach has the following advantages over the receiver-based approach (i.e. Approach 1).</p>
+<ul>
+<li>
+<p>Simplified Parallelism: No need to create multiple input Kafka streams and union them. With directStream, Spark Streaming will create as many RDD partitions as there are Kafka partitions to consume, which will all read data from Kafka in parallel. So there is a one-to-one mapping between Kafka and RDD partitions, which is easier to understand and tune.</p>
+</li>
+<li>
+<p>Efficiency: Achieving zero-data loss in the first approach required the data to be stored in a Write Ahead Log, which further replicated the data. This is actually inefficient as the data effectively gets replicated twice - once by Kafka, and a second time by the Write Ahead Log. This second approach eliminates the problem as there is no receiver, and hence no need for Write Ahead Logs. As long as you have sufficient Kafka retention, messages can be recovered from Kafka.</p>
+</li>
+<li>
+<p>Exactly-once semantics: The first approach uses Kafka’s high level API to store consumed offsets in Zookeeper. This is traditionally the way to consume data from Kafka. While this approach (in combination with write ahead logs) can ensure zero data loss (i.e. at-least once semantics), there is a small chance some records may get consumed twice under some failures. This occurs because of inconsistencies between data reliably received by Spark Streaming and offsets tracked by Zookeeper. Hence, in this second approach, we use simple Kafka API that does not use Zookeeper. Offsets are tracked by Spark Streaming within its checkpoints. This eliminates inconsistencies between Spark Streaming and Zookeeper/Kafka, and so each record is received by Spark Streaming effectively exactly once despite failures. In order to achieve exactly-once semantics for output of your results, your output operation that saves the data to an external data store must be either idempotent, or an atomic transaction that saves results and offsets (see Semantics of output operations in the main programming guide for further information).</p>
+</li>
+</ul>
+<p>Note that one disadvantage of this approach is that it does not update offsets in Zookeeper, hence Zookeeper-based Kafka monitoring tools will not show progress. However, you can access the offsets processed by this approach in each batch and update Zookeeper yourself (see below).</p>
+<p>Next, we discuss how to use this approach in your streaming application.
+In the streaming application code, import KafkaUtils and create an input DStream as follows.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyspark.streaming.kafka</span> <span class="kn">import</span> <span class="n">KafkaUtils</span>
+<span class="n">directKafkaStream</span> <span class="o">=</span> <span class="n">KafkaUtils</span><span class="o">.</span><span class="n">createDirectStream</span><span class="p">(</span><span class="n">ssc</span><span class="p">,</span> <span class="p">[</span><span class="n">topic</span><span class="p">],</span> <span class="p">{</span><span class="s2">&quot;metadata.broker.list&quot;</span><span class="p">:</span> <span class="n">brokers</span><span class="p">})</span>
+</pre></div>
+
+
+<p>You can also pass a messageHandler to createDirectStream to access KafkaMessageAndMetadata that contains metadata about the current message and transform it to any desired type. By default, the Python API will decode Kafka data as UTF8 encoded strings. You can specify your custom decoding function to decode the byte arrays in Kafka records to any arbitrary data type. See the following example:</p>
+<div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd"> Counts words in UTF8 encoded, &#39;\n&#39; delimited text directly received from Kafka in every 2 seconds.</span>
+<span class="sd"> Usage: direct_kafka_wordcount.py &lt;broker_list&gt; &lt;topic&gt;</span>
+<span class="sd"> To run this on your local machine, you need to setup Kafka and create a producer first, see</span>
+<span class="sd"> http://kafka.apache.org/documentation.html#quickstart</span>
+<span class="sd"> and then run the example</span>
+<span class="sd">    `$ bin/spark-submit --jars \</span>
+<span class="sd">      external/kafka-assembly/target/scala-*/spark-streaming-kafka-assembly-*.jar \</span>
+<span class="sd">      examples/src/main/python/streaming/direct_kafka_wordcount.py \</span>
+<span class="sd">      localhost:9092 test`</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pyspark</span> <span class="kn">import</span> <span class="n">SparkContext</span>
+<span class="kn">from</span> <span class="nn">pyspark.streaming</span> <span class="kn">import</span> <span class="n">StreamingContext</span>
+<span class="kn">from</span> <span class="nn">pyspark.streaming.kafka</span> <span class="kn">import</span> <span class="n">KafkaUtils</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Usage: direct_kafka_wordcount.py &lt;broker_list&gt; &lt;topic&gt;&quot;</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="nb">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">sc</span> <span class="o">=</span> <span class="n">SparkContext</span><span class="p">(</span><span class="n">appName</span><span class="o">=</span><span class="s2">&quot;PythonStreamingDirectKafkaWordCount&quot;</span><span class="p">)</span>
+    <span class="n">ssc</span> <span class="o">=</span> <span class="n">StreamingContext</span><span class="p">(</span><span class="n">sc</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">brokers</span><span class="p">,</span> <span class="n">topic</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">kvs</span> <span class="o">=</span> <span class="n">KafkaUtils</span><span class="o">.</span><span class="n">createDirectStream</span><span class="p">(</span><span class="n">ssc</span><span class="p">,</span> <span class="p">[</span><span class="n">topic</span><span class="p">],</span> <span class="p">{</span><span class="s2">&quot;metadata.broker.list&quot;</span><span class="p">:</span> <span class="n">brokers</span><span class="p">})</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">kvs</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">counts</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">line</span><span class="p">:</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">))</span> \
+        <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">word</span><span class="p">:</span> <span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> \
+        <span class="o">.</span><span class="n">reduceByKey</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">counts</span><span class="o">.</span><span class="n">pprint</span><span class="p">()</span>
+    <span class="n">ssc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">ssc</span><span class="o">.</span><span class="n">awaitTermination</span><span class="p">()</span>
+</pre></div>
+
+
+<p>In the Kafka parameters, you must specify either metadata.broker.list or bootstrap.servers. By default, it will start consuming from the latest offset of each Kafka partition. If you set configuration auto.offset.reset in Kafka parameters to smallest, then it will start consuming from the smallest offset.</p>
+<p>You can also start consuming from any arbitrary offset using other variations of KafkaUtils.createDirectStream. Furthermore, if you want to access the Kafka offsets consumed in each batch, you can do the following.</p>
+<div class="highlight"><pre><span></span>offsetRanges = []
+def storeOffsetRanges(rdd):
+global offsetRanges
+offsetRanges = rdd.offsetRanges()
+return rdd
+def printOffsetRanges(rdd):
+for o in offsetRanges:
+     print &quot;%s %s %s %s&quot; % (o.topic, o.partition, o.fromOffset, o.untilOffset)
+directKafkaStream \
+ .transform(storeOffsetRanges) \
+ .foreachRDD(printOffsetRanges)
+</pre></div>
+
+
+<p>You can use this to update Zookeeper yourself if you want Zookeeper-based Kafka monitoring tools to show progress of the streaming application.</p>
+<p>Note that the typecast to HasOffsetRanges will only succeed if it is done in the first method called on the directKafkaStream, not later down a chain of methods. You can use transform() instead of foreachRDD() as your first method call in order to access offsets, then call further Spark methods. However, be aware that the one-to-one mapping between RDD partition and Kafka partition does not remain after any methods that shuffle or repartition, e.g. reduceByKey() or window().</p>
+<p>Another thing to note is that since this approach does not use Receivers, the standard receiver-related (that is, configurations of the form spark.streaming.receiver.<em> ) will not apply to the input DStreams created by this approach (will apply to other input DStreams though). Instead, use the configurations spark.streaming.kafka.</em>. An important one is spark.streaming.kafka.maxRatePerPartition which is the maximum rate (in messages per second) at which each Kafka partition will be read by this direct API.</p>
+            <div class="hr"></div>
+            
+            <!-- Begin MailChimp Signup Form -->
+            <link href="//cdn-images.mailchimp.com/embedcode/slim-081711.css" rel="stylesheet" type="text/css">
+            <style type="text/css">
+                #mc_embed_signup{background:#F1F3F3; clear:left; font:14px Helvetica,Arial,sans-serif; }
+                #mc-embedded-subscribe.button{background-color: #0f52ba;}
+                /* Add your own MailChimp form style overrides in your site stylesheet or in this style block.
+                   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+            </style>
+            <div id="mc_embed_signup">
+            <form action="//adilmoujahid.us10.list-manage.com/subscribe/post?u=28846a375fbf5c13a93712283&amp;id=a45c6ff723" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+                <div id="mc_embed_signup_scroll">
+                <label for="mce-EMAIL">Subscribe to my Data in Practice Newsletter</label>
+                <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+                <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+                <div style="position: absolute; left: -5000px;"><input type="text" name="b_28846a375fbf5c13a93712283_a45c6ff723" tabindex="-1" value=""></div>
+                <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+                </div>
+            </form>
+            </div>
+
+            <!--End mc_embed_signup-->
+            <a href="#" class="go-top">Go Top</a>
+<div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div><footer class="footer">
+    <p>&copy; Mohcine Madkour &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+</div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+</body>
+
+
+</html>
