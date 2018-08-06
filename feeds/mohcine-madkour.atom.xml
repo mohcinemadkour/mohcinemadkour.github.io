@@ -95,7 +95,376 @@ Definition : The state value function v (s) of an MRP is the expected return
 starting from state s v (s) = E [G t | S t = s]
 &lt;img alt="Value Function" src="/images/Value_Function.png"&gt;&lt;/p&gt;
 &lt;h1&gt;Final Words&lt;/h1&gt;
-&lt;p&gt;Reinforcement learning is extremely fun but hard topic. I am excited to learn more!&lt;/p&gt;</content><category term="Deep Reinforcement Learning"></category></entry><entry><title>The role of unit tests in test automation</title><link href="https://mohcinemadkour.github.io/posts/2017/08/The%20role%20of%20unit%20tests%20in%20test%20automation/" rel="alternate"></link><published>2017-08-03T16:00:00-04:00</published><updated>2017-08-03T16:00:00-04:00</updated><author><name>Mohcine Madkour</name></author><id>tag:mohcinemadkour.github.io,2017-08-03:/posts/2017/08/The role of unit tests in test automation/</id><summary type="html">&lt;p&gt;Unit testing is a software development and testing approach in which the smallest testable parts of an application, called units, are individually and independently tested to see if they are operating properly. Unit testing can be done manually but is usually automated. Unit testing is a part of the test-driven …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Unit testing is a software development and testing approach in which the smallest testable parts of an application, called units, are individually and independently tested to see if they are operating properly. Unit testing can be done manually but is usually automated. Unit testing is a part of the test-driven development(TDD) methodology that requires developers to first write failing unit tests. Then they write code in order to change the application until the test passes. Writing the failing test is important because it forces the developer to take into account all possible inputs, errors and outputs. &lt;/p&gt;
+&lt;p&gt;Reinforcement learning is extremely fun but hard topic. I am excited to learn more!&lt;/p&gt;</content><category term="Deep Reinforcement Learning"></category></entry><entry><title>Analysing Model Perfromance from Receiver Operator Characteristic (ROC) and Recall and Precision (PR) curves</title><link href="https://mohcinemadkour.github.io/posts/2018/06/Analysing%20Model%20Perfromance%20from%20ROC,%20and%20Recall%20and%20Precision%20curves/" rel="alternate"></link><published>2018-06-09T16:00:00-04:00</published><updated>2018-06-09T16:00:00-04:00</updated><author><name>Mohcine Madkour</name></author><id>tag:mohcinemadkour.github.io,2018-06-09:/posts/2018/06/Analysing Model Perfromance from ROC, and Recall and Precision curves/</id><summary type="html">&lt;p&gt;ROC and PR curves are commonly used to present results for binary decision problems in machine learning. The ROC curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings. Each point of the ROC curve (i.e. threshold) corresponds to …&lt;/p&gt;</summary><content type="html">&lt;p&gt;ROC and PR curves are commonly used to present results for binary decision problems in machine learning. The ROC curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings. Each point of the ROC curve (i.e. threshold) corresponds to specific values of sensitivity and specificity. The area under the ROC curve (AUC) is a summary measure of performance that indicates whether on average a true positive is ranked higher than a false positives. If model A has higher AUC than model B, model A is performing better on average, but there still could be specific areas of the ROC space where model B is better (i.e. thresholds for which sensitivity and specificity are higher for model B than A. However, when dealing with highly skewed datasets, Precision-Recall (PR) curves give a more informative picture of an algorithm's performance. There is deep connection between ROC space and PR space, such that a curve dominates in ROC space if  and only if it dominates in PR space. The precision-recall curve shows the tradeoff between precision and recall for different threshold. A high area under the curve represents both high recall and high precision, where high precision, x-axis, relates to a low false positive rate, and high recall, y-axis, relates to a low false negative rate. High scores for both show that the classifier is returning accurate results (high precision), as well as returning a majority of all positive results (high recall).&lt;/p&gt;
+&lt;h2&gt;Sensitivity (positive in disease)&lt;/h2&gt;
+&lt;p&gt;Sensitivity is the ability of a test to correctly classify an individual as ′diseased′&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Sensitivity = a / a+c
+= a (true positive) / a+c (true positive + false negative)
+= Probability of being test positive when disease present.
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Specificity (negative in health)&lt;/h2&gt;
+&lt;p&gt;The ability of a test to correctly classify an individual as disease- free is called the test′s specificity&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Specificity = d / b+d
+= d (true negative) / b+d (true negative + false positive)
+= Probability of being test negative when disease absent.
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Sensitivity and specificity are inversely proportional, meaning that as the sensitivity increases, the specificity decreases and vice versa.&lt;/p&gt;
+&lt;h2&gt;Positive Predictive Value (PPV)&lt;/h2&gt;
+&lt;p&gt;It is the percentage of patients with a positive test who actually have the disease. &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;PPV: = a / a+b
+= a (true positive) / a+b (true positive + false positive)
+= Probability (patient having disease when test is positive)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Negative Predictive Value (NPV)&lt;/h2&gt;
+&lt;p&gt;It is the percentage of patients with a negative test who do not have the disease.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;NPV:    =   d / c+d
+=   d (true negative) / c+d (false negative + true negative)
+=   Probability (patient not having disease when test is negative)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Positive and negative predictive values are influenced by the prevalence of disease in the population that is being tested. If we  test in a high prevalence setting, it is more likely that persons who test positive truly have disease than if the test is performed in a population with low prevalence. So the PPV will increase with increasing prevalence and NPV decreases with increase in prevalence.&lt;/p&gt;
+&lt;h2&gt;Methods to find the ‘optimal’ threshold point&lt;/h2&gt;
+&lt;p&gt;Three criteria  are  used to  find  optimal  threshold point  from  ROC  curve.  These criteria are known as points on curve closest to the (0, 1), Youden index, and minimize cost criterion. First two methods give equal weight to sensitivity and specificity and impose no ethical, cost, and no prevalence  constraints.  The  third  criterion  considers  cost  which  mainly  includes financial  cost  for  correct  and  false  diagnosis,  cost  of  discomfort  to  person  caused  by treatment, and cost of further investigation when needed.  This method is rarely used in medical literature because it is difficult to estimate the respective costs and prevalence is often difficult to assess.&lt;/p&gt;
+&lt;p&gt;Youden index  is  more  commonly  used  criterion  because  this  index  reflects  the  intension  to maximize the correct classification 
+rate and is easy to calculate. It maximizes the vertical distance from line of equality to the point [x, y] as shown in Figure. The x represents (1-specificity) and y represents sensitivity.  In  other  words,  the  Youden  index  J  is  the  point on the ROC  curve  which  is farthest  from  line  of  equality  (diagonal  line).  The  main  aim of  Youden  index  is  to 
+maximize the difference between TPR (sensitivity) and FPR (1 –specificty) and little algebra yields J = max[sensitivity+specificty].  The  value  of  J  for  continuous  test  can  be  located  by  doing  a  search  of plausible  values  where  sum  of  sensitivity  and  specificity  can be  maximum:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;j= model_metric[&amp;#39;thres&amp;#39;].iloc[model_metric[&amp;#39;yod_index&amp;#39;].idxmax()-1]
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Sometimes a second cutoff that is bigger than j but less than 1 is needed. This cutoff can be used to stratify the positively predicted values to moderate and high prediction for example(needed for risk prediction stratification). This cutoff can be calculated using the accuracy measurement using the following method:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;cutoff2=cu.cal_cutoff2(model_metric)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;with&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;    def cal_cutoff2(data):
+    val=0
+    for i in range(len(data)-10):
+    if((abs(data[&amp;#39;acc&amp;#39;].iloc[i]-data[&amp;#39;acc&amp;#39;].iloc[i+10]))&amp;lt;0.002):
+        val=data[&amp;#39;thres&amp;#39;].iloc[i]
+        break
+return(val)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The chart bellow illustrates the relationship between the different performance metrics ( prevalence is exluded) in an example&lt;img alt=" PPV and NPV  relationship" src="/images/NPV-PPV-Accracy-Youden.png"&gt;&lt;/p&gt;
+&lt;h1&gt;Calculation of performance metrics&lt;/h1&gt;
+&lt;p&gt;Here is the python code for the calculation of  performance metrics &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;def calculate_metric&lt;span class="p"&gt;(&lt;/span&gt;outcome&lt;span class="p"&gt;,&lt;/span&gt; score&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    obser &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;outcome&lt;span class="p"&gt;))&lt;/span&gt;
+    obser&lt;span class="p"&gt;[[&lt;/span&gt;i &lt;span class="kr"&gt;for&lt;/span&gt; i&lt;span class="p"&gt;,&lt;/span&gt; x &lt;span class="kr"&gt;in&lt;/span&gt; enumerate&lt;span class="p"&gt;(&lt;/span&gt;outcome&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;if&lt;/span&gt; x &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="p"&gt;]]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="p"&gt;;&lt;/span&gt;
+    obser &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;float&lt;span class="p"&gt;(&lt;/span&gt;i&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;for&lt;/span&gt; i &lt;span class="kr"&gt;in&lt;/span&gt; obser&lt;span class="p"&gt;]&lt;/span&gt;
+    score &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;float&lt;span class="p"&gt;(&lt;/span&gt;i&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;for&lt;/span&gt; i &lt;span class="kr"&gt;in&lt;/span&gt; score&lt;span class="p"&gt;]&lt;/span&gt;
+    prev &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kp"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    thres &lt;span class="o"&gt;=&lt;/span&gt; np.arange&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0.01&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;1.01&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;0.01&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;#(0.01,0.98,0.01)&lt;/span&gt;
+    xval &lt;span class="o"&gt;=&lt;/span&gt; thres
+    acc &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
+    ppv &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
+    npv &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
+    sen &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
+    spe &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
+    yod &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
+    auc &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
+    recall &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
+    precision &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
+    F1 &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt; 
+    &lt;span class="kr"&gt;for&lt;/span&gt; l &lt;span class="kr"&gt;in&lt;/span&gt; &lt;span class="kp"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        plotdata &lt;span class="o"&gt;=&lt;/span&gt; ROC_parameters&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;,&lt;/span&gt;score&lt;span class="p"&gt;,&lt;/span&gt;thres&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;])&lt;/span&gt;
+        acc&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        ppv&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        npv&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        sen&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        spe&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        yod&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        recall&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;6&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        precision&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;7&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        F1&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;8&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        auc&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; roc_auc_score&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;,&lt;/span&gt; score&lt;span class="p"&gt;)&lt;/span&gt;
+    prev &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kp"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="c1"&gt;#roc_vals=np.zeros((length(spe),8))&lt;/span&gt;
+    roc_vals&lt;span class="o"&gt;=&lt;/span&gt;pd.DataFrame&lt;span class="p"&gt;(&lt;/span&gt;index&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kp"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;101&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; columns&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[[&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;thres&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;acc&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;ppv&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;npv&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;specificity&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;sensitivity&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;yod_index&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;recall&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;precision&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;F1&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;auc&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]])&lt;/span&gt;
+    &lt;span class="c1"&gt;#roc_vals &amp;lt;- dacolnames(roc_vals) &amp;lt;- c(&amp;quot;thres&amp;quot;,&amp;quot;acc&amp;quot;,&amp;quot;ppv&amp;quot;,&amp;quot;npv&amp;quot;,&amp;quot;specificity&amp;quot;,&amp;quot;sensitivity&amp;quot;,&amp;quot;yod_index&amp;quot;,&amp;quot;auc&amp;quot;)&lt;/span&gt;
+    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;thres&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;thres
+    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;acc&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; acc
+    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;ppv&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; ppv
+    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;npv&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; npv
+    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;specificity&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;spe
+    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;sensitivity&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; sen
+    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;yod_index&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; yod&lt;span class="p"&gt;;&lt;/span&gt;
+    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;recall&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; recall&lt;span class="p"&gt;;&lt;/span&gt;
+    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;precision&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; precision
+    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;F1&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; F1&lt;span class="p"&gt;;&lt;/span&gt;
+    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;auc&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; auc&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kr"&gt;return&lt;/span&gt; roc_vals
+
+def ROC_parameters&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;,&lt;/span&gt;score&lt;span class="p"&gt;,&lt;/span&gt;thr&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="c1"&gt;#print obser,score,thr&lt;/span&gt;
+    temp&lt;span class="o"&gt;=&lt;/span&gt;np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;score&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="c1"&gt;#print thr;&lt;/span&gt;
+    temp&lt;span class="p"&gt;[[&lt;/span&gt; i &lt;span class="kr"&gt;for&lt;/span&gt; i&lt;span class="p"&gt;,&lt;/span&gt; x &lt;span class="kr"&gt;in&lt;/span&gt; enumerate&lt;span class="p"&gt;(&lt;/span&gt;score&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;if&lt;/span&gt; x &lt;span class="o"&gt;&amp;gt;=&lt;/span&gt; thr &lt;span class="p"&gt;]]&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
+    p_ind&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt; i &lt;span class="kr"&gt;for&lt;/span&gt; i&lt;span class="p"&gt;,&lt;/span&gt; x &lt;span class="kr"&gt;in&lt;/span&gt; enumerate&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;if&lt;/span&gt; x &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="p"&gt;]&lt;/span&gt;
+    n_ind &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt; i &lt;span class="kr"&gt;for&lt;/span&gt; i&lt;span class="p"&gt;,&lt;/span&gt; x &lt;span class="kr"&gt;in&lt;/span&gt; enumerate&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;if&lt;/span&gt; x &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="p"&gt;]&lt;/span&gt;
+    TP &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;temp&lt;span class="p"&gt;[&lt;/span&gt;p_ind&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    FP &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;temp&lt;span class="p"&gt;[&lt;/span&gt;n_ind&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    TN &lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kp"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;temp&lt;span class="p"&gt;[&lt;/span&gt;n_ind&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    FN &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;temp&lt;span class="p"&gt;[&lt;/span&gt;p_ind&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    acc &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;TP&lt;span class="o"&gt;+&lt;/span&gt;TN&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;temp&lt;span class="p"&gt;)&lt;/span&gt;
+    recall&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;
+    precision&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;
+    &lt;span class="c1"&gt;#print TP,FP,TN,FN;&lt;/span&gt;
+    &lt;span class="kr"&gt;if&lt;/span&gt; TP&lt;span class="o"&gt;+&lt;/span&gt;FP&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        ppv &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;TP&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;TP&lt;span class="o"&gt;+&lt;/span&gt;FP&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="kp"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        ppv&lt;span class="o"&gt;=&lt;/span&gt;np.NaN
+    &lt;span class="kr"&gt;if&lt;/span&gt; TN&lt;span class="o"&gt;+&lt;/span&gt;FN&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        npv &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;TN&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;TN&lt;span class="o"&gt;+&lt;/span&gt;FN&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="kp"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        npv&lt;span class="o"&gt;=&lt;/span&gt;np.NaN
+    &lt;span class="kr"&gt;if&lt;/span&gt; TP&lt;span class="o"&gt;+&lt;/span&gt;FN&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        sen &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;TP&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;TP&lt;span class="o"&gt;+&lt;/span&gt;FN&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="kp"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        sen&lt;span class="o"&gt;=&lt;/span&gt;np.NaN
+    &lt;span class="kr"&gt;if&lt;/span&gt; TN&lt;span class="o"&gt;+&lt;/span&gt;FP&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        spe &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;TN&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;TN&lt;span class="o"&gt;+&lt;/span&gt;FP&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="kp"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        spe&lt;span class="o"&gt;=&lt;/span&gt;np.NaN
+    &lt;span class="kr"&gt;if&lt;/span&gt; TP&lt;span class="o"&gt;+&lt;/span&gt;FN&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        recall &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;TP&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;TP&lt;span class="o"&gt;+&lt;/span&gt;FN&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="kp"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        recall&lt;span class="o"&gt;=&lt;/span&gt;np.NaN    
+    &lt;span class="kr"&gt;if&lt;/span&gt; TP&lt;span class="o"&gt;+&lt;/span&gt;FP&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        precision &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;TP&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;TP&lt;span class="o"&gt;+&lt;/span&gt;FP&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="kp"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        precision&lt;span class="o"&gt;=&lt;/span&gt;np.NaN
+    &lt;span class="kr"&gt;if&lt;/span&gt; recall&lt;span class="o"&gt;+&lt;/span&gt;precision&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;         
+        F1 &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)((&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;recall&lt;span class="o"&gt;*&lt;/span&gt;precision&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;recall&lt;span class="o"&gt;+&lt;/span&gt;precision&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="kp"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        F1&lt;span class="o"&gt;=&lt;/span&gt;np.NaN
+    yod &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;sen&lt;span class="o"&gt;+&lt;/span&gt;spe&lt;span class="m"&gt;-1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    ls&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kt"&gt;list&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+    ls.append&lt;span class="p"&gt;(&lt;/span&gt;acc&lt;span class="p"&gt;)&lt;/span&gt;
+    ls.append&lt;span class="p"&gt;(&lt;/span&gt;ppv&lt;span class="p"&gt;)&lt;/span&gt;
+    ls.append&lt;span class="p"&gt;(&lt;/span&gt;npv&lt;span class="p"&gt;)&lt;/span&gt;
+    ls.append&lt;span class="p"&gt;(&lt;/span&gt;sen&lt;span class="p"&gt;)&lt;/span&gt;
+    ls.append&lt;span class="p"&gt;(&lt;/span&gt;spe&lt;span class="p"&gt;)&lt;/span&gt;
+    ls.append&lt;span class="p"&gt;(&lt;/span&gt;yod&lt;span class="p"&gt;)&lt;/span&gt;
+    ls.append&lt;span class="p"&gt;(&lt;/span&gt;recall&lt;span class="p"&gt;)&lt;/span&gt;
+    ls.append&lt;span class="p"&gt;(&lt;/span&gt;precision&lt;span class="p"&gt;)&lt;/span&gt;
+    ls.append&lt;span class="p"&gt;(&lt;/span&gt;F1&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="kp"&gt;ls&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h1&gt;calculating performance measurements and confidence intervals using Boostraping&lt;/h1&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;def calculate_metric_boostrap(outcome, score):
+    d = []
+    for p in range(0,len(score)):
+        d.append((score[p]))
+    score=pd.Series(d)
+    n_bootstraps = 0
+    rng_seed = 42  # control reproducibility
+    scores_table = {} 
+    rng = np.random.RandomState(rng_seed)
+    for i in range(n_bootstraps):
+    # bootstrap by sampling with replacement on the prediction indices
+        indices = rng.random_integers(0, len(outcome) - 1, len(outcome))
+        if len(np.unique(outcome[indices])) &amp;lt; 2:
+        # We need at least one positive and one negative sample for ROC AUC
+        # to be defined: reject the sample
+            continue
+        scores_table[i]= calculate_metric(outcome[indices], score[indices])
+
+    panel = pd.Panel(scores_table)
+    df=panel.mean(axis=0)
+    return df,panel
+
+def confidence_interval(panel):
+    vector = []
+    confidence_lower=panel[1].copy()
+    confidence_upper=panel[1].copy()
+    nr=len(panel[1].axes[0])
+    nc=len(panel[1].axes[1])
+    for ix in  range(0,nr):
+        for iy in range(0,nc):
+            vector = []
+            for k, df in panel.iteritems():
+                vector.append(df.iloc[ix,iy])
+            sorted_vector = np.array(vector)
+            sorted_vector.sort()
+            confidence_lower.iloc[ix,iy] = sorted_vector[int(0.05 * len(sorted_vector))]
+            confidence_upper.iloc[ix,iy] = sorted_vector[int(0.95 * len(sorted_vector))]
+    return confidence_lower, confidence_upper
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h1&gt;Plot&lt;/h1&gt;
+&lt;p&gt;The chart bellow outlines the performance evaluation pipeline (except prevalence) in an example&lt;img alt=" performance evaluation pipeline" src="/images/MLPipe.jpg"&gt;&lt;/p&gt;
+&lt;h1&gt;The bias-variance trade-off&lt;/h1&gt;
+&lt;p&gt;Bias and variance are inherent properties of estimators and we usually have to select learning algorithms and hyperparameters so that both bias and variance are as low as possible (see Bias-variance dilemma). Another way to reduce the variance of a model is to use more training data. However, you should only collect more training data if the true function is too complex to be approximated by an estimator with a lower variance.
+&lt;img alt=" bias-variance trade-off" src="/images/biasvariance.png"&gt;&lt;/p&gt;
+&lt;h1&gt;Analyzing Model Variance and Bias&lt;/h1&gt;
+&lt;p&gt;The two methods used here for analyzing how the model is performing with the data are Learning Curves and a Model Complexity plot.Learning curves give us an opportunity to diagnose bias and variance in supervised learning models. &lt;/p&gt;
+&lt;h2&gt;Learning Curves&lt;/h2&gt;
+&lt;p&gt;A learning curve shows the validation and training score of an estimator for varying numbers of training samples. It is a tool to find out how much we benefit from adding more training data and whether the estimator suffers more from a &lt;strong&gt;variance error&lt;/strong&gt; or a &lt;strong&gt;bias error&lt;/strong&gt;. If both the validation score and the training score converge to a value that is &lt;strong&gt;too low&lt;/strong&gt; with increasing size of the training set, we will not benefit much from more training data. In the following plot you can see an example: naive Bayes roughly converges to a low score.
+We will probably have to &lt;strong&gt;use an estimator&lt;/strong&gt; or a &lt;strong&gt;parametrization of the current estimator&lt;/strong&gt; that can learn more &lt;strong&gt;complex concepts&lt;/strong&gt; (i.e. has a lower bias). If the training score is much greater than the validation score for the maximum number of training samples (&lt;strong&gt;i.e. has a high variance&lt;/strong&gt;), adding more training samples will most likely increase generalization. In the following plot you can see that the SVM could benefit from more training examples.&lt;/p&gt;
+&lt;h1&gt;Example of Scoring Learners and Cohort&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Cohort Definition&lt;/th&gt;
+&lt;th&gt;Cohort Size&lt;/th&gt;
+&lt;th&gt;CVD Percent in Cohort&lt;/th&gt;
+&lt;th&gt;Covariates in Learner/Model&lt;/th&gt;
+&lt;th&gt;Method Type&lt;/th&gt;
+&lt;th&gt;Method Sensitivity&lt;/th&gt;
+&lt;th&gt;Method PPV&lt;/th&gt;
+&lt;th&gt;Balanced Accuracy&lt;/th&gt;
+&lt;th&gt;Method Accuracy&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;ALL OF THEM (don't emulate&lt;/td&gt;
+&lt;td&gt;369000&lt;/td&gt;
+&lt;td&gt;0.80%&lt;/td&gt;
+&lt;td&gt;"bmi&lt;/td&gt;
+&lt;td&gt;numAge&lt;/td&gt;
+&lt;td&gt;tchol&lt;/td&gt;
+&lt;td&gt;sbp&lt;/td&gt;
+&lt;td&gt;htn&lt;/td&gt;
+&lt;td&gt;t2d"&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Age &amp;gt; 55&lt;/td&gt;
+&lt;td&gt;122792&lt;/td&gt;
+&lt;td&gt;22.60%&lt;/td&gt;
+&lt;td&gt;"numAge&lt;/td&gt;
+&lt;td&gt;tchol&lt;/td&gt;
+&lt;td&gt;htn&lt;/td&gt;
+&lt;td&gt;gender"&lt;/td&gt;
+&lt;td&gt;Logit&lt;/td&gt;
+&lt;td&gt;0.16&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Age 20-40&lt;/td&gt;
+&lt;td&gt;121130&lt;/td&gt;
+&lt;td&gt;0.02%&lt;/td&gt;
+&lt;td&gt;"tchol&lt;/td&gt;
+&lt;td&gt;t2d&lt;/td&gt;
+&lt;td&gt;smoking&lt;/td&gt;
+&lt;td&gt;race"&lt;/td&gt;
+&lt;td&gt;LDA&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;"htn == ""Y"""&lt;/td&gt;
+&lt;td&gt;108510&lt;/td&gt;
+&lt;td&gt;18.85%&lt;/td&gt;
+&lt;td&gt;smoking&lt;/td&gt;
+&lt;td&gt;Logit&lt;/td&gt;
+&lt;td&gt;"""NA"""&lt;/td&gt;
+&lt;td&gt;"""NA"""&lt;/td&gt;
+&lt;td&gt;"""NA"" (is this weird?)"&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;"gender == ""F"" &amp;amp; numAge &amp;gt; 60"&lt;/td&gt;
+&lt;td&gt;53929&lt;/td&gt;
+&lt;td&gt;14.30%&lt;/td&gt;
+&lt;td&gt;"tchol&lt;/td&gt;
+&lt;td&gt;htn"&lt;/td&gt;
+&lt;td&gt;Logit&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;NaN&lt;/td&gt;
+&lt;td&gt;0.5&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Age 30-45&lt;/td&gt;
+&lt;td&gt;99930&lt;/td&gt;
+&lt;td&gt;"numAge&lt;/td&gt;
+&lt;td&gt;race&lt;/td&gt;
+&lt;td&gt;htn&lt;/td&gt;
+&lt;td&gt;gender&lt;/td&gt;
+&lt;td&gt;smoking"&lt;/td&gt;
+&lt;td&gt;Logit&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Age &amp;lt;= 40&lt;/td&gt;
+&lt;td&gt;93980 train; 93981 test&lt;/td&gt;
+&lt;td&gt;1.64%&lt;/td&gt;
+&lt;td&gt;"numAge&lt;/td&gt;
+&lt;td&gt;htn&lt;/td&gt;
+&lt;td&gt;smoking&lt;/td&gt;
+&lt;td&gt;treat&lt;/td&gt;
+&lt;td&gt;t2d&lt;/td&gt;
+&lt;td&gt;gender&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;"gender == ""M"" &amp;amp; numAge &amp;gt; 60"&lt;/td&gt;
+&lt;td&gt;36853&lt;/td&gt;
+&lt;td&gt;30.75%&lt;/td&gt;
+&lt;td&gt;"tchol&lt;/td&gt;
+&lt;td&gt;htn"&lt;/td&gt;
+&lt;td&gt;Logit&lt;/td&gt;
+&lt;td&gt;0.28&lt;/td&gt;
+&lt;td&gt;0.51&lt;/td&gt;
+&lt;td&gt;0.58&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;GENETICS&lt;/td&gt;
+&lt;td&gt;66100&lt;/td&gt;
+&lt;td&gt;2.40%&lt;/td&gt;
+&lt;td&gt;"tchol&lt;/td&gt;
+&lt;td&gt;rs8055236&lt;/td&gt;
+&lt;td&gt;htn&lt;/td&gt;
+&lt;td&gt;t2d&lt;/td&gt;
+&lt;td&gt;smoking"&lt;/td&gt;
+&lt;td&gt;lda&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;age &amp;lt; 55 &amp;amp; age &amp;gt; 35&lt;/td&gt;
+&lt;td&gt;379272&lt;/td&gt;
+&lt;td&gt;5.30%&lt;/td&gt;
+&lt;td&gt;cvd ~ tchol + htn + t2d + bmi + rs8055236&lt;/td&gt;
+&lt;td&gt;logit&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;nan&lt;/td&gt;
+&lt;td&gt;0.5&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;age&amp;gt;55&lt;/td&gt;
+&lt;td&gt;logit&lt;/td&gt;
+&lt;td&gt;0.22&lt;/td&gt;
+&lt;td&gt;0.59&lt;/td&gt;
+&lt;td&gt;0.6&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;GENETICS&lt;/td&gt;
+&lt;td&gt;46217 train; 8157 test&lt;/td&gt;
+&lt;td&gt;9.78%&lt;/td&gt;
+&lt;td&gt;"cvd ~ numAge + htn + smoking&lt;/td&gt;
+&lt;td&gt;+ treat + t2d + gender + bmi + tchol + sbp + rs10757278 + rs4665058 + rs8055236"&lt;/td&gt;
+&lt;td&gt;SuperLearner&lt;/td&gt;
+&lt;td&gt;0.9&lt;/td&gt;
+&lt;td&gt;0.369&lt;/td&gt;
+&lt;td&gt;0.8394&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</content><category term="ROC"></category><category term="AUROC"></category><category term="AUCPR"></category><category term="F1 Score"></category><category term="Recall"></category><category term="Precision"></category></entry><entry><title>The role of unit tests in test automation</title><link href="https://mohcinemadkour.github.io/posts/2017/08/The%20role%20of%20unit%20tests%20in%20test%20automation/" rel="alternate"></link><published>2017-08-03T16:00:00-04:00</published><updated>2017-08-03T16:00:00-04:00</updated><author><name>Mohcine Madkour</name></author><id>tag:mohcinemadkour.github.io,2017-08-03:/posts/2017/08/The role of unit tests in test automation/</id><summary type="html">&lt;p&gt;Unit testing is a software development and testing approach in which the smallest testable parts of an application, called units, are individually and independently tested to see if they are operating properly. Unit testing can be done manually but is usually automated. Unit testing is a part of the test-driven …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Unit testing is a software development and testing approach in which the smallest testable parts of an application, called units, are individually and independently tested to see if they are operating properly. Unit testing can be done manually but is usually automated. Unit testing is a part of the test-driven development(TDD) methodology that requires developers to first write failing unit tests. Then they write code in order to change the application until the test passes. Writing the failing test is important because it forces the developer to take into account all possible inputs, errors and outputs. &lt;/p&gt;
 &lt;p&gt;The result of using TDD is that an agile team can accumulate a comprehensive suite of unit tests that can be run at any time to provide feedback that their software is still working.  If the new code breaks something and causes a test to fail,  TDD also makes it easier to pinpoint the problem, refactor the application and fix the bug.&lt;/p&gt;
 &lt;h1&gt;The AAA pattern&lt;/h1&gt;
 &lt;p&gt;The goal of unit testing is to isolate each part of a program and show that the individual parts work correctly.  This is in line with the YAGNI ("You ain't gonna need it") principle at the heart of the agile development practice of doing the simplest thing that can possibly work.  Using the YAGNI principle to build units of software, together with other practices such as continuous refactoring and continuous integration, make it easier to automate groups or suites of unit tests.  Unit test automation is a key component of a Continuous Delivery DevTestOps solution, that is, a continuously tested, two-way DevOps software delivery pipeline between an organization and its customers.&lt;/p&gt;
