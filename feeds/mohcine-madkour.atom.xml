@@ -155,7 +155,7 @@ return(val)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;The chart bellow illustrates the relationship between the different performance metrics ( prevalence is exluded) in an example&lt;img alt=" PPV and NPV  relationship" src="/images/NPV-PPV-Accracy-Youden.png"&gt;&lt;/p&gt;
+&lt;p&gt;The chart bellow illustrates the relationship between the different performance metrics ( prevalence is exluded) in an example of 4 estimators apllied on 4 -classes data&lt;img alt=" PPV and NPV  relationship" src="/images/NPV-PPV-Accracy-Youden.png"&gt;&lt;/p&gt;
 &lt;h1&gt;Calculation of performance metrics&lt;/h1&gt;
 &lt;p&gt;Here is the python code for the calculation of  performance metrics &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;def calculate_metric&lt;span class="p"&gt;(&lt;/span&gt;outcome&lt;span class="p"&gt;,&lt;/span&gt; score&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
@@ -305,10 +305,12 @@ def confidence_interval(panel):
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;h1&gt;Plot&lt;/h1&gt;
+&lt;p&gt;The chart bellow illustrates ROC and PR curves for 4 different estimators applied on the same data&lt;img alt=" ROC" src="/images/ROC-PV1.png"&gt;&lt;img alt=" PR" src="/images/ROC-PV2.png"&gt;
+The performances of the algorithms appear to be comparable in ROC space, however, in PR space we can see that Estimator 4 has a clear advantage over Estimator 3.&lt;/p&gt;
+&lt;h1&gt;Assessing the Model&lt;/h1&gt;
 &lt;p&gt;The chart bellow outlines the performance evaluation pipeline (except prevalence) in an example&lt;img alt=" performance evaluation pipeline" src="/images/MLPipe.jpg"&gt;&lt;/p&gt;
-&lt;h1&gt;The bias-variance trade-off&lt;/h1&gt;
-&lt;p&gt;Bias and variance are inherent properties of estimators and we usually have to select learning algorithms and hyperparameters so that both bias and variance are as low as possible (see Bias-variance dilemma). Another way to reduce the variance of a model is to use more training data. However, you should only collect more training data if the true function is too complex to be approximated by an estimator with a lower variance.
+&lt;h1&gt;The bias-variance trade-off (Bias-variance dilemma)&lt;/h1&gt;
+&lt;p&gt;Bias and variance are inherent properties of estimators and we usually have to select learning algorithms and hyperparameters so that both bias and variance are as low as possible. Another way to reduce the variance of a model is to use more training data. However, you should only collect more training data if the true function is too complex to be approximated by an estimator with a lower variance.
 &lt;img alt=" bias-variance trade-off" src="/images/biasvariance.png"&gt;&lt;/p&gt;
 &lt;h1&gt;Analyzing Model Variance and Bias&lt;/h1&gt;
 &lt;p&gt;The two methods used here for analyzing how the model is performing with the data are Learning Curves and a Model Complexity plot.Learning curves give us an opportunity to diagnose bias and variance in supervised learning models. &lt;/p&gt;
