@@ -1,5 +1,207 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Mohcine Madkour - Mohcine Madkour</title><link href="https://mohcinemadkour.github.io/" rel="alternate"></link><link href="https://mohcinemadkour.github.io/feeds/mohcine-madkour.atom.xml" rel="self"></link><id>https://mohcinemadkour.github.io/</id><updated>2018-06-14T13:01:00-04:00</updated><entry><title>Deep Reinforcement Learning</title><link href="https://mohcinemadkour.github.io/posts/2018/06/Deep%20Reinforcement%20Learning/" rel="alternate"></link><published>2018-06-14T13:01:00-04:00</published><updated>2018-06-14T13:01:00-04:00</updated><author><name>Mohcine Madkour</name></author><id>tag:mohcinemadkour.github.io,2018-06-14:/posts/2018/06/Deep Reinforcement Learning/</id><summary type="html">&lt;p&gt;Today, we will explore Reinforcement Learning – a goal-oriented learning based on interaction with environment. Reinforcement Learning is said to be the hope of true artificial intelligence. And it is rightly said so, because the potential that Reinforcement Learning possesses is immense.
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Mohcine Madkour - Mohcine Madkour</title><link href="https://mohcinemadkour.github.io/" rel="alternate"></link><link href="https://mohcinemadkour.github.io/feeds/mohcine-madkour.atom.xml" rel="self"></link><id>https://mohcinemadkour.github.io/</id><updated>2018-10-07T16:00:00-04:00</updated><entry><title>Using Python to transform a set of CSV files to a MySQL database</title><link href="https://mohcinemadkour.github.io/posts/2018/10/Using%20only%20Python:%20How%20to%20transform%20a%20set%20of%20CSV%20files%20to%20a%20complete%20MySQL%20database%20from%20end%20to%20end/" rel="alternate"></link><published>2018-10-07T16:00:00-04:00</published><updated>2018-10-07T16:00:00-04:00</updated><author><name>Mohcine Madkour</name></author><id>tag:mohcinemadkour.github.io,2018-10-07:/posts/2018/10/Using only Python: How to transform a set of CSV files to a complete MySQL database from end to end/</id><summary type="html">&lt;p&gt;Usually when I need to upload a CSV I will use Periscope Data's CSV functionality. It's fast, easy, allows me to join the data with all my databases, and automatically casts types and load the data. Sometimes, however, I like to interact directly with a MySQL cluster—usually for complex …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Usually when I need to upload a CSV I will use Periscope Data's CSV functionality. It's fast, easy, allows me to join the data with all my databases, and automatically casts types and load the data. Sometimes, however, I like to interact directly with a MySQL cluster—usually for complex data transformations and modeling in Python. When interacting directly with a database, it can be a pain to write a create table statement and load your data. When the table is wide, you have two choices while writing your create table—spend the time to figure out the correct data types, or lazily import everything as text and deal with the type casting in SQL. The first is slow, and the second will get you in trouble down the road.&lt;/p&gt;
+&lt;p&gt;I recently ran into a great example of this when I needed to upload 20 Gega of EHR data. They are available in a CSV format, but a daunting 100+ columns wide. I wanted to load the data into My SQL and rather than be generous in my data types, I wanted to use the proper columns. I decided to speed up the load process by writing a Python script, which turned into a fun exercise in data type detection and automated data loading to database.&lt;/p&gt;
+&lt;h2&gt;Checklist before start&lt;/h2&gt;
+&lt;p&gt;First of all ... couple of things to check:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Check your database is created and you have the required information (host name, database name, user, password)&lt;/li&gt;
+&lt;li&gt;Names of columns can not have spaces&lt;/li&gt;
+&lt;li&gt;Names of files will be the name of tables in the database&lt;/li&gt;
+&lt;li&gt;The tables will be Droped if already exist&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Import libraries and provide path to data and information for connection&lt;/h2&gt;
+&lt;p&gt;The first step is to load our data, import our libraries, and load the data into a CSV reader object. The csv library will be used to iterate over the data, and the ast library will be used to determine data type.&lt;/p&gt;
+&lt;p&gt;We will also use a few lists. "Longest" will be a list of the longest values in character length to specify varchar column capacity, "headers" will be a list of the column names, and "type_list" will be the updating list of column types as we iterate over our data.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;mysql.connector&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;mysql.connector&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Error&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;argparse&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;csv&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;os&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;listdir&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;os.path&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;isfile&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;join&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;itertools&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;count&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;csv&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;csv&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nn"&gt;ast&lt;/span&gt; 
+&lt;span class="c1"&gt;#import psycopg2&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;__future__&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;print_function&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Path and list of files I wanted to create the database from&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;#mypath=&amp;quot;/home/mohcine/Databox/Data/SortedData/left/new/&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;mypath&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Your path to where the CSV files are located&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;onlyfiles&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;listdir&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mypath&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;isfile&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mypath&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;.&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;csv&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;onlyfiles&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Database info&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Your creadential of the database&lt;/span&gt;
+&lt;span class="n"&gt;myhost&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;#39;&lt;/span&gt;
+&lt;span class="n"&gt;mydatabase&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;#39;&lt;/span&gt;
+&lt;span class="n"&gt;myuser&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;#39;&lt;/span&gt;
+&lt;span class="n"&gt;mypassword&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Find the Data Type&lt;/h2&gt;
+&lt;p&gt;Once we have our data, we need to find the data type for each row. This means we need to evaluate every value and cast to the most restrictive option, from decimalized numbers to integers, and from integers to strings.&lt;/p&gt;
+&lt;p&gt;The function dataType does this. First, it evaluates to see if the value is text or a number, and then for the appropriate type of number if needed. This function consumes both the new data, and the current best type to evaluate against. &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;dataType&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;val&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;current_type&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="c1"&gt;# Evaluates numbers to an appropriate type, and strings an error&lt;/span&gt;
+        &lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ast&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;literal_eval&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;val&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="ne"&gt;ValueError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;varchar&amp;#39;&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="ne"&gt;SyntaxError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;varchar&amp;#39;&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;long&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;float&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;long&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="n"&gt;current_type&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;float&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;varchar&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+            &lt;span class="c1"&gt;# Use smallest possible int type&lt;/span&gt;
+            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;32768&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="mi"&gt;32767&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="n"&gt;current_type&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;int&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;bigint&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+                &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;smallint&amp;#39;&lt;/span&gt;
+            &lt;span class="k"&gt;elif&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;2147483648&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="mi"&gt;2147483647&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="n"&gt;current_type&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;bigint&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+                &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;int&amp;#39;&lt;/span&gt;
+            &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;bigint&amp;#39;&lt;/span&gt;
+            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="nb"&gt;float&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="n"&gt;current_type&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;varchar&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+                &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;decimal&amp;#39;&lt;/span&gt;
+            &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;varchar&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Create tables&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;onlyfiles&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="c1"&gt;#Create table from the generated statement      &lt;/span&gt;
+    &lt;span class="n"&gt;fo&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mypath&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;r&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;reader&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;csv&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;reader&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fo&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;longest&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;headers&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;type_list&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[],&lt;/span&gt; &lt;span class="p"&gt;[],&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+    &lt;span class="c1"&gt;# iterate over the rows in our CSV, call our function above, and populate our lists&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;row&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;reader&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;        
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;headers&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;headers&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;row&lt;/span&gt;
+            &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;col&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;row&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="n"&gt;longest&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+                &lt;span class="n"&gt;type_list&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;row&lt;/span&gt;&lt;span class="p"&gt;)):&lt;/span&gt;
+                &lt;span class="c1"&gt;# NA is the csv null value&lt;/span&gt;
+                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;type_list&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;varchar&amp;#39;&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="n"&gt;row&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;NA&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                    &lt;span class="k"&gt;pass&lt;/span&gt;
+                &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                    &lt;span class="n"&gt;var_type&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dataType&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;row&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;type_list&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+                    &lt;span class="n"&gt;type_list&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;var_type&lt;/span&gt;
+                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;row&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;longest&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+                    &lt;span class="n"&gt;longest&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;row&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+    &lt;span class="n"&gt;fo&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="c1"&gt;# And use our lists to write the SQL statement.&lt;/span&gt;
+
+    &lt;span class="n"&gt;statement&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;DROP TABLE IF EXISTS &amp;#39;&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;.&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;conn&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mysql&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;connector&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;host&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;myhost&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;database&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;mydatabase&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;myuser&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;password&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;mypassword&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;is_connected&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt; 
+            &lt;span class="n"&gt;cursor&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cursor&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+            &lt;span class="n"&gt;cursor&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;execute&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;statement&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;commit&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="n"&gt;Error&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;finally&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="c1"&gt;# Make sure data is committed to the database&lt;/span&gt;
+        &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;commit&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="n"&gt;cursor&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="n"&gt;statement&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;CREATE TABLE &amp;#39;&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;.&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; (&amp;#39;&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;headers&lt;/span&gt;&lt;span class="p"&gt;)):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;type_list&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;varchar&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;statement&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;statement&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;{} varchar({}),&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;headers&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lower&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;longest&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]))&lt;/span&gt;
+        &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;statement&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;statement&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;{} {}&amp;#39;&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;,&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;headers&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lower&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;type_list&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+    &lt;span class="n"&gt;statement&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;statement&lt;/span&gt;&lt;span class="p"&gt;[:&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;);&amp;#39;&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;statement&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="c1"&gt;#Create table from the generated statement  &lt;/span&gt;
+    &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;conn&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mysql&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;connector&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;host&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;myhost&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;database&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;mydatabase&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;myuser&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;password&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;mypassword&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;is_connected&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt; 
+            &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;connected&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="n"&gt;cursor&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cursor&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+            &lt;span class="n"&gt;cursor&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;execute&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;statement&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;commit&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="n"&gt;Error&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;finally&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="c1"&gt;# Make sure data is committed to the database&lt;/span&gt;
+        &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;commit&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="n"&gt;cursor&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Load Data from local csv files&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;onlyfiles&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="c1"&gt;#print f&lt;/span&gt;
+    &lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt;
+    &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mypath&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;r&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;csv_file&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;csv_reader&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;csv&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;DictReader&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;csv_file&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;line_count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;row&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;csv_reader&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;line_count&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="n"&gt;cln&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;next&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;csv_reader&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+                &lt;span class="n"&gt;line_count&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+            &lt;span class="n"&gt;inserts&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+            &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;l&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;cln&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="n"&gt;inserts&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;inserts&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;row&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;l&lt;/span&gt;&lt;span class="p"&gt;],)&lt;/span&gt;
+            &lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;inserts&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="c1"&gt;#print len(cln)&lt;/span&gt;
+    &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+    &lt;span class="n"&gt;col&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="n"&gt;cal&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;l&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;cln&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;col&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;(&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;l&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;,&amp;quot;&lt;/span&gt;
+            &lt;span class="n"&gt;val&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;(&lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s2"&gt;,&amp;quot;&lt;/span&gt;
+            &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+        &lt;span class="k"&gt;elif&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cln&lt;/span&gt;&lt;span class="p"&gt;)):&lt;/span&gt;
+            &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+            &lt;span class="n"&gt;col&lt;/span&gt;&lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="n"&gt;l&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;,&amp;quot;&lt;/span&gt;
+            &lt;span class="n"&gt;val&lt;/span&gt;&lt;span class="o"&gt;+=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s2"&gt;,&amp;quot;&lt;/span&gt;
+        &lt;span class="k"&gt;elif&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cln&lt;/span&gt;&lt;span class="p"&gt;)):&lt;/span&gt;
+            &lt;span class="n"&gt;col&lt;/span&gt;&lt;span class="o"&gt;+=&lt;/span&gt;&lt;span class="n"&gt;l&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;)&amp;quot;&lt;/span&gt;  
+            &lt;span class="n"&gt;val&lt;/span&gt;&lt;span class="o"&gt;+=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s2"&gt;)&amp;quot;&lt;/span&gt;
+            &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+    &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;conn&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mysql&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;connector&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;host&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;myhost&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;database&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;mydatabase&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;myuser&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;password&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;mypassword&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;is_connected&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;       
+            &lt;span class="n"&gt;query&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;INSERT INTO &amp;quot;&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;.&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;col&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;VALUES&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;val&lt;/span&gt;
+            &lt;span class="n"&gt;cursor&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cursor&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+            &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;each&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="n"&gt;cursor&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;execute&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;query&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;each&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+                &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;commit&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="n"&gt;Error&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;finally&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="c1"&gt;# Make sure data is committed to the database&lt;/span&gt;
+        &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;commit&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="n"&gt;cursor&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Check tables&lt;/h2&gt;
+&lt;p&gt;Checking if the number of rows in the CVS files are matching the count of tables' rows in the database&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;onlyfiles&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mypath&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;r&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;f1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;csvlines&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;csv&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;reader&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;delimiter&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;,&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;lineNum&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;enumerate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;csvlines&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;lineNum&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;line&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; 
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;The csv file {} has {} rows and {} columns &amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mypath&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;readlines&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</content><category term="MySQL"></category><category term="MySQL Cluster"></category><category term="Database"></category><category term="Load data"></category><category term="CSV"></category></entry><entry><title>Sentiment analysis on streaming Twitter data</title><link href="https://mohcinemadkour.github.io/posts/2018/08/Analysing%20Model%20Perfromance%20from%20ROC,%20and%20Recall%20and%20Precision%20curves/" rel="alternate"></link><published>2018-08-06T16:00:00-04:00</published><updated>2018-08-06T16:00:00-04:00</updated><author><name>Mohcine Madkour</name></author><id>tag:mohcinemadkour.github.io,2018-08-06:/posts/2018/08/Analysing Model Perfromance from ROC, and Recall and Precision curves/</id><summary type="html">&lt;p&gt;This tutorial will teach you how to build sentiment analysis algorithms with Apache Spark. We will be doing data transformation using Python and Apache Spark 2, and we will be classifying tweets as happy or sad using a Gradient Boosting algorithm. The solution is going to use many different components …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This tutorial will teach you how to build sentiment analysis algorithms with Apache Spark. We will be doing data transformation using Python and Apache Spark 2, and we will be classifying tweets as happy or sad using a Gradient Boosting algorithm. The solution is going to use many different components in the HDF/HDP stack including NiFi, Solr, Spark, and Zeppelin, and it will also utilize libraries that are available in the Open Source Community.&lt;/p&gt;
+&lt;p&gt;Gradient Boosting is a versatile technique that can be applied to many classification problems. &lt;/p&gt;
+&lt;h1&gt;Apache Spark&lt;/h1&gt;
+&lt;p&gt;Apache Sparkis a fast and general-purpose cluster computing system. Designed for large-scale data processing, it run programs up to 100x faster than Hadoop MapReduce in memory, or 10x faster on disk. Spark can run on Hadoop, Mesos, standalone, or in the cloud. It can access diverse data sources including HDFS, Cassandra, HBase, and S3. Spark has an advanced DAG execution engine that supports acyclic data flow and in-memory computing. It provides high-level APIs in Java, Scala, Python and R, and an optimized engine that supports general execution graphs. You can learn more about spark at their quick start guide&lt;/p&gt;</content><category term="sentiment analysis"></category><category term="data streaming"></category><category term="Twitter data"></category><category term="Kafka"></category><category term="Spark"></category></entry><entry><title>Deep Reinforcement Learning</title><link href="https://mohcinemadkour.github.io/posts/2018/06/Deep%20Reinforcement%20Learning/" rel="alternate"></link><published>2018-06-14T13:01:00-04:00</published><updated>2018-06-14T13:01:00-04:00</updated><author><name>Mohcine Madkour</name></author><id>tag:mohcinemadkour.github.io,2018-06-14:/posts/2018/06/Deep Reinforcement Learning/</id><summary type="html">&lt;p&gt;Today, we will explore Reinforcement Learning – a goal-oriented learning based on interaction with environment. Reinforcement Learning is said to be the hope of true artificial intelligence. And it is rightly said so, because the potential that Reinforcement Learning possesses is immense.
 Reinforcement learning refers to goal-oriented algorithms, which learn how …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Today, we will explore Reinforcement Learning – a goal-oriented learning based on interaction with environment. Reinforcement Learning is said to be the hope of true artificial intelligence. And it is rightly said so, because the potential that Reinforcement Learning possesses is immense.
 Reinforcement learning refers to goal-oriented algorithms, which learn how to attain a complex objective (goal) or maximize along a particular dimension over many steps; for example, maximize the points won in a game over many moves. They can start from a blank slate, and under the right conditions they achieve superhuman performance. Like a child incentivized by spankings and candy, these algorithms are penalized when they make the wrong decisions and rewarded when they make the right ones – this is reinforcement.&lt;/p&gt;
 &lt;h1&gt;Introduction to reinforcement learning&lt;/h1&gt;
@@ -95,7 +297,7 @@ Definition : The state value function v (s) of an MRP is the expected return
 starting from state s v (s) = E [G t | S t = s]
 &lt;img alt="Value Function" src="/images/Value_Function.png"&gt;&lt;/p&gt;
 &lt;h1&gt;Final Words&lt;/h1&gt;
-&lt;p&gt;Reinforcement learning is extremely fun but hard topic. I am excited to learn more!&lt;/p&gt;</content><category term="Deep Reinforcement Learning"></category></entry><entry><title>Analysing Model Perfromance from Receiver Operator Characteristic (ROC) and Recall and Precision (PR) curves</title><link href="https://mohcinemadkour.github.io/posts/2018/06/Analysing%20Model%20Perfromance%20from%20ROC,%20and%20Recall%20and%20Precision%20curves/" rel="alternate"></link><published>2018-06-09T16:00:00-04:00</published><updated>2018-06-09T16:00:00-04:00</updated><author><name>Mohcine Madkour</name></author><id>tag:mohcinemadkour.github.io,2018-06-09:/posts/2018/06/Analysing Model Perfromance from ROC, and Recall and Precision curves/</id><summary type="html">&lt;p&gt;ROC and PR curves are commonly used to present results for binary decision problems in machine learning. The ROC curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings. Each point of the ROC curve (i.e. threshold) corresponds to …&lt;/p&gt;</summary><content type="html">&lt;p&gt;ROC and PR curves are commonly used to present results for binary decision problems in machine learning. The ROC curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings. Each point of the ROC curve (i.e. threshold) corresponds to specific values of sensitivity and specificity. The area under the ROC curve (AUC) is a summary measure of performance that indicates whether on average a true positive is ranked higher than a false positives. If model A has higher AUC than model B, model A is performing better on average, but there still could be specific areas of the ROC space where model B is better (i.e. thresholds for which sensitivity and specificity are higher for model B than A. However, when dealing with highly skewed datasets, Precision-Recall (PR) curves give a more informative picture of an algorithm's performance. There is deep connection between ROC space and PR space, such that a curve dominates in ROC space if  and only if it dominates in PR space. The precision-recall curve shows the tradeoff between precision and recall for different threshold. A high area under the curve represents both high recall and high precision, where high precision, x-axis, relates to a low false positive rate, and high recall, y-axis, relates to a low false negative rate. High scores for both show that the classifier is returning accurate results (high precision), as well as returning a majority of all positive results (high recall).&lt;/p&gt;
+&lt;p&gt;Reinforcement learning is extremely fun but hard topic. I am excited to learn more!&lt;/p&gt;</content><category term="Deep Reinforcement Learning"></category></entry><entry><title>Analysing Model Perfromance from Receiver Operator Characteristic and Recall and Precision curves</title><link href="https://mohcinemadkour.github.io/posts/2018/06/Analysing%20Model%20Perfromance%20from%20ROC,%20and%20Recall%20and%20Precision%20curves/" rel="alternate"></link><published>2018-06-09T16:00:00-04:00</published><updated>2018-06-09T16:00:00-04:00</updated><author><name>Mohcine Madkour</name></author><id>tag:mohcinemadkour.github.io,2018-06-09:/posts/2018/06/Analysing Model Perfromance from ROC, and Recall and Precision curves/</id><summary type="html">&lt;p&gt;ROC and PR curves are commonly used to present results for binary decision problems in machine learning. The ROC curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings. Each point of the ROC curve (i.e. threshold) corresponds to …&lt;/p&gt;</summary><content type="html">&lt;p&gt;ROC and PR curves are commonly used to present results for binary decision problems in machine learning. The ROC curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings. Each point of the ROC curve (i.e. threshold) corresponds to specific values of sensitivity and specificity. The area under the ROC curve (AUC) is a summary measure of performance that indicates whether on average a true positive is ranked higher than a false positives. If model A has higher AUC than model B, model A is performing better on average, but there still could be specific areas of the ROC space where model B is better (i.e. thresholds for which sensitivity and specificity are higher for model B than A. However, when dealing with highly skewed datasets, Precision-Recall (PR) curves give a more informative picture of an algorithm's performance. There is deep connection between ROC space and PR space, such that a curve dominates in ROC space if  and only if it dominates in PR space. The precision-recall curve shows the tradeoff between precision and recall for different threshold. A high area under the curve represents both high recall and high precision, where high precision, x-axis, relates to a low false positive rate, and high recall, y-axis, relates to a low false negative rate. High scores for both show that the classifier is returning accurate results (high precision), as well as returning a majority of all positive results (high recall).&lt;/p&gt;
 &lt;h2&gt;Sensitivity (positive in disease)&lt;/h2&gt;
 &lt;p&gt;Sensitivity is the ability of a test to correctly classify an individual as ′diseased′&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Sensitivity = a / a+c
@@ -148,7 +350,7 @@ maximize the difference between TPR (sensitivity) and FPR (1 –specificty) and 
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;    def cal_cutoff2(data):
     val=0
     for i in range(len(data)-10):
-    if((abs(data[&amp;#39;acc&amp;#39;].iloc[i]-data[&amp;#39;acc&amp;#39;].iloc[i+10]))&amp;lt;0.002):
+    if((abs(data[&amp;#39;acc&amp;#39;].iloc[i]-data[&amp;#39;acc&amp;#39;].iloc[i+10]))&amp;amp;lt;0.002):
         val=data[&amp;#39;thres&amp;#39;].iloc[i]
         break
 return(val)
@@ -158,108 +360,108 @@ return(val)
 &lt;p&gt;The chart bellow illustrates the relationship between the different performance metrics ( prevalence is exluded) in an example of 4 estimators apllied on 4 -classes data&lt;img alt=" PPV and NPV  relationship" src="/images/NPV-PPV-Accracy-Youden.png"&gt;&lt;/p&gt;
 &lt;h1&gt;Calculation of performance metrics&lt;/h1&gt;
 &lt;p&gt;Here is the python code for the calculation of  performance metrics &lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;def calculate_metric&lt;span class="p"&gt;(&lt;/span&gt;outcome&lt;span class="p"&gt;,&lt;/span&gt; score&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-    obser &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;outcome&lt;span class="p"&gt;))&lt;/span&gt;
-    obser&lt;span class="p"&gt;[[&lt;/span&gt;i &lt;span class="kr"&gt;for&lt;/span&gt; i&lt;span class="p"&gt;,&lt;/span&gt; x &lt;span class="kr"&gt;in&lt;/span&gt; enumerate&lt;span class="p"&gt;(&lt;/span&gt;outcome&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;if&lt;/span&gt; x &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="p"&gt;]]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="p"&gt;;&lt;/span&gt;
-    obser &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;float&lt;span class="p"&gt;(&lt;/span&gt;i&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;for&lt;/span&gt; i &lt;span class="kr"&gt;in&lt;/span&gt; obser&lt;span class="p"&gt;]&lt;/span&gt;
-    score &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;float&lt;span class="p"&gt;(&lt;/span&gt;i&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;for&lt;/span&gt; i &lt;span class="kr"&gt;in&lt;/span&gt; score&lt;span class="p"&gt;]&lt;/span&gt;
-    prev &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kp"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    thres &lt;span class="o"&gt;=&lt;/span&gt; np.arange&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0.01&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;1.01&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;0.01&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="c1"&gt;#(0.01,0.98,0.01)&lt;/span&gt;
-    xval &lt;span class="o"&gt;=&lt;/span&gt; thres
-    acc &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
-    ppv &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
-    npv &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
-    sen &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
-    spe &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
-    yod &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
-    auc &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
-    recall &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
-    precision &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;
-    F1 &lt;span class="o"&gt;=&lt;/span&gt; np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt; 
-    &lt;span class="kr"&gt;for&lt;/span&gt; l &lt;span class="kr"&gt;in&lt;/span&gt; &lt;span class="kp"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;thres&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        plotdata &lt;span class="o"&gt;=&lt;/span&gt; ROC_parameters&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;,&lt;/span&gt;score&lt;span class="p"&gt;,&lt;/span&gt;thres&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;])&lt;/span&gt;
-        acc&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        ppv&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        npv&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        sen&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        spe&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        yod&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        recall&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;6&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        precision&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;7&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        F1&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;plotdata&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;8&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        auc&lt;span class="p"&gt;[&lt;/span&gt;l&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; roc_auc_score&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;,&lt;/span&gt; score&lt;span class="p"&gt;)&lt;/span&gt;
-    prev &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kp"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="c1"&gt;#roc_vals=np.zeros((length(spe),8))&lt;/span&gt;
-    roc_vals&lt;span class="o"&gt;=&lt;/span&gt;pd.DataFrame&lt;span class="p"&gt;(&lt;/span&gt;index&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kp"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;101&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; columns&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[[&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;thres&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;acc&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;ppv&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;npv&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;specificity&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;sensitivity&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;yod_index&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;recall&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;precision&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;F1&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;auc&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]])&lt;/span&gt;
-    &lt;span class="c1"&gt;#roc_vals &amp;lt;- dacolnames(roc_vals) &amp;lt;- c(&amp;quot;thres&amp;quot;,&amp;quot;acc&amp;quot;,&amp;quot;ppv&amp;quot;,&amp;quot;npv&amp;quot;,&amp;quot;specificity&amp;quot;,&amp;quot;sensitivity&amp;quot;,&amp;quot;yod_index&amp;quot;,&amp;quot;auc&amp;quot;)&lt;/span&gt;
-    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;thres&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;thres
-    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;acc&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; acc
-    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;ppv&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; ppv
-    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;npv&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; npv
-    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;specificity&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;spe
-    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;sensitivity&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; sen
-    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;yod_index&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; yod&lt;span class="p"&gt;;&lt;/span&gt;
-    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;recall&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; recall&lt;span class="p"&gt;;&lt;/span&gt;
-    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;precision&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; precision
-    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;F1&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; F1&lt;span class="p"&gt;;&lt;/span&gt;
-    roc_vals&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;auc&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; auc&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="kr"&gt;return&lt;/span&gt; roc_vals
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;def calculate_metric(outcome, score):
+    obser = np.zeros(len(outcome))
+    obser[[i for i, x in enumerate(outcome) if x == 1 ]] = 1 ;
+    obser = [float(i) for i in obser]
+    score = [float(i) for i in score]
+    prev = round(sum(obser)/len(obser),2)
+    thres = np.arange(0.01,1.01,0.01)#(0.01,0.98,0.01)
+    xval = thres
+    acc = np.zeros(len(thres))
+    ppv = np.zeros(len(thres))
+    npv = np.zeros(len(thres))
+    sen = np.zeros(len(thres))
+    spe = np.zeros(len(thres))
+    yod = np.zeros(len(thres))
+    auc = np.zeros(len(thres))
+    recall = np.zeros(len(thres))
+    precision = np.zeros(len(thres))
+    F1 = np.zeros(len(thres)) 
+    for l in range(len(thres)):
+        plotdata = ROC_parameters(obser,score,thres[l])
+        acc[l] = round(plotdata[0],3)
+        ppv[l] = round(plotdata[1],3)
+        npv[l] = round(plotdata[2],3)
+        sen[l] = round(plotdata[3],3)
+        spe[l] = round(plotdata[4],3)
+        yod[l] = round(plotdata[5],3)
+        recall[l] = round(plotdata[6],3)
+        precision[l] = round(plotdata[7],3)
+        F1[l] = round(plotdata[8],3)
+        auc[l] = roc_auc_score(obser, score)
+    prev = round(sum(obser)/len(obser),2)
+    #roc_vals=np.zeros((length(spe),8))
+    roc_vals=pd.DataFrame(index=range(1,101), columns=[[&amp;quot;thres&amp;quot;,&amp;quot;acc&amp;quot;,&amp;quot;ppv&amp;quot;,&amp;quot;npv&amp;quot;,&amp;quot;specificity&amp;quot;,&amp;quot;sensitivity&amp;quot;,&amp;quot;yod_index&amp;quot;,&amp;quot;recall&amp;quot;,&amp;quot;precision&amp;quot;,&amp;quot;F1&amp;quot;,&amp;quot;auc&amp;quot;]])
+    #roc_vals &amp;amp;lt;- dacolnames(roc_vals) &amp;amp;lt;- c(&amp;quot;thres&amp;quot;,&amp;quot;acc&amp;quot;,&amp;quot;ppv&amp;quot;,&amp;quot;npv&amp;quot;,&amp;quot;specificity&amp;quot;,&amp;quot;sensitivity&amp;quot;,&amp;quot;yod_index&amp;quot;,&amp;quot;auc&amp;quot;)
+    roc_vals[&amp;#39;thres&amp;#39;]=thres
+    roc_vals[&amp;#39;acc&amp;#39;]= acc
+    roc_vals[&amp;#39;ppv&amp;#39;] = ppv
+    roc_vals[&amp;#39;npv&amp;#39;] = npv
+    roc_vals[&amp;#39;specificity&amp;#39;] =spe
+    roc_vals[&amp;#39;sensitivity&amp;#39;] = sen
+    roc_vals[&amp;#39;yod_index&amp;#39;] = yod;
+    roc_vals[&amp;#39;recall&amp;#39;] = recall;
+    roc_vals[&amp;#39;precision&amp;#39;] = precision
+    roc_vals[&amp;#39;F1&amp;#39;] = F1;
+    roc_vals[&amp;#39;auc&amp;#39;] = auc;
+    return roc_vals
 
-def ROC_parameters&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;,&lt;/span&gt;score&lt;span class="p"&gt;,&lt;/span&gt;thr&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-    &lt;span class="c1"&gt;#print obser,score,thr&lt;/span&gt;
-    temp&lt;span class="o"&gt;=&lt;/span&gt;np.zeros&lt;span class="p"&gt;(&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;score&lt;span class="p"&gt;))&lt;/span&gt;
-    &lt;span class="c1"&gt;#print thr;&lt;/span&gt;
-    temp&lt;span class="p"&gt;[[&lt;/span&gt; i &lt;span class="kr"&gt;for&lt;/span&gt; i&lt;span class="p"&gt;,&lt;/span&gt; x &lt;span class="kr"&gt;in&lt;/span&gt; enumerate&lt;span class="p"&gt;(&lt;/span&gt;score&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;if&lt;/span&gt; x &lt;span class="o"&gt;&amp;gt;=&lt;/span&gt; thr &lt;span class="p"&gt;]]&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
-    p_ind&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt; i &lt;span class="kr"&gt;for&lt;/span&gt; i&lt;span class="p"&gt;,&lt;/span&gt; x &lt;span class="kr"&gt;in&lt;/span&gt; enumerate&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;if&lt;/span&gt; x &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="p"&gt;]&lt;/span&gt;
-    n_ind &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt; i &lt;span class="kr"&gt;for&lt;/span&gt; i&lt;span class="p"&gt;,&lt;/span&gt; x &lt;span class="kr"&gt;in&lt;/span&gt; enumerate&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;if&lt;/span&gt; x &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="p"&gt;]&lt;/span&gt;
-    TP &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;temp&lt;span class="p"&gt;[&lt;/span&gt;p_ind&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    FP &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;temp&lt;span class="p"&gt;[&lt;/span&gt;n_ind&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    TN &lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kp"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;temp&lt;span class="p"&gt;[&lt;/span&gt;n_ind&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    FN &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kp"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;temp&lt;span class="p"&gt;[&lt;/span&gt;p_ind&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    acc &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;TP&lt;span class="o"&gt;+&lt;/span&gt;TN&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;len&lt;span class="p"&gt;(&lt;/span&gt;temp&lt;span class="p"&gt;)&lt;/span&gt;
-    recall&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;
-    precision&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;
-    &lt;span class="c1"&gt;#print TP,FP,TN,FN;&lt;/span&gt;
-    &lt;span class="kr"&gt;if&lt;/span&gt; TP&lt;span class="o"&gt;+&lt;/span&gt;FP&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        ppv &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;TP&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;TP&lt;span class="o"&gt;+&lt;/span&gt;FP&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="kp"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        ppv&lt;span class="o"&gt;=&lt;/span&gt;np.NaN
-    &lt;span class="kr"&gt;if&lt;/span&gt; TN&lt;span class="o"&gt;+&lt;/span&gt;FN&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        npv &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;TN&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;TN&lt;span class="o"&gt;+&lt;/span&gt;FN&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="kp"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        npv&lt;span class="o"&gt;=&lt;/span&gt;np.NaN
-    &lt;span class="kr"&gt;if&lt;/span&gt; TP&lt;span class="o"&gt;+&lt;/span&gt;FN&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        sen &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;TP&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;TP&lt;span class="o"&gt;+&lt;/span&gt;FN&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="kp"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        sen&lt;span class="o"&gt;=&lt;/span&gt;np.NaN
-    &lt;span class="kr"&gt;if&lt;/span&gt; TN&lt;span class="o"&gt;+&lt;/span&gt;FP&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        spe &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;TN&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;TN&lt;span class="o"&gt;+&lt;/span&gt;FP&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="kp"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        spe&lt;span class="o"&gt;=&lt;/span&gt;np.NaN
-    &lt;span class="kr"&gt;if&lt;/span&gt; TP&lt;span class="o"&gt;+&lt;/span&gt;FN&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        recall &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;TP&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;TP&lt;span class="o"&gt;+&lt;/span&gt;FN&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="kp"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        recall&lt;span class="o"&gt;=&lt;/span&gt;np.NaN    
-    &lt;span class="kr"&gt;if&lt;/span&gt; TP&lt;span class="o"&gt;+&lt;/span&gt;FP&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        precision &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;TP&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;TP&lt;span class="o"&gt;+&lt;/span&gt;FP&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="kp"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        precision&lt;span class="o"&gt;=&lt;/span&gt;np.NaN
-    &lt;span class="kr"&gt;if&lt;/span&gt; recall&lt;span class="o"&gt;+&lt;/span&gt;precision&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;         
-        F1 &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)((&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;recall&lt;span class="o"&gt;*&lt;/span&gt;precision&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;recall&lt;span class="o"&gt;+&lt;/span&gt;precision&lt;span class="p"&gt;))&lt;/span&gt;
-    &lt;span class="kp"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-        F1&lt;span class="o"&gt;=&lt;/span&gt;np.NaN
-    yod &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;float&lt;span class="p"&gt;)(&lt;/span&gt;sen&lt;span class="o"&gt;+&lt;/span&gt;spe&lt;span class="m"&gt;-1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    ls&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kt"&gt;list&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
-    ls.append&lt;span class="p"&gt;(&lt;/span&gt;acc&lt;span class="p"&gt;)&lt;/span&gt;
-    ls.append&lt;span class="p"&gt;(&lt;/span&gt;ppv&lt;span class="p"&gt;)&lt;/span&gt;
-    ls.append&lt;span class="p"&gt;(&lt;/span&gt;npv&lt;span class="p"&gt;)&lt;/span&gt;
-    ls.append&lt;span class="p"&gt;(&lt;/span&gt;sen&lt;span class="p"&gt;)&lt;/span&gt;
-    ls.append&lt;span class="p"&gt;(&lt;/span&gt;spe&lt;span class="p"&gt;)&lt;/span&gt;
-    ls.append&lt;span class="p"&gt;(&lt;/span&gt;yod&lt;span class="p"&gt;)&lt;/span&gt;
-    ls.append&lt;span class="p"&gt;(&lt;/span&gt;recall&lt;span class="p"&gt;)&lt;/span&gt;
-    ls.append&lt;span class="p"&gt;(&lt;/span&gt;precision&lt;span class="p"&gt;)&lt;/span&gt;
-    ls.append&lt;span class="p"&gt;(&lt;/span&gt;F1&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="kp"&gt;ls&lt;/span&gt;
+def ROC_parameters(obser,score,thr):
+    #print obser,score,thr
+    temp=np.zeros(len(score))
+    #print thr;
+    temp[[ i for i, x in enumerate(score) if x &amp;amp;gt;= thr ]]= 1
+    p_ind=[ i for i, x in enumerate(obser) if x == 1 ]
+    n_ind = [ i for i, x in enumerate(obser) if x == 0 ]
+    TP = sum(temp[p_ind]==1)
+    FP = sum(temp[n_ind]==1)
+    TN =sum(temp[n_ind]==0)
+    FN = sum(temp[p_ind]==0)
+    acc = (float)(TP+TN)/len(temp)
+    recall=0
+    precision=0
+    #print TP,FP,TN,FN;
+    if TP+FP&amp;amp;gt;0:
+        ppv = (float)(TP)/(TP+FP)
+    else:
+        ppv=np.NaN
+    if TN+FN&amp;amp;gt;0:
+        npv = (float)(TN)/(TN+FN)
+    else:
+        npv=np.NaN
+    if TP+FN&amp;amp;gt;0:
+        sen = (float)(TP)/(TP+FN)
+    else:
+        sen=np.NaN
+    if TN+FP&amp;amp;gt;0:
+        spe = (float)(TN)/(TN+FP)
+    else:
+        spe=np.NaN
+    if TP+FN&amp;amp;gt;0:
+        recall = (float)(TP)/(TP+FN)
+    else:
+        recall=np.NaN    
+    if TP+FP&amp;amp;gt;0:
+        precision = (float)(TP)/(TP+FP)
+    else:
+        precision=np.NaN
+    if recall+precision&amp;amp;gt;0:         
+        F1 = (float)((2*recall*precision)/(recall+precision))
+    else:
+        F1=np.NaN
+    yod = (float)(sen+spe-1)
+    ls=list();
+    ls.append(acc)
+    ls.append(ppv)
+    ls.append(npv)
+    ls.append(sen)
+    ls.append(spe)
+    ls.append(yod)
+    ls.append(recall)
+    ls.append(precision)
+    ls.append(F1)
+    return ls
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -276,7 +478,7 @@ def ROC_parameters&lt;span class="p"&gt;(&lt;/span&gt;obser&lt;span class="p"&gt
     for i in range(n_bootstraps):
     # bootstrap by sampling with replacement on the prediction indices
         indices = rng.random_integers(0, len(outcome) - 1, len(outcome))
-        if len(np.unique(outcome[indices])) &amp;lt; 2:
+        if len(np.unique(outcome[indices])) &amp;amp;lt; 2:
         # We need at least one positive and one negative sample for ROC AUC
         # to be defined: reject the sample
             continue
@@ -473,7 +675,7 @@ We will probably have to &lt;strong&gt;use an estimator&lt;/strong&gt; or a &lt;
 &lt;p&gt;Unit tests are designed for code that has no external dependencies, such as calls to the database or web services.  Because they focus on a specific behavior in a small section of a system under test (SUT), they're also relatively straight-forward to automate, especially if they are written in a standard format such as the AAA pattern.&lt;/p&gt;
 &lt;p&gt;The AAA unit test pattern&lt;/p&gt;
 &lt;p&gt;Image Source: Code Project
-![Image Source: Code Project](images/AAA pattern.)&lt;/p&gt;
+&lt;img alt="Image Source: Code Project" src="images/AAA pattern."&gt;&lt;/p&gt;
 &lt;p&gt;The AAA (Arrange, Act, Assert ) pattern helps organize and clarify test code by breaking down a test case into the following functional sections:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;The Arrange section of a unit test initializes objects and sets the value of the data that is passed to the test case.
 The Act section invokes the test case with the arranged parameters.
@@ -549,18 +751,18 @@ when Sweater Inventory is requested to remove N items, then count = count - N
 
 
 &lt;p&gt;As you can see, writing large unit tests in this way can quickly become complex and convoluted,  especially when you need to test end-to-end functionality for a complete 6-step e-commerce shopping-cart application, i.e.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Access Homepage –&amp;gt; 
-Customer Search results –&amp;gt;
-Product details  –&amp;gt;
-Customer login (or Register New customer) –&amp;gt;
-Payment details –&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Access Homepage –&amp;amp;gt; 
+Customer Search results –&amp;amp;gt;
+Product details  –&amp;amp;gt;
+Customer login (or Register New customer) –&amp;amp;gt;
+Payment details –&amp;amp;gt;
 Order confirmation
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;A simpler and better to way to use the AAA unit test scaffolding, both for unit and higher-level tests, is by using Behavior-Driven Development (BDD), which BDD pioneer Dan North defines this way:&lt;/p&gt;
 &lt;p&gt;"BDD is a second-generation, outside–in, pull-based, multiple-stakeholder, multiple-scale, high-automation, agile methodology. It describes a cycle of interactions with well-defined outputs, resulting in the delivery of working, tested software that matters."
-![andolasoft](images/bdd n tdd.jpg)
+&lt;img alt="andolasoft" src="images/bdd n tdd.jpg"&gt;
 BDD is an enhancement of TDD&lt;/p&gt;
 &lt;p&gt;Image Source:  andolasoft&lt;/p&gt;
 &lt;p&gt;The main advantage of BDD is that it encourages collaboration between developers, QA and non-technical or business participants on a software project.  It extends TDD by writing test cases in a natural language that non-programmers and domain experts can read. BDD features are usually defined in a GIVEN WHEN and THEN (GWT) format, which is a semi-structured way of writing down test cases.  A BDD feature  or user story needs to follow the following structure:&lt;/p&gt;
@@ -588,7 +790,7 @@ Then I should have four black sweaters in inventory.
 
 
 &lt;p&gt;In TDD, the developers write the tests while in BDD the automated specifications are created by users or testers (with developers writing the underlying code that implements the test.) 
-![Test Automation Pyramid](/images/automation pyramid.png)
+&lt;img alt="Test Automation Pyramid" src="/images/automation pyramid.png"&gt;
 Test Automation Pyramid&lt;/p&gt;
 &lt;p&gt;Image Source:  Effective Testing Practices in an Agile Environment&lt;/p&gt;
 &lt;h1&gt;Outside-in vs. Inside-out Testing&lt;/h1&gt;
@@ -634,7 +836,7 @@ move any more.&lt;/p&gt;
 &lt;h2&gt;Timeline View&lt;/h2&gt;
 &lt;p&gt;For data that relates to temporal events, the Timeline Widget adds an interesting dimension to your exhibit.&lt;/p&gt;
 &lt;p&gt;The nobelists.js data file lists the years when the Nobelists won their prizes, so I can plot each one on a time line. To display timelines in Exhibit you need to include a separate utility, the Timeline widget. The Timeline widget is a bit bulky, so Exhibit doesn't include it by default. You have to include the time extension to Exhibit. Open the file nobelists.html, find the reference to exhibit-api.js and add the following script element after it:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;&amp;lt;div&lt;/span&gt; &lt;span class="na"&gt;data-ex-role=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;view&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&amp;amp;lt;div data-ex-role=&amp;quot;view&amp;quot;&amp;amp;gt;
     data-ex-view-class=&amp;quot;Timeline&amp;quot;  
     data-ex-start=&amp;quot;.time&amp;quot; 
     data-ex-end=&amp;quot;.time2&amp;quot; 
@@ -643,11 +845,11 @@ move any more.&lt;/p&gt;
     data-ex-bottom-band-unit=&amp;quot;year&amp;quot; 
     data-ex-top-band-pixels-per-unit=&amp;quot;90&amp;quot; 
     data-ex-bottom-band-pixels-per-unit=&amp;quot;400&amp;quot;
-        &lt;span class="nt"&gt;&amp;lt;div&lt;/span&gt; &lt;span class="na"&gt;data-ex-role=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;lens&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
-                &lt;span class="nt"&gt;&amp;lt;span&lt;/span&gt; &lt;span class="na"&gt;data-ex-content=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;.hour&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/span&amp;gt;&lt;/span&gt;: 
-                &lt;span class="nt"&gt;&amp;lt;span&lt;/span&gt; &lt;span class="na"&gt;data-ex-content=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;.label&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/span&amp;gt;&lt;/span&gt;
-        &lt;span class="nt"&gt;&amp;lt;/div&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/div&amp;gt;&lt;/span&gt;
+        &amp;amp;lt;div data-ex-role=&amp;quot;lens&amp;quot;&amp;amp;gt;
+                &amp;amp;lt;span data-ex-content=&amp;quot;.hour&amp;quot;&amp;amp;gt;&amp;amp;lt;/span&amp;amp;gt;: 
+                &amp;amp;lt;span data-ex-content=&amp;quot;.label&amp;quot;&amp;amp;gt;&amp;amp;lt;/span&amp;amp;gt;
+        &amp;amp;lt;/div&amp;amp;gt;
+&amp;amp;lt;/div&amp;amp;gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
