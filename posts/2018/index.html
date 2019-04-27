@@ -1,41 +1,57 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-        <title>Mohcine Madkour - 2018 archives</title>
-        <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+
+
+        <title>Mohcine Madkour // Big Data Architectures and more</title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../theme/css/pure.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 </head>
 
-<body id="index" class="home">
-        <header id="banner" class="body">
-                <h1><a href="../../">Mohcine Madkour <strong></strong></a></h1>
-        </header><!-- /#banner -->
-        <nav id="menu"><ul>
-            <li><a href="archives.html">Archive</a></li>
-            <li><a href="pages/about.html">About</a></li>
-            <li><a href="pdfs/mohcine_madkour_cv.pdf">CV-Resume</a></li>
-            <li><a href="../../pages/about.html">About</a></li>
-            <li><a href="../../category/clustering-k-means">Clustering, K-Means</a></li>
-            <li><a href="../../category/deep-learning">Deep Learning</a></li>
-            <li><a href="../../category/software">Software</a></li>
-            <li><a href="../../category/statistical-analysis">Statistical Analysis</a></li>
-        </ul></nav><!-- /#menu -->
+<body>
 <h1>Archives for 2018</h1>
 
 <dl>
     <dt>Sat 09 June 2018</dt>
-    <dd><a href="../../posts/2018/06/Analysing Model Perfromance from ROC, and Recall and Precision curves1/">Analysing Model Perfromance from Receiver Operator Characteristic and Recall and Precision curves</a></dd>
+    <dd><a href="../../posts/2018/06/Analysing Model Perfromance from ROC, and Recall and Precision curves/">Analysing Model Perfromance from Receiver Operator Characteristic and Recall and Precision curves</a></dd>
     <dt>Thu 14 June 2018</dt>
     <dd><a href="../../posts/2018/06/Deep Reinforcement Learning/">Deep Reinforcement Learning</a></dd>
     <dt>Mon 06 August 2018</dt>
-    <dd><a href="../../posts/2018/08/Sentiment analysis on streaming Twitter data/">Sentiment analysis on streaming Twitter data</a></dd>
-    <dt>Tue 09 October 2018</dt>
-    <dd><a href="../../posts/2018/10/Learning from unbalanced data/">Building Machine Learning models with Unbalanced data</a></dd>
+    <dd><a href="../../posts/2018/08/Analysing Model Perfromance from ROC, and Recall and Precision curves/">Sentiment analysis on streaming Twitter data</a></dd>
+    <dt>Sun 07 October 2018</dt>
+    <dd><a href="../../posts/2018/10/Using only Python: How to transform a set of CSV files to a complete MySQL database from end to end/">End to End ETL process using CSV files and MySQL database</a></dd>
 </dl>
-        <footer id="contentinfo" class="body">
-                <address id="about" class="vcard body">
-                Proudly powered by <a href="http://getpelican.com/">Pelican</a>,
-                which takes great advantage of <a href="http://python.org">Python</a>.
-                </address><!-- /#about -->
-        </footer><!-- /#contentinfo -->
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
 </body>
 </html>

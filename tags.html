@@ -1,50 +1,67 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+
+
         <title>Mohcine Madkour - Tags</title>
-        <meta charset="utf-8" />
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./theme/css/pure.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 </head>
 
-<body id="index" class="home">
-        <header id="banner" class="body">
-                <h1><a href="./">Mohcine Madkour <strong></strong></a></h1>
-        </header><!-- /#banner -->
-        <nav id="menu"><ul>
-            <li><a href="archives.html">Archive</a></li>
-            <li><a href="pages/about.html">About</a></li>
-            <li><a href="pdfs/mohcine_madkour_cv.pdf">CV-Resume</a></li>
-            <li><a href="./pages/about.html">About</a></li>
-            <li><a href="./category/clustering-k-means">Clustering, K-Means</a></li>
-            <li><a href="./category/deep-learning">Deep Learning</a></li>
-            <li><a href="./category/software">Software</a></li>
-            <li><a href="./category/statistical-analysis">Statistical Analysis</a></li>
-        </ul></nav><!-- /#menu -->
-    <h1>Tags for Mohcine Madkour</h1>
-    <ul>
-        <li><a href="./tag/aucpr/">AUCPR</a> (2)</li>
-        <li><a href="./tag/auroc/">AUROC</a> (2)</li>
+<body>
+    <h1>Tags for Mohcine Madkour</h1>        <li><a href="./tag/aucpr/">AUCPR</a> (1)</li>
+        <li><a href="./tag/auroc/">AUROC</a> (1)</li>
+        <li><a href="./tag/csv/">CSV</a> (1)</li>
         <li><a href="./tag/data-streaming/">data streaming</a> (1)</li>
         <li><a href="./tag/data-visualization/">data visualization</a> (1)</li>
+        <li><a href="./tag/database/">Database</a> (1)</li>
         <li><a href="./tag/deep-reinforcement-learning/">Deep Reinforcement Learning</a> (1)</li>
-        <li><a href="./tag/f1-score/">F1 Score</a> (2)</li>
+        <li><a href="./tag/f1-score/">F1 Score</a> (1)</li>
         <li><a href="./tag/k-means/">K-means</a> (1)</li>
         <li><a href="./tag/kafka/">Kafka</a> (1)</li>
-        <li><a href="./tag/precision/">Precision</a> (2)</li>
-        <li><a href="./tag/recall/">Recall</a> (2)</li>
-        <li><a href="./tag/roc/">ROC</a> (2)</li>
+        <li><a href="./tag/load-data/">Load data</a> (1)</li>
+        <li><a href="./tag/mysql/">MySQL</a> (1)</li>
+        <li><a href="./tag/mysql-cluster/">MySQL Cluster</a> (1)</li>
+        <li><a href="./tag/precision/">Precision</a> (1)</li>
+        <li><a href="./tag/recall/">Recall</a> (1)</li>
+        <li><a href="./tag/roc/">ROC</a> (1)</li>
         <li><a href="./tag/sentiment-analysis/">sentiment analysis</a> (1)</li>
         <li><a href="./tag/software/">Software</a> (1)</li>
         <li><a href="./tag/spark/">Spark</a> (1)</li>
         <li><a href="./tag/twitter-data/">Twitter data</a> (1)</li>
-        <li><a href="./tag/unbalanced-data/">unbalanced data</a> (1)</li>
         <li><a href="./tag/unit-test/">Unit Test</a> (1)</li>
         <li><a href="./tag/vaers-reports/">VAERS Reports</a> (1)</li>
-    </ul>
-        <footer id="contentinfo" class="body">
-                <address id="about" class="vcard body">
-                Proudly powered by <a href="http://getpelican.com/">Pelican</a>,
-                which takes great advantage of <a href="http://python.org">Python</a>.
-                </address><!-- /#about -->
-        </footer><!-- /#contentinfo -->
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
 </body>
 </html>
