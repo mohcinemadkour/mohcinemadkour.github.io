@@ -74,7 +74,7 @@ precision=truepositives/truepositives+falsepositives
 <img alt="the difference between precision and recall" src="/images/Precisionrecall.svg.png">
 <a href="https://en.wikipedia.org/wiki/Precision_and_recall">Image credit</a></p>
 <p>We can further combine these two metrics into a single value by calcuating the f-score as defined below.</p>
-<p>Fβ=(1+β2)precision⋅recall/(β2⋅precision)+recall</p>
+<p>$$Fβ=(1+β2)precision⋅recall/(β2⋅precision)+recall$$</p>
 <p>The β parameter allows us to control the tradeoff of importance between precision and recall. β&lt;1 focuses more on precision while β&gt;1</p>
 <p>focuses more on recall.</p>
 <p>Another common tool used to understand a model's performance is a Receiver Operating Characteristics (ROC) curve. An ROC curve visualizes an algorithm's ability to discriminate the positive class from the rest of the data. We'll do this by plotting the True Positive Rate against the False Positive Rate for varying prediction thresholds.</p>
