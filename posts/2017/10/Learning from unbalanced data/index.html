@@ -67,21 +67,22 @@ When building a tree-based model (such as a decision tree), our objective is to 
 <h1>Metrics</h1>
 <p>When dealing with imbalanced data, standard classification metrics do not adequately represent your models performance. For example, suppose you are building a model which will look at a person's medical records and classify whether or not they are likely to have a rare disease. An accuracy of 99.5% might look great until you realize that it is correctly classifying the 99.5% of healthy people as "disease-free" and incorrectly classifying the 0.5% of people which do have the disease as healthy. I discussed this in my post on evaluating a machine learning model, but I'll provide a discussion here as well regarding useful metrics when dealing with imbalanced data.</p>
 <p><strong>Precision</strong> is defined as the fraction of relevant examples (true positives) among all of the examples which were predicted to belong in a certain class.
-precision=truepositives/truepositives+falsepositives</p>
+<img alt="Precision" src="/images/ImbalancedData/M1.png"></p>
 <p><strong>Recall</strong> is defined as the fraction of examples which were predicted to belong to a class with respect to all of the examples that truly belong in the class.</p>
-<p>recall=truepositives/truepositives+falsenegatives</p>
+<p><img alt="Recall" src="/images/ImbalancedData/M2.png"></p>
 <p>The following graphic does a phenomenal job visualizing the difference between precision and recall.
 <img alt="the difference between precision and recall" src="/images/ImbalancedData/Precisionrecall.svg.png">
 <a href="https://en.wikipedia.org/wiki/Precision_and_recall">Image credit</a></p>
 <p>We can further combine these two metrics into a single value by calcuating the f-score as defined below.</p>
-<p>$$Fβ=(1+β2)precision⋅recall/(β2⋅precision)+recall$$</p>
+<p><img alt="Recall" src="/images/ImbalancedData/M3.png"></p>
 <p>The β parameter allows us to control the tradeoff of importance between precision and recall. β&lt;1 focuses more on precision while β&gt;1</p>
 <p>focuses more on recall.</p>
 <p>Another common tool used to understand a model's performance is a Receiver Operating Characteristics (ROC) curve. An ROC curve visualizes an algorithm's ability to discriminate the positive class from the rest of the data. We'll do this by plotting the True Positive Rate against the False Positive Rate for varying prediction thresholds.</p>
-<p>TPR=truepositives/truepositives+falsenegatives</p>
-<p>FPR=falsepositives/falsepositives+truenegatives</p>
+<p>TPR=truepositives/truepositives+falsenegatives
+<img alt="TPR" src="/images/ImbalancedData/M4.png"></p>
+<p>FPR=falsepositives/falsepositives+truenegatives
+<img alt="FPR" src="/images/ImbalancedData/M5.png"></p>
 <p>For classifiers which only produce factor outcomes (ie. directly output a class), there exists a fixed TPR and FPR for a trained model. However, other classifiers, such as logistic regression, are capable of giving a probabilistic output (ie. the chance that a given observation belongs to the positive class). For these classifiers, we can specify the probability threshold by which above that amount we'll predict the observation belongs to the positive class.</p>
-<p>Screen-Shot-2018-02-15-at-12.41.38-PM</p>
 <p><img alt="ROC" src="/images/ImbalancedData/Screen-Shot-2018-02-15-at-12.41.38-PM.png"></p>
 <p>[Image credit] (https://en.wikipedia.org/wiki/Receiver_operating_characteristic) and [Image credit] (https://scikit-learn.org/stable/auto_examples/model_selection/plot_roc.html#sphx-glr-auto-examples-model-selection-plot-roc-py)</p>
 <p>If we set a very low value for this probability threshold, we can increase our True Positive Rate as we'll be more likely to capture all of the positive observations. However, this can also introduce a number of false positive classifications, increasing our False Positive Rate. Intuitively, there exists a tradeoff between maximizing our True Positive Rate and minimizing our False Positive Rate. The ideal model would correctly identify all positive observations as belonging to the positive class (TPR=1) and would not incorrectly classify negative observations as belonging to the positive class (FPR=0).
@@ -111,10 +112,10 @@ To calculate the proper weights for each class, you can use the sklearn utility 
 
 
 <p>In a tree-based model where you're determining the optimal split according to some measure such as decreased entropy, you can simply scale the entropy component of each class by the corresponding weight such that you place more emphasis on the minority classes. As a reminder, the entropy of a node can be calculated as</p>
-<p>−∑ipilog(pi)</p>
+<p><img alt="eq" src="/images/ImbalancedData/M6.png"></p>
 <p>where pi is the fraction of data points within class i.</p>
 <p>In a gradient-based model, you can scale the calculated loss for each observation by the appropriate class weight such that you place more significance on the losses associated with minority classes. As a reminder, a common loss function for classification is the categorical cross entropy (which is very similar to the above equation, albeit with slight differences). This may be calculated as</p>
-<p>∑iyilogy^i</p>
+<p><img alt="eq" src="/images/ImbalancedData/M7.png"></p>
 <p>where yi represents the true class (typically a one-hot encoded vector) and y^i represents the predicted class distribution.</p>
 <h1>Further reading</h1>
 <div class="highlight"><pre><span></span><span class="cp">[</span><span class="nx">Learning</span> <span class="nx">from</span> <span class="nx">Imbalanced</span> <span class="kd">Data</span> <span class="o">-</span> <span class="nx">Literature</span> <span class="nx">Review</span><span class="cp">]</span> <span class="o">(</span><span class="nt">http</span><span class="o">://</span><span class="nt">ieeexplore</span><span class="p">.</span><span class="nc">ieee</span><span class="p">.</span><span class="nc">org</span><span class="o">/</span><span class="nt">document</span><span class="o">/</span><span class="nt">5128907</span><span class="o">/)</span>

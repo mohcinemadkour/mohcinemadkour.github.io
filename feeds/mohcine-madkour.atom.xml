@@ -681,21 +681,22 @@ When building a tree-based model (such as a decision tree), our objective is to 
 &lt;h1&gt;Metrics&lt;/h1&gt;
 &lt;p&gt;When dealing with imbalanced data, standard classification metrics do not adequately represent your models performance. For example, suppose you are building a model which will look at a person's medical records and classify whether or not they are likely to have a rare disease. An accuracy of 99.5% might look great until you realize that it is correctly classifying the 99.5% of healthy people as "disease-free" and incorrectly classifying the 0.5% of people which do have the disease as healthy. I discussed this in my post on evaluating a machine learning model, but I'll provide a discussion here as well regarding useful metrics when dealing with imbalanced data.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Precision&lt;/strong&gt; is defined as the fraction of relevant examples (true positives) among all of the examples which were predicted to belong in a certain class.
-precision=truepositives/truepositives+falsepositives&lt;/p&gt;
+&lt;img alt="Precision" src="/images/ImbalancedData/M1.png"&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Recall&lt;/strong&gt; is defined as the fraction of examples which were predicted to belong to a class with respect to all of the examples that truly belong in the class.&lt;/p&gt;
-&lt;p&gt;recall=truepositives/truepositives+falsenegatives&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Recall" src="/images/ImbalancedData/M2.png"&gt;&lt;/p&gt;
 &lt;p&gt;The following graphic does a phenomenal job visualizing the difference between precision and recall.
 &lt;img alt="the difference between precision and recall" src="/images/ImbalancedData/Precisionrecall.svg.png"&gt;
 &lt;a href="https://en.wikipedia.org/wiki/Precision_and_recall"&gt;Image credit&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;We can further combine these two metrics into a single value by calcuating the f-score as defined below.&lt;/p&gt;
-&lt;p&gt;$$Fβ=(1+β2)precision⋅recall/(β2⋅precision)+recall$$&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Recall" src="/images/ImbalancedData/M3.png"&gt;&lt;/p&gt;
 &lt;p&gt;The β parameter allows us to control the tradeoff of importance between precision and recall. β&amp;lt;1 focuses more on precision while β&amp;gt;1&lt;/p&gt;
 &lt;p&gt;focuses more on recall.&lt;/p&gt;
 &lt;p&gt;Another common tool used to understand a model's performance is a Receiver Operating Characteristics (ROC) curve. An ROC curve visualizes an algorithm's ability to discriminate the positive class from the rest of the data. We'll do this by plotting the True Positive Rate against the False Positive Rate for varying prediction thresholds.&lt;/p&gt;
-&lt;p&gt;TPR=truepositives/truepositives+falsenegatives&lt;/p&gt;
-&lt;p&gt;FPR=falsepositives/falsepositives+truenegatives&lt;/p&gt;
+&lt;p&gt;TPR=truepositives/truepositives+falsenegatives
+&lt;img alt="TPR" src="/images/ImbalancedData/M4.png"&gt;&lt;/p&gt;
+&lt;p&gt;FPR=falsepositives/falsepositives+truenegatives
+&lt;img alt="FPR" src="/images/ImbalancedData/M5.png"&gt;&lt;/p&gt;
 &lt;p&gt;For classifiers which only produce factor outcomes (ie. directly output a class), there exists a fixed TPR and FPR for a trained model. However, other classifiers, such as logistic regression, are capable of giving a probabilistic output (ie. the chance that a given observation belongs to the positive class). For these classifiers, we can specify the probability threshold by which above that amount we'll predict the observation belongs to the positive class.&lt;/p&gt;
-&lt;p&gt;Screen-Shot-2018-02-15-at-12.41.38-PM&lt;/p&gt;
 &lt;p&gt;&lt;img alt="ROC" src="/images/ImbalancedData/Screen-Shot-2018-02-15-at-12.41.38-PM.png"&gt;&lt;/p&gt;
 &lt;p&gt;[Image credit] (https://en.wikipedia.org/wiki/Receiver_operating_characteristic) and [Image credit] (https://scikit-learn.org/stable/auto_examples/model_selection/plot_roc.html#sphx-glr-auto-examples-model-selection-plot-roc-py)&lt;/p&gt;
 &lt;p&gt;If we set a very low value for this probability threshold, we can increase our True Positive Rate as we'll be more likely to capture all of the positive observations. However, this can also introduce a number of false positive classifications, increasing our False Positive Rate. Intuitively, there exists a tradeoff between maximizing our True Positive Rate and minimizing our False Positive Rate. The ideal model would correctly identify all positive observations as belonging to the positive class (TPR=1) and would not incorrectly classify negative observations as belonging to the positive class (FPR=0).
@@ -725,10 +726,10 @@ To calculate the proper weights for each class, you can use the sklearn utility 
 
 
 &lt;p&gt;In a tree-based model where you're determining the optimal split according to some measure such as decreased entropy, you can simply scale the entropy component of each class by the corresponding weight such that you place more emphasis on the minority classes. As a reminder, the entropy of a node can be calculated as&lt;/p&gt;
-&lt;p&gt;−∑ipilog(pi)&lt;/p&gt;
+&lt;p&gt;&lt;img alt="eq" src="/images/ImbalancedData/M6.png"&gt;&lt;/p&gt;
 &lt;p&gt;where pi is the fraction of data points within class i.&lt;/p&gt;
 &lt;p&gt;In a gradient-based model, you can scale the calculated loss for each observation by the appropriate class weight such that you place more significance on the losses associated with minority classes. As a reminder, a common loss function for classification is the categorical cross entropy (which is very similar to the above equation, albeit with slight differences). This may be calculated as&lt;/p&gt;
-&lt;p&gt;∑iyilogy^i&lt;/p&gt;
+&lt;p&gt;&lt;img alt="eq" src="/images/ImbalancedData/M7.png"&gt;&lt;/p&gt;
 &lt;p&gt;where yi represents the true class (typically a one-hot encoded vector) and y^i represents the predicted class distribution.&lt;/p&gt;
 &lt;h1&gt;Further reading&lt;/h1&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;Learning&lt;/span&gt; &lt;span class="nx"&gt;from&lt;/span&gt; &lt;span class="nx"&gt;Imbalanced&lt;/span&gt; &lt;span class="kd"&gt;Data&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="nx"&gt;Literature&lt;/span&gt; &lt;span class="nx"&gt;Review&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;http&lt;/span&gt;&lt;span class="o"&gt;://&lt;/span&gt;&lt;span class="nt"&gt;ieeexplore&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;ieee&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;org&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;document&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;5128907&lt;/span&gt;&lt;span class="o"&gt;/)&lt;/span&gt;
