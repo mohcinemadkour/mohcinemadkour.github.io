@@ -8,23 +8,21 @@ http://annals.org/aim/article/2088549/transparent-reporting-multivariable-predic
 &lt;p&gt;&lt;img alt="png" src="/images/1.png"&gt;
 &lt;img alt="png" src="/images/2.png"&gt;&lt;/p&gt;
 &lt;p&gt;Credit to:&lt;/p&gt;
-&lt;p&gt;Framingham RS,
+&lt;p&gt;&lt;em&gt;Framingham RS&lt;/em&gt;: 
 &lt;a href="http://circ.ahajournals.org/cgi/pmidlookup?view=long&amp;amp;pmid=18212285"&gt;http://circ.ahajournals.org/cgi/pmidlookup?view=long&amp;amp;pmid=18212285&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;ASCVD, https://www.ncbi.nlm.nih.gov/pmc/articles/pmid/24682252/&lt;/p&gt;
-&lt;p&gt;JHS, &lt;a href="http://jamanetwork.com/journals/jamacardiology/fullarticle/2492417"&gt;http://jamanetwork.com/journals/jamacardiology/fullarticle/2492417&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Mesa, &lt;a href="https://www.ncbi.nlm.nih.gov/pubmed/25686167"&gt;https://www.ncbi.nlm.nih.gov/pubmed/25686167&lt;/a&gt;,
-&lt;a href="http://www.sciencedirect.com/science/article/pii/S0021915006004047"&gt;http://www.sciencedirect.com/science/article/pii/S0021915006004047&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;ASCVD&lt;/em&gt;: https://www.ncbi.nlm.nih.gov/pmc/articles/pmid/24682252/&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;JHS&lt;/em&gt;: &lt;a href="http://jamanetwork.com/journals/jamacardiology/fullarticle/2492417"&gt;http://jamanetwork.com/journals/jamacardiology/fullarticle/2492417&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Mesa&lt;/em&gt;: &lt;a href="https://www.ncbi.nlm.nih.gov/pubmed/25686167"&gt;https://www.ncbi.nlm.nih.gov/pubmed/25686167&lt;/a&gt;&lt;/p&gt;
 &lt;h1&gt;Clinical Study Reporting&lt;/h1&gt;
-&lt;p&gt;&lt;img alt="png" src="/images/3.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="/images/3.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img alt="png" src="/images/4.png"&gt;
 Credit: &lt;a href="https://cnx.org/contents/8v2Xzdco@3/The-Structure-of-DNA"&gt;https://cnx.org/contents/8v2Xzdco@3/The-Structure-of-DNA&lt;/a&gt;&lt;/p&gt;
 &lt;h2&gt;What is a SNP?&lt;/h2&gt;
 &lt;p&gt;A SNP (Single Nucelotide Polymorphism) is a single base-pair location in the
 genome where we observe variation across a population.
 We need two pieces of information to locate a snp: the chromosome it’s on, and
-the linear position on the chromosome.\
-&lt;img alt="png" src="/images/5.png"&gt;\
-Snp Image by David Hall / CC Licensed&lt;/p&gt;
+the linear position on the chromosome.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="/images/5.png"&gt;&lt;/p&gt;
 &lt;h2&gt;Parents and genetics&lt;/h2&gt;
 &lt;p&gt;Because we have two chromosomes (one from each parent), we will have two copies
 (values) at any SNP. Each of these copies is called an &lt;em&gt;allele&lt;/em&gt;.
@@ -37,18 +35,17 @@ Nomenclature: if a genotype is observed most of the time, we term that genotype
 the &lt;em&gt;wild type&lt;/em&gt; (WT). The other genotype is called the &lt;em&gt;variant&lt;/em&gt;, and by
 definition occurs less than the wild type.
 Based on population studies, we can see that genotype frequencies vary by racial
-population. Is this reflected in our genotype data?\
-&lt;img alt="png" src="/images/6.png"&gt;\
-Snppedia Snapshot&lt;/p&gt;
+population. &lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="/images/6.png"&gt;&lt;/p&gt;
 &lt;h2&gt;SNPs are associated with disease&lt;/h2&gt;
 &lt;p&gt;A number of SNPs have been associated with CVD. Having a variant can increase
 your overall risk of having CVD.
-A number of these SNPs are associated with genes involving lipid synthesis.\
+A number of these SNPs are associated with genes involving lipid synthesis.
 &lt;img alt="png" src="/images/7.png"&gt;
 Credit:
-&lt;a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4507276/pdf/nihms-703604.pdf"&gt;https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4507276/pdf/nihms-703604.pdf&lt;/a&gt;\&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://github.com/laderast/cvdNight1"&gt;EDA code&lt;/a&gt;\&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://github.com/laderast/cvdNight2"&gt;Genetics Model&lt;/a&gt;\&lt;/p&gt;</content><category term="Machine Learning"></category><category term="Prevention of cardiovascular disease"></category><category term="Risk prediction"></category></entry><entry><title>Type 2 Diabetes - Risk Predictions</title><link href="https://mmadkour.xyz/posts/2019/07/Machine%20Learning,%20July%202019,%20Risk%20prediction/" rel="alternate"></link><published>2019-07-12T13:01:00-04:00</published><updated>2019-07-12T13:01:00-04:00</updated><author><name>Mohcine Madkour</name></author><id>tag:mmadkour.xyz,2019-07-12:/posts/2019/07/Machine Learning, July 2019, Risk prediction/</id><summary type="html">&lt;p&gt;Type 2 diabetes is a chronic condition that affects the way the body metabolizes sugar (glucose). With type 2 diabetes, the body either resists the effects of insulin (a hormone that regulates the movement of sugar into cells) or it doesn't produce enough insulin to maintain normal glucose levels.&lt;/p&gt;
+&lt;a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4507276/pdf/nihms-703604.pdf"&gt;https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4507276/pdf/nihms-703604.pdf&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/laderast/cvdNight1"&gt;EDA code&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/laderast/cvdNight2"&gt;Genetics Model&lt;/a&gt;&lt;/p&gt;</content><category term="Machine Learning"></category><category term="Prevention of cardiovascular disease"></category><category term="Risk prediction"></category></entry><entry><title>Type 2 Diabetes - Risk Predictions</title><link href="https://mmadkour.xyz/posts/2019/07/Machine%20Learning,%20July%202019,%20Risk%20prediction/" rel="alternate"></link><published>2019-07-12T13:01:00-04:00</published><updated>2019-07-12T13:01:00-04:00</updated><author><name>Mohcine Madkour</name></author><id>tag:mmadkour.xyz,2019-07-12:/posts/2019/07/Machine Learning, July 2019, Risk prediction/</id><summary type="html">&lt;p&gt;Type 2 diabetes is a chronic condition that affects the way the body metabolizes sugar (glucose). With type 2 diabetes, the body either resists the effects of insulin (a hormone that regulates the movement of sugar into cells) or it doesn't produce enough insulin to maintain normal glucose levels.&lt;/p&gt;
 &lt;p&gt;Type …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Type 2 diabetes is a chronic condition that affects the way the body metabolizes sugar (glucose). With type 2 diabetes, the body either resists the effects of insulin (a hormone that regulates the movement of sugar into cells) or it doesn't produce enough insulin to maintain normal glucose levels.&lt;/p&gt;
 &lt;p&gt;Type 2 diabetes occurs more commonly in middle-aged and elderly people. Uncontrolled it can cause all sorts of very bad things: infections, damaged kidneys, vision loss and blindness, amputations and many more. So, there is no question that type 2 diabetes needs to be taken seriously and treated. &lt;/p&gt;
 &lt;p&gt;Type 2 diabetes is usually diagnosed using the &lt;strong&gt;glycated hemoglobin (A1C)&lt;/strong&gt; test. This blood test indicates the average blood sugar level for the past two to three months. Normal levels are below 5.7 percent, and a result between 5.7 and 6.4 percent is considered prediabetes. An A1C level of 6.5 percent or higher on two separate tests means you have diabetes.&lt;/p&gt;
