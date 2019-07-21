@@ -46,7 +46,7 @@
                     <h1>Diagnostic model for predicting Cardiovascular Disease Risk using Genomics data</h1>
                         <p class="post-meta">
                             // under                                 <a class="post-category" href="../../../../tag/machine-learning/">Machine Learning</a>
-                                <a class="post-category" href="../../../../tag/july-2019/">July 2019</a>
+                                <a class="post-category" href="../../../../tag/prevention-of-cardiovascular-disease/">Prevention of cardiovascular disease</a>
                                 <a class="post-category" href="../../../../tag/risk-prediction/">Risk prediction</a>
                         </p>
                 </header>
@@ -54,8 +54,7 @@
             <p>Prevention of cardiovascular disease (CVD) requires timely identification of people who are at increased risk in order to target effective dietary, lifestyle, or pharmacotherapeutic intervention—or a combination of the 3. Risk factors for CVD are well understood, but the relative impact of each factor on an individual’s overall risk is difficult to accurately quantify, making a validated CVD risk calculator an important clinical tool. The first widely used cardiovascular risk prediction equation was the Framingham Risk Score (FRS), developed from the country's first longitudinal cardiovascular cohort study. Eventual adoption of the FRS firmly established absolute risk assessment as an integral part of primary prevention, operationalizing the widely accepted paradigm that more intensive prevention efforts, specifically drug therapy, should be directed to those at higher risk.</p>
 <p>Although the original Framingham cohort has been expanded multiple times since its inception, clinicians and researchers continue to express concern that the predominantly white, middle-class Framingham, Massachusetts, population might not be representative of the United States in general—which would limit the accuracy of the FRS predictive tool when it is applied to a more diverse population. Furthermore, cholesterol-lowering medications were not available when the FRS was first developed. The FRS, therefore, might not accurately estimate risk in more modern populations, in whom aggressive modification of CVD risk factors has resulted in a lower overall rate of atherosclerotic CVD than when the FRS was developed.</p>
 <p>Despite numerous available CVD risk calculators, one best tool has yet to emerge. This state of affairs has limited the ability of front-line providers who are tasked with primary prevention of CVD—including family physicians (FPs)—to provide the best evidence-based recommendations to patients.</p>
-<h1><img alt="./media/image1.jpeg" src="/images/media/image1.jpeg"></h1>
-<p>~   http://annals.org/data/Journals/AIM/931895/2ff1_Box_A_Schematic_representation_of_diagnostic_and_prognostic_prediction_modeling_studies.jpeg</p>
+<p><img alt="/images/media/image1.jpeg" src="http://annals.org/data/Journals/AIM/931895/2ff1_Box_A_Schematic_representation_of_diagnostic_and_prognostic_prediction_modeling_studies.jpeg"></p>
 <p>Credit: TRIPOD group (Collins et al), Annals, 2015.
 http://annals.org/aim/article/2088549/transparent-reporting-multivariable-prediction-model-individual-prognosis-diagnosis-tripod-tripod</p>
 <table>
@@ -111,9 +110,15 @@ http://annals.org/aim/article/2088549/transparent-reporting-multivariable-predic
 <td></td>
 <td></td>
 </tr>
+<tr>
+<td>Credit to:</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
 </tbody>
 </table>
-<p>Credit to:</p>
 <p>Framingham RS,
 <a href="http://circ.ahajournals.org/cgi/pmidlookup?view=long&amp;pmid=18212285">http://circ.ahajournals.org/cgi/pmidlookup?view=long&amp;pmid=18212285</a></p>
 <p>ASCVD, https://www.ncbi.nlm.nih.gov/pmc/articles/pmid/24682252/</p>
@@ -220,84 +225,61 @@ http://annals.org/aim/article/2088549/transparent-reporting-multivariable-predic
 </table>
 <p>$$
 \mathbf{\text{Predicted}}\ \mathbf{\text{ASCVD}}\ \mathbf{\text{risk}} = \mathbf{1} - \mathbf{S}_{\mathbf{0}}\left( \mathbf{t} \right)^{\mathbf{e}^{(\mathbf{\text{Individual}}\ \mathbf{\text{score}} - \mathbf{\text{Mean}}\ \mathbf{\text{score}})}}\ 
-$$</p>
-<p>† Obtained from the ACC/AHA Guideline on the Assessment of Cardiovascular Risk
-working group (S. Coady, Personal Communication).</p>
-<h1>what do you expect? What factors increase risk?</h1>
-<table>
-<thead>
-<tr>
-<th><strong>Case examples</strong></th>
-<th><strong>Framingham1</strong></th>
-<th><strong>ASCVD2</strong></th>
-<th><strong>Mesa3</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Smythe 68 year old white male with Chol of 250, HDL of 40, LDL 120, SBP 123, no other illnesses - what if black male? - what if white female? - what if smoker?</td>
-<td>16.8% 16.8%? 5.2% 18.3%</td>
-<td>18.7% 11.7% 8.5% 23.6%</td>
-<td>10.1% 8.3% 4.9% 15.7%</td>
-</tr>
-<tr>
-<td>Chavez 45 year old Hispanic female with Chol of 200, HDL 40, LDL 101 SBP 150 Diabetes and smoker. Not treated for HTN. - what if CAC is 350 Agatston units? - what if 39?</td>
-<td>4.7% 4.7%? 3.6%</td>
-<td>11.6% 11.6%? N/A</td>
-<td>3.7% 14.2% N/A</td>
-</tr>
-<tr>
-<td>Lee 55 year old Asian male with Chol of 130 LDL 50 HDL 50 SBP 170 treated for HTN (not well) no diabetes and never smoked</td>
-<td>6.1%</td>
-<td>6.6%</td>
-<td>3.4%</td>
-</tr>
-</tbody>
-</table>
-<h1>Clinical Study Reporting</h1>
-<p><img alt="http://annals.org/data/Journals/AIM/931895/9tt1_Table_Checklist_of_Items_to_Include_When_Reporting_a_Study_Developing_or_Validating_a_Multi.jpeg" src="/images/media/807d0e4173bbfaec1129c7ade248ce5c.jpg"></p>
-<p><img alt="http://annals.org/data/Journals/AIM/931895/9tt1_Table_Checklist_of_Items_to_Include_When_Reporting_a_Study_Developing_or_Validating_a_Multi.jpeg" src="/images/media/807d0e4173bbfaec1129c7ade248ce5c.jpg"></p>
-<p><img alt="http://annals.org/data/Journals/AIM/931895/9tt1_Table_Checklist_of_Items_to_Include_When_Reporting_a_Study_Developing_or_Validating_a_Multi.jpeg" src="/images/media/807d0e4173bbfaec1129c7ade248ce5c.jpg"></p>
-<p><img alt="http://annals.org/data/Journals/AIM/931895/9tt1_Table_Checklist_of_Items_to_Include_When_Reporting_a_Study_Developing_or_Validating_a_Multi.jpeg" src="/images/media/807d0e4173bbfaec1129c7ade248ce5c.jpg"></p>
-<h1>Genetics and Cardiovascular Risk</h1>
-<p><img alt="C:\Users\qq834\AppData\Local\Microsoft\Windows\INetCache\Content.Word\download.jpg" src="/images/media/3548125eb8e7822ddd8ddce0b89dcecf.jpg"></p>
-<p>Credit: <a href="https://cnx.org/contents/8v2Xzdco@3/The-Structure-of-DNA">https://cnx.org/contents/8v2Xzdco@3/The-Structure-of-DNA</a></p>
-<h2>What is a SNP?</h2>
+$$
+† Obtained from the ACC/AHA Guideline on the Assessment of Cardiovascular Risk
+working group (S. Coady, Personal Communication).
+what do you expect? What factors increase risk?
+===============================================
+| <strong>Case examples</strong>                                                                                                                                                         | <strong>Framingham1</strong>         | <strong>ASCVD2</strong>             | <strong>Mesa3</strong>             |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------|------------------------|-----------------------|
+| Smythe 68 year old white male with Chol of 250, HDL of 40, LDL 120, SBP 123, no other illnesses - what if black male? - what if white female? - what if smoker?           | 16.8% 16.8%? 5.2% 18.3% | 18.7% 11.7% 8.5% 23.6% | 10.1% 8.3% 4.9% 15.7% |
+| Chavez 45 year old Hispanic female with Chol of 200, HDL 40, LDL 101 SBP 150 Diabetes and smoker. Not treated for HTN. - what if CAC is 350 Agatston units? - what if 39? | 4.7% 4.7%? 3.6%         | 11.6% 11.6%? N/A       | 3.7% 14.2% N/A        |
+| Lee 55 year old Asian male with Chol of 130 LDL 50 HDL 50 SBP 170 treated for HTN (not well) no diabetes and never smoked                                                 | 6.1%                    | 6.6%                   | 3.4%                  |
+Clinical Study Reporting
+========================
+<img alt="http://annals.org/data/Journals/AIM/931895/9tt1_Table_Checklist_of_Items_to_Include_When_Reporting_a_Study_Developing_or_Validating_a_Multi.jpeg" src="/images/media/807d0e4173bbfaec1129c7ade248ce5c.jpg">
+<img alt="http://annals.org/data/Journals/AIM/931895/9tt1_Table_Checklist_of_Items_to_Include_When_Reporting_a_Study_Developing_or_Validating_a_Multi.jpeg" src="/images/media/807d0e4173bbfaec1129c7ade248ce5c.jpg">
+<img alt="http://annals.org/data/Journals/AIM/931895/9tt1_Table_Checklist_of_Items_to_Include_When_Reporting_a_Study_Developing_or_Validating_a_Multi.jpeg" src="/images/media/807d0e4173bbfaec1129c7ade248ce5c.jpg">
+<img alt="http://annals.org/data/Journals/AIM/931895/9tt1_Table_Checklist_of_Items_to_Include_When_Reporting_a_Study_Developing_or_Validating_a_Multi.jpeg" src="/images/media/807d0e4173bbfaec1129c7ade248ce5c.jpg">
+Genetics and Cardiovascular Risk
+================================
+<img alt="" src="/images/media/3548125eb8e7822ddd8ddce0b89dcecf.jpg">
+Credit: <a href="https://cnx.org/contents/8v2Xzdco@3/The-Structure-of-DNA">https://cnx.org/contents/8v2Xzdco@3/The-Structure-of-DNA</a>
+What is a SNP?</p>
+<hr>
 <p>A SNP (Single Nucelotide Polymorphism) is a single base-pair location in the
-genome where we observe variation across a population.</p>
-<p>We need two pieces of information to locate a snp: the chromosome it’s on, and
-the linear position on the chromosome.</p>
-<p><img alt="C:\Users\qq834\AppData\Local\Microsoft\Windows\INetCache\Content.Word\download.png" src="/images/media/9a49a7f3c1c89806ba98187b9f5cee04.png"></p>
-<p>Snp Image by David Hall / CC Licensed</p>
-<h2>Parents and genetics</h2>
+genome where we observe variation across a population.
+We need two pieces of information to locate a snp: the chromosome it’s on, and
+the linear position on the chromosome.
+<img alt="C:\Users\qq834\AppData\Local\Microsoft\Windows\INetCache\Content.Word\download.png" src="/images/media/9a49a7f3c1c89806ba98187b9f5cee04.png">
+Snp Image by David Hall / CC Licensed
+Parents and genetics</p>
+<hr>
 <p>Because we have two chromosomes (one from each parent), we will have two copies
-(values) at any SNP. Each of these copies is called an <em>allele</em>.</p>
-<p>For example, if my dad gave me a copy (allele) with an A, and my mom gave me a
-copy (allele) with a G, my genotype at that SNP location would be AG.</p>
-<h2>SNP Frequencies</h2>
+(values) at any SNP. Each of these copies is called an <em>allele</em>.
+For example, if my dad gave me a copy (allele) with an A, and my mom gave me a
+copy (allele) with a G, my genotype at that SNP location would be AG.
+SNP Frequencies</p>
+<hr>
 <p>We classify the different genotypes based on how frequently they are observed in
-the population.</p>
-<p>Nomenclature: if a genotype is observed most of the time, we term that genotype
+the population.
+Nomenclature: if a genotype is observed most of the time, we term that genotype
 the <em>wild type</em> (WT). The other genotype is called the <em>variant</em>, and by
-definition occurs less than the wild type.</p>
-<p>Based on population studies, we can see that genotype frequencies vary by racial
-population. Is this reflected in our genotype data?</p>
-<p><img alt="C:\Users\qq834\AppData\Local\Microsoft\Windows\INetCache\Content.Word\download (2).png" src="/images/media/6e7319ff2bf0ba77955ca39a973fefe4.png"></p>
-<p>Snppedia Snapshot</p>
-<h2>SNPs are associated with disease</h2>
+definition occurs less than the wild type.
+Based on population studies, we can see that genotype frequencies vary by racial
+population. Is this reflected in our genotype data?
+<img alt="C:\Users\qq834\AppData\Local\Microsoft\Windows\INetCache\Content.Word\download (2).png" src="/images/media/6e7319ff2bf0ba77955ca39a973fefe4.png">
+Snppedia Snapshot
+SNPs are associated with disease</p>
+<hr>
 <p>A number of SNPs have been associated with CVD. Having a variant can increase
-your overall risk of having CVD.</p>
-<p>A number of these SNPs are associated with genes involving lipid synthesis.</p>
-<p><img alt="" src="/images/media/49470225a6341462340941f1f94cb6ba.png"></p>
-<blockquote>
-<p>C:\Users\qq834\AppData\Local\Microsoft\Windows\INetCache\Content.Word\download
-  (1).png</p>
-</blockquote>
-<p>Credit:
-<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4507276/pdf/nihms-703604.pdf">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4507276/pdf/nihms-703604.pdf</a></p>
-<p><a href="https://github.com/laderast/cvdNight1">Code link</a></p>
-<p>## Genetics Model</p>
-<p><a href="https://github.com/laderast/cvdNight2">Code link</a></p>
+your overall risk of having CVD.
+A number of these SNPs are associated with genes involving lipid synthesis.
+<img alt="" src="/images/media/49470225a6341462340941f1f94cb6ba.png">
+Credit:
+<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4507276/pdf/nihms-703604.pdf">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4507276/pdf/nihms-703604.pdf</a>
+<a href="https://github.com/laderast/cvdNight1">EDA code</a>
+<a href="https://github.com/laderast/cvdNight2">Genetics Model</a></p>
             <div class="hr"></div>
             <a href="#" class="go-top">Go Top</a>
 <div class="comments">
