@@ -57,229 +57,50 @@
 <p><img alt="/images/media/image1.jpeg" src="http://annals.org/data/Journals/AIM/931895/2ff1_Box_A_Schematic_representation_of_diagnostic_and_prognostic_prediction_modeling_studies.jpeg"></p>
 <p>Credit: TRIPOD group (Collins et al), Annals, 2015.
 http://annals.org/aim/article/2088549/transparent-reporting-multivariable-prediction-model-individual-prognosis-diagnosis-tripod-tripod</p>
-<table>
-<thead>
-<tr>
-<th><strong>Model</strong></th>
-<th><strong>1 Framingham (D’Agostino)</strong></th>
-<th><strong>2 ASCVD risk (Muntner)</strong></th>
-<th><strong>3 Jackson Heart Study (Fox)</strong></th>
-<th><strong>4 Mesa</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>WHY</td>
-<td>Heart attack and stroke risk could be identified</td>
-<td>Variation by race and geography</td>
-<td>Models don’t capture race or new variables</td>
-<td>Increase ethnicity mix in scoring; add coronary artery calcium (CAC) + other data</td>
-</tr>
-<tr>
-<td>HOW: General Model development Model validation</td>
-<td>Use Heart Study to predict outcomes Cox proportional-hazards regression Limited; no training set</td>
-<td>Used REGARDS study Stratified logistic regression Separate data set (the ref)</td>
-<td>Jackson Study all black Cox proportional-hazards regression Separate sets</td>
-<td>Cohort study from 2000-present Cox proportional-hazards regression Unusual – repeat lots of other risk scores, <strong>add</strong> in CAC</td>
-</tr>
-<tr>
-<td>WHAT they found: Participants</td>
-<td>8491 in Framingham study</td>
-<td>18500 Medicare eligible patients in study</td>
-<td>2200 (Training) + 2300 (Validation)</td>
-<td>6184 persons – Caucasian, Chinese, African American, Hispanic</td>
-</tr>
-<tr>
-<td>Model specification</td>
-<td>Gender stratified, uses Age, Total Cholesterol, HDL, SBP, Diabetes, Smoking, Treatment for HTN</td>
-<td>Separates Race, Gender, treatment for HTN, uses Age, Total Cholesterol, HDL, SBP, Diabetes, Smoking</td>
-<td>6 models; as left but no stratification + GFR; added BNP, CIMT, ABI, Echo of heart failure, A1c</td>
-<td>Add CAC, CRP to standard scores</td>
-</tr>
-<tr>
-<td>Model performance</td>
-<td>C-stat: men .749, women .785 Hosmer-Lemeshow p=.08-.41</td>
-<td>C-Stat: 0.71 (.66-.75) H-L p=.14-.56</td>
-<td>C-stat: 0.77-0.83; Validation: .70-.77 ; no sig improvement</td>
-<td>C-stat not available; increase risk in intermediate group</td>
-</tr>
-<tr>
-<td>WHAT it means</td>
-<td>Add CAC, CRP if intermediate risk</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>Credit to:</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
+<p><img alt="png" src="/images/1.png">
+<img alt="png" src="/images/2.png"></p>
+<p>Credit to:</p>
 <p>Framingham RS,
 <a href="http://circ.ahajournals.org/cgi/pmidlookup?view=long&amp;pmid=18212285">http://circ.ahajournals.org/cgi/pmidlookup?view=long&amp;pmid=18212285</a></p>
 <p>ASCVD, https://www.ncbi.nlm.nih.gov/pmc/articles/pmid/24682252/</p>
 <p>JHS, <a href="http://jamanetwork.com/journals/jamacardiology/fullarticle/2492417">http://jamanetwork.com/journals/jamacardiology/fullarticle/2492417</a></p>
 <p>Mesa, <a href="https://www.ncbi.nlm.nih.gov/pubmed/25686167">https://www.ncbi.nlm.nih.gov/pubmed/25686167</a>,
 <a href="http://www.sciencedirect.com/science/article/pii/S0021915006004047">http://www.sciencedirect.com/science/article/pii/S0021915006004047</a></p>
-<h1>The ASCVD risk scores!</h1>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>Equations parameters*</th>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td></td>
-<td>S0(t) at 5 years†</td>
-<td>S0(t) at 10 years</td>
-<td>Mean score</td>
-<td>Individual score</td>
-</tr>
-<tr>
-<td><strong>Participants not taking antihypertensive medications</strong></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>Black women</td>
-<td>0.98194</td>
-<td>0.9533</td>
-<td>86.61</td>
-<td>= 17.114 × ln(age) + 0.94 × ln(TC) - 18.92 × ln(HDL-C) + 4.475 × ln(age) × ln(HDL-C) + 27.82 × ln(SBP) - 6.087 × ln(age) × ln(SBP) (+ 0.691 if current smoker) (+ 0.874 if diabetes)</td>
-</tr>
-<tr>
-<td>White women</td>
-<td>0.98898</td>
-<td>0.9665</td>
-<td>-29.18</td>
-<td>= - 29.799 × ln(age) + 4.884 × ln(age)2 + 13.54 × ln(TC) - 3.114 × ln(age) × ln(TC) -13.578 × ln(HDL-C) + 3.149 × ln(age) × ln(HDL-C) + 1.957 × ln(SBP) (+ 7.574 - 1.665 × ln(age) if current smoker) (+ 0.661 if diabetes)</td>
-</tr>
-<tr>
-<td>Black men</td>
-<td>0.95726</td>
-<td>0.8954</td>
-<td>19.54</td>
-<td>= 2.469 × ln(age) + 0.302 × ln(TC) - 0.307 × ln(HDL-C) + 1.809 × ln(SBP) (+ 0.549 if current smoker) (+ 0.645 if diabetes)</td>
-</tr>
-<tr>
-<td>White men</td>
-<td>0.96254</td>
-<td>0.9144</td>
-<td>61.18</td>
-<td>= 12.344 × ln(age) + 11.853 × ln(TC) - 2.664 × ln(age) × ln(TC) - 7.99 × ln(HDL-C) + 1.769 × ln(age) × ln(HDL-C) + 1.764 × ln(SBP) (+ 7.837 - 1.795 × ln(age) if current smoker) (+ 0.658 if diabetes)</td>
-</tr>
-<tr>
-<td><strong>Participants taking antihypertensive medications</strong></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>Black women</td>
-<td>0.98194</td>
-<td>0.9533</td>
-<td>86.61</td>
-<td>= 17.114 × ln(age) + 0.94 × ln(TC) - 18.92 × ln(HDL-C) + 4.475 × ln(age) × ln(HDL-C) + 29.291 × ln(SBP) - 6.432 × ln(age) × ln(SBP) (+ 0.691 if current smoker) (+ 0.874 if diabetes)</td>
-</tr>
-<tr>
-<td>White women</td>
-<td>0.98898</td>
-<td>0.9665</td>
-<td>-29.18</td>
-<td>= - 29.799 × ln(age) + 4.884 × ln(age)2 + 13.54 × ln(TC) - 3.114 × ln(age) × ln(TC) -13.578 × ln(HDL-C) + 3.149 × ln(age) × ln(HDL-C) + 2.019 × ln(SBP) (+ 7.574 - 1.665 × ln(age) if current smoker) (+ 0.661 if diabetes)</td>
-</tr>
-<tr>
-<td>Black men</td>
-<td>0.95726</td>
-<td>0.8954</td>
-<td>19.54</td>
-<td>= 2.469 × ln(age) + 0.302 × ln(TC) - 0.307 × ln(HDL-C) + 1.916 × ln(SBP) (+ 0.549 if current smoker) (+ 0.645 if diabetes)</td>
-</tr>
-<tr>
-<td>White men</td>
-<td>0.96254</td>
-<td>0.9144</td>
-<td>61.18</td>
-<td>= 12.344 × ln(age) + 11.853 × ln(TC) - 2.664 × ln(age) × ln(TC) - 7.99 × ln(HDL-C) + 1.769 × ln(age) × ln(HDL-C) + 1.797 × ln(SBP) (+ 7.837 - 1.795 × ln(age) if current smoker) (+ 0.658 if diabetes)</td>
-</tr>
-<tr>
-<td>ASCVD: atherosclerotic cardiovascular disease; HDL-C: high-density lipoprotein cholesterol; REGARDS: REasons for Geographic And Racial Differences in Stroke; SBP: systolic blood pressure; TC: total cholesterol. * Final risk estimation is calculated as:</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p>$$
-\mathbf{\text{Predicted}}\ \mathbf{\text{ASCVD}}\ \mathbf{\text{risk}} = \mathbf{1} - \mathbf{S}_{\mathbf{0}}\left( \mathbf{t} \right)^{\mathbf{e}^{(\mathbf{\text{Individual}}\ \mathbf{\text{score}} - \mathbf{\text{Mean}}\ \mathbf{\text{score}})}}\ 
-$$
-† Obtained from the ACC/AHA Guideline on the Assessment of Cardiovascular Risk
-working group (S. Coady, Personal Communication).
-what do you expect? What factors increase risk?
-===============================================
-| <strong>Case examples</strong>                                                                                                                                                         | <strong>Framingham1</strong>         | <strong>ASCVD2</strong>             | <strong>Mesa3</strong>             |
-|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------|------------------------|-----------------------|
-| Smythe 68 year old white male with Chol of 250, HDL of 40, LDL 120, SBP 123, no other illnesses - what if black male? - what if white female? - what if smoker?           | 16.8% 16.8%? 5.2% 18.3% | 18.7% 11.7% 8.5% 23.6% | 10.1% 8.3% 4.9% 15.7% |
-| Chavez 45 year old Hispanic female with Chol of 200, HDL 40, LDL 101 SBP 150 Diabetes and smoker. Not treated for HTN. - what if CAC is 350 Agatston units? - what if 39? | 4.7% 4.7%? 3.6%         | 11.6% 11.6%? N/A       | 3.7% 14.2% N/A        |
-| Lee 55 year old Asian male with Chol of 130 LDL 50 HDL 50 SBP 170 treated for HTN (not well) no diabetes and never smoked                                                 | 6.1%                    | 6.6%                   | 3.4%                  |
-Clinical Study Reporting
-========================
-<img alt="http://annals.org/data/Journals/AIM/931895/9tt1_Table_Checklist_of_Items_to_Include_When_Reporting_a_Study_Developing_or_Validating_a_Multi.jpeg" src="/images/media/807d0e4173bbfaec1129c7ade248ce5c.jpg">
-<img alt="http://annals.org/data/Journals/AIM/931895/9tt1_Table_Checklist_of_Items_to_Include_When_Reporting_a_Study_Developing_or_Validating_a_Multi.jpeg" src="/images/media/807d0e4173bbfaec1129c7ade248ce5c.jpg">
-<img alt="http://annals.org/data/Journals/AIM/931895/9tt1_Table_Checklist_of_Items_to_Include_When_Reporting_a_Study_Developing_or_Validating_a_Multi.jpeg" src="/images/media/807d0e4173bbfaec1129c7ade248ce5c.jpg">
-<img alt="http://annals.org/data/Journals/AIM/931895/9tt1_Table_Checklist_of_Items_to_Include_When_Reporting_a_Study_Developing_or_Validating_a_Multi.jpeg" src="/images/media/807d0e4173bbfaec1129c7ade248ce5c.jpg">
-Genetics and Cardiovascular Risk
-================================
-<img alt="" src="/images/media/3548125eb8e7822ddd8ddce0b89dcecf.jpg">
-Credit: <a href="https://cnx.org/contents/8v2Xzdco@3/The-Structure-of-DNA">https://cnx.org/contents/8v2Xzdco@3/The-Structure-of-DNA</a>
-What is a SNP?</p>
-<hr>
+<h1>Clinical Study Reporting</h1>
+<p><img alt="png" src="/images/3.png"></p>
+<p><img alt="png" src="/images/4.png">
+Credit: <a href="https://cnx.org/contents/8v2Xzdco@3/The-Structure-of-DNA">https://cnx.org/contents/8v2Xzdco@3/The-Structure-of-DNA</a></p>
+<h2>What is a SNP?</h2>
 <p>A SNP (Single Nucelotide Polymorphism) is a single base-pair location in the
 genome where we observe variation across a population.
 We need two pieces of information to locate a snp: the chromosome it’s on, and
-the linear position on the chromosome.
-<img alt="C:\Users\qq834\AppData\Local\Microsoft\Windows\INetCache\Content.Word\download.png" src="/images/media/9a49a7f3c1c89806ba98187b9f5cee04.png">
-Snp Image by David Hall / CC Licensed
-Parents and genetics</p>
-<hr>
+the linear position on the chromosome.\
+<img alt="png" src="/images/5.png">\
+Snp Image by David Hall / CC Licensed</p>
+<h2>Parents and genetics</h2>
 <p>Because we have two chromosomes (one from each parent), we will have two copies
 (values) at any SNP. Each of these copies is called an <em>allele</em>.
 For example, if my dad gave me a copy (allele) with an A, and my mom gave me a
-copy (allele) with a G, my genotype at that SNP location would be AG.
-SNP Frequencies</p>
-<hr>
+copy (allele) with a G, my genotype at that SNP location would be AG.</p>
+<h2>SNP Frequencies</h2>
 <p>We classify the different genotypes based on how frequently they are observed in
 the population.
 Nomenclature: if a genotype is observed most of the time, we term that genotype
 the <em>wild type</em> (WT). The other genotype is called the <em>variant</em>, and by
 definition occurs less than the wild type.
 Based on population studies, we can see that genotype frequencies vary by racial
-population. Is this reflected in our genotype data?
-<img alt="C:\Users\qq834\AppData\Local\Microsoft\Windows\INetCache\Content.Word\download (2).png" src="/images/media/6e7319ff2bf0ba77955ca39a973fefe4.png">
-Snppedia Snapshot
-SNPs are associated with disease</p>
-<hr>
+population. Is this reflected in our genotype data?\
+<img alt="png" src="/images/6.png">\
+Snppedia Snapshot</p>
+<h2>SNPs are associated with disease</h2>
 <p>A number of SNPs have been associated with CVD. Having a variant can increase
 your overall risk of having CVD.
-A number of these SNPs are associated with genes involving lipid synthesis.
-<img alt="" src="/images/media/49470225a6341462340941f1f94cb6ba.png">
+A number of these SNPs are associated with genes involving lipid synthesis.\
+<img alt="png" src="/images/7.png">
 Credit:
-<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4507276/pdf/nihms-703604.pdf">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4507276/pdf/nihms-703604.pdf</a>
-<a href="https://github.com/laderast/cvdNight1">EDA code</a>
-<a href="https://github.com/laderast/cvdNight2">Genetics Model</a></p>
+<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4507276/pdf/nihms-703604.pdf">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4507276/pdf/nihms-703604.pdf</a>\</p>
+<p><a href="https://github.com/laderast/cvdNight1">EDA code</a>\</p>
+<p><a href="https://github.com/laderast/cvdNight2">Genetics Model</a>\</p>
             <div class="hr"></div>
             <a href="#" class="go-top">Go Top</a>
 <div class="comments">
