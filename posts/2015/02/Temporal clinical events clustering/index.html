@@ -79,7 +79,7 @@ move any more.</p>
 <h2>Timeline View</h2>
 <p>For data that relates to temporal events, the Timeline Widget adds an interesting dimension to your exhibit.</p>
 <p>The nobelists.js data file lists the years when the Nobelists won their prizes, so I can plot each one on a time line. To display timelines in Exhibit you need to include a separate utility, the Timeline widget. The Timeline widget is a bit bulky, so Exhibit doesn't include it by default. You have to include the time extension to Exhibit. Open the file nobelists.html, find the reference to exhibit-api.js and add the following script element after it:</p>
-<div class="highlight"><pre><span></span><span class="nt">&lt;div</span> <span class="na">data-ex-role=</span><span class="s">&quot;view&quot;</span><span class="nt">&gt;</span>
+<div class="highlight"><pre><span></span>&amp;lt;div data-ex-role=&quot;view&quot;&amp;gt;
     data-ex-view-class=&quot;Timeline&quot;  
     data-ex-start=&quot;.time&quot; 
     data-ex-end=&quot;.time2&quot; 
@@ -88,11 +88,11 @@ move any more.</p>
     data-ex-bottom-band-unit=&quot;year&quot; 
     data-ex-top-band-pixels-per-unit=&quot;90&quot; 
     data-ex-bottom-band-pixels-per-unit=&quot;400&quot;
-        <span class="nt">&lt;div</span> <span class="na">data-ex-role=</span><span class="s">&quot;lens&quot;</span><span class="nt">&gt;</span>
-                <span class="nt">&lt;span</span> <span class="na">data-ex-content=</span><span class="s">&quot;.hour&quot;</span><span class="nt">&gt;&lt;/span&gt;</span>: 
-                <span class="nt">&lt;span</span> <span class="na">data-ex-content=</span><span class="s">&quot;.label&quot;</span><span class="nt">&gt;&lt;/span&gt;</span>
-        <span class="nt">&lt;/div&gt;</span>
-<span class="nt">&lt;/div&gt;</span>
+        &amp;lt;div data-ex-role=&quot;lens&quot;&amp;gt;
+                &amp;lt;span data-ex-content=&quot;.hour&quot;&amp;gt;&amp;lt;/span&amp;gt;: 
+                &amp;lt;span data-ex-content=&quot;.label&quot;&amp;gt;&amp;lt;/span&amp;gt;
+        &amp;lt;/div&amp;gt;
+&amp;lt;/div&amp;gt;
 </pre></div>
 
 
