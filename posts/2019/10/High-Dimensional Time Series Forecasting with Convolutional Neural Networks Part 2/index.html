@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+
+
+        <title>High-Dimensional Time Series Forecasting with Convolutional Neural Networks - Part 2 // Mohcine Madkour // Big Data Architectures and more</title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../../../theme/css/pure.css">
+    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+<div class="pure-g-r" id="layout">
+    <div class="sidebar sidebar-article pure-u">
+        <header class="header-article">
+            <hgroup>
+                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine Madkour">
+                        <img class="avatar" alt="Mohcine Madkour" src="http://www.gravatar.com/avatar/ae08847efc1a85b710f326eb8ee2e907">
+                </a>
+                <h2 class="article-info">Mohcine Madkour</h2>
+                <small class="about-author"></small>
+                <h5>Published</h5>
+                <p>Sat 12 October 2019</p>
+                <a href="/">&larr;Home</a>
+            </hgroup>
+        </header>
+    </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>High-Dimensional Time Series Forecasting with Convolutional Neural Networks - Part 2</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="../../../../tag/time-series-forecasting/">Time Series Forecasting</a>
+                                <a class="post-category" href="../../../../tag/convolutional-neural-networks/">Convolutional Neural Networks</a>
+                        </p>
+                </header>
+            </section>
+            <p>This notebook expands on the <a href="https://github.com/mohcinemadkour/TimeSeries_Seq2Seq/blob/master/notebooks/TS_Seq2Seq_Conv_Intro.ipynb">previous notebook in this series</a>, demonstrating in python/keras code how a <strong>convolutional</strong> sequence-to-sequence neural network modeled after WaveNet can be built for the purpose of high-dimensional time series forecasting. I assume working familiarity with <strong>dilated causal convolutions</strong> (WaveNet's core building block), and recommend referencing the 3rd section of the previous notebook if you need to review the concept.</p>
+<p>For an introduction to neural network forecasting with an LSTM architecture, check out the <a href="https://github.com/mohcinemadkour/TimeSeries_Seq2Seq/blob/master/notebooks/TS_Seq2Seq_Intro.ipynb">first notebook in this series</a>.   </p>
+<p>In this notebook I'll be using the daily wikipedia web page traffic dataset again, available <a href="https://www.kaggle.com/c/web-traffic-time-series-forecasting/data">here on Kaggle</a>. The corresponding competition called for forecasting 60 days into the future, which we'll now mirror in this demonstration of a full-fledged model. Once again we'll use all of the series history available in "train_1.csv" for the encoding stage of the model. </p>
+<p>Our goal here is to expand on the previous notebook's simple WaveNet implementation, adding additional architecture components from the <a href="https://arxiv.org/pdf/1609.03499.pdf">original model</a>. In particular, each convolutional block of our network will incorporate <strong>gated activations</strong>, <strong>residual connections</strong>, and <strong>skip connections</strong> in addition to the dilated causal convolutions we saw in the previous notebook. I'll explain how these three new mechanisms work in section 3. Feel free to skip ahead to that section if you're comfortable with the data setup and formatting steps (as in the previous notebooks), and want to get right into the neural network.    </p>
+<p><strong>Note</strong>: for a written overview on this topic, check out my two blog posts that walk through the core concepts behind WaveNet - <a href="https://github.com/mohcinemadkour/TimeSeries_Seq2Seq/blob/master/notebooks/TS_Seq2Seq_Conv_Intro.ipynb">part 1</a>, <a href="https://github.com/mohcinemadkour/TimeSeries_Seq2Seq/blob/master/notebooks/TS_Seq2Seq_Conv_Full.ipynb">part 2</a>.  </p>
+<p>Here's a section breakdown of this notebook -- enjoy!</p>
+<p><strong>1. Loading and Previewing the Data</strong> <br>
+<strong>2. Formatting the Data for Modeling</strong><br>
+<strong>3. Building the Model - Training Architecture</strong><br>
+<strong>4. Building the Model - Inference Loop</strong><br>
+<strong>5. Generating and Plotting Predictions</strong></p>
+<h2>1. Loading and Previewing the Data</h2>
+<p>First thing's first, let's load up the data and get a quick feel for it (reminder that the dataset is available <a href="https://www.kaggle.com/c/web-traffic-time-series-forecasting/data">here</a>). </p>
+<p>Note that there are a good number of NaN values in the data that don't disambiguate missing from zero. For the sake of simplicity in this tutorial, we'll naively fill these with 0 later on.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="kn">as</span> <span class="nn">sns</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;../data/train_1.csv&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Page</th>
+      <th>2015-07-01</th>
+      <th>2015-07-02</th>
+      <th>2015-07-03</th>
+      <th>2015-07-04</th>
+      <th>2015-07-05</th>
+      <th>2015-07-06</th>
+      <th>2015-07-07</th>
+      <th>2015-07-08</th>
+      <th>2015-07-09</th>
+      <th>...</th>
+      <th>2016-12-22</th>
+      <th>2016-12-23</th>
+      <th>2016-12-24</th>
+      <th>2016-12-25</th>
+      <th>2016-12-26</th>
+      <th>2016-12-27</th>
+      <th>2016-12-28</th>
+      <th>2016-12-29</th>
+      <th>2016-12-30</th>
+      <th>2016-12-31</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2NE1_zh.wikipedia.org_all-access_spider</td>
+      <td>18.0</td>
+      <td>11.0</td>
+      <td>5.0</td>
+      <td>13.0</td>
+      <td>14.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
+      <td>22.0</td>
+      <td>26.0</td>
+      <td>...</td>
+      <td>32.0</td>
+      <td>63.0</td>
+      <td>15.0</td>
+      <td>26.0</td>
+      <td>14.0</td>
+      <td>20.0</td>
+      <td>22.0</td>
+      <td>19.0</td>
+      <td>18.0</td>
+      <td>20.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2PM_zh.wikipedia.org_all-access_spider</td>
+      <td>11.0</td>
+      <td>14.0</td>
+      <td>15.0</td>
+      <td>18.0</td>
+      <td>11.0</td>
+      <td>13.0</td>
+      <td>22.0</td>
+      <td>11.0</td>
+      <td>10.0</td>
+      <td>...</td>
+      <td>17.0</td>
+      <td>42.0</td>
+      <td>28.0</td>
+      <td>15.0</td>
+      <td>9.0</td>
+      <td>30.0</td>
+      <td>52.0</td>
+      <td>45.0</td>
+      <td>26.0</td>
+      <td>20.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3C_zh.wikipedia.org_all-access_spider</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>...</td>
+      <td>3.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>7.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>6.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>17.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4minute_zh.wikipedia.org_all-access_spider</td>
+      <td>35.0</td>
+      <td>13.0</td>
+      <td>10.0</td>
+      <td>94.0</td>
+      <td>4.0</td>
+      <td>26.0</td>
+      <td>14.0</td>
+      <td>9.0</td>
+      <td>11.0</td>
+      <td>...</td>
+      <td>32.0</td>
+      <td>10.0</td>
+      <td>26.0</td>
+      <td>27.0</td>
+      <td>16.0</td>
+      <td>11.0</td>
+      <td>17.0</td>
+      <td>19.0</td>
+      <td>10.0</td>
+      <td>11.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>52_Hz_I_Love_You_zh.wikipedia.org_all-access_s...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>...</td>
+      <td>48.0</td>
+      <td>9.0</td>
+      <td>25.0</td>
+      <td>13.0</td>
+      <td>3.0</td>
+      <td>11.0</td>
+      <td>27.0</td>
+      <td>13.0</td>
+      <td>36.0</td>
+      <td>10.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 551 columns</p>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>&amp;lt;class &#39;pandas.core.frame.DataFrame&#39;&amp;gt;
+RangeIndex: 145063 entries, 0 to 145062
+Columns: 551 entries, Page to 2016-12-31
+dtypes: float64(550), object(1)
+memory usage: 609.8+ MB
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">data_start_date</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">data_end_date</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Data ranges from </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_start_date</span><span class="p">,</span> <span class="n">data_end_date</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Data ranges from 2015-07-01 to 2016-12-31
+</pre></div>
+
+
+<p>We can define a function that lets us visualize some random webpage series as below. For the sake of smoothing out the scale of traffic across different series, we apply a log1p transformation before plotting - i.e. take $\log(1+x)$ for each value $x$ in a series.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_random_series</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">n_series</span><span class="p">):</span>
+
+    <span class="n">sample</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n_series</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+    <span class="n">page_labels</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="s1">&#39;Page&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">series_samples</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="n">data_start_date</span><span class="p">:</span><span class="n">data_end_date</span><span class="p">]</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">series_samples</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">series_samples</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Randomly Selected Wikipedia Page Daily Views Over Time (Log(views) + 1)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">page_labels</span><span class="p">)</span>
+
+<span class="n">plot_random_series</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="output_6_0d.png"></p>
+<h2>2. Formatting the Data for Modeling</h2>
+<p>Sadly we can't just throw the dataframe we've created into keras and let it work its magic. Instead, we have to set up a few data transformation steps to extract nice numpy arrays that we can pass to keras. But even before doing that, we have to know how to appropriately partition the time series into encoding and prediction intervals for the purposes of training and validation. Note that for our simple convolutional model we won't use an encoder-decoder architecture like in the first notebook, but <strong>we'll keep the "encoding" and "decoding" (prediction) terminology to be consistent</strong> -- in this case, the encoding interval represents the entire series history that we will use for the network's feature learning, but not output any predictions on. </p>
+<p>We'll use a style of <strong>walk-forward validation</strong>, where our validation set spans the same time-range as our training set, but shifted forward in time (in this case by 60 days). This way, we simulate how our model will perform on unseen data that comes in the future. </p>
+<p><a href="https://github.com/Arturus/kaggle-web-traffic/blob/master/how_it_works.md">Artur Suilin</a> has created a very nice image that visualizes this validation style and contrasts it with traditional validation. I highly recommend checking out his entire repo, as he's implemented a truly state of the art (and competition winning) seq2seq model on this data set. </p>
+<p><img alt="architecture" src="/images/ArturSuilin_validation.png"></p>
+<h3>Train and Validation Series Partioning</h3>
+<p>We need to create 4 sub-segments of the data:</p>
+<div class="highlight"><pre><span></span>1. Train encoding period
+2. Train decoding period (train targets, 60 days)
+3. Validation encoding period
+4. Validation decoding period (validation targets, 60 days)
+</pre></div>
+
+
+<p>We'll do this by finding the appropriate start and end dates for each segment. Starting from the end of the data we've loaded, we'll work backwards to get validation and training prediction intervals. Then we'll work forward from the start to get training and validation encoding intervals. </p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+
+<span class="n">pred_steps</span> <span class="o">=</span> <span class="mi">60</span> 
+<span class="n">pred_length</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">pred_steps</span><span class="p">)</span>
+
+<span class="n">first_day</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">data_start_date</span><span class="p">)</span> 
+<span class="n">last_day</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">data_end_date</span><span class="p">)</span>
+
+<span class="n">val_pred_start</span> <span class="o">=</span> <span class="n">last_day</span> <span class="o">-</span> <span class="n">pred_length</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">val_pred_end</span> <span class="o">=</span> <span class="n">last_day</span>
+
+<span class="n">train_pred_start</span> <span class="o">=</span> <span class="n">val_pred_start</span> <span class="o">-</span> <span class="n">pred_length</span>
+<span class="n">train_pred_end</span> <span class="o">=</span> <span class="n">val_pred_start</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> 
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">enc_length</span> <span class="o">=</span> <span class="n">train_pred_start</span> <span class="o">-</span> <span class="n">first_day</span>
+
+<span class="n">train_enc_start</span> <span class="o">=</span> <span class="n">first_day</span>
+<span class="n">train_enc_end</span> <span class="o">=</span> <span class="n">train_enc_start</span> <span class="o">+</span> <span class="n">enc_length</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">val_enc_start</span> <span class="o">=</span> <span class="n">train_enc_start</span> <span class="o">+</span> <span class="n">pred_length</span>
+<span class="n">val_enc_end</span> <span class="o">=</span> <span class="n">val_enc_start</span> <span class="o">+</span> <span class="n">enc_length</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Train encoding:&#39;</span><span class="p">,</span> <span class="n">train_enc_start</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">train_enc_end</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Train prediction:&#39;</span><span class="p">,</span> <span class="n">train_pred_start</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">train_pred_end</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Val encoding:&#39;</span><span class="p">,</span> <span class="n">val_enc_start</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">val_enc_end</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Val prediction:&#39;</span><span class="p">,</span> <span class="n">val_pred_start</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">val_pred_end</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Encoding interval:&#39;</span><span class="p">,</span> <span class="n">enc_length</span><span class="o">.</span><span class="n">days</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Prediction interval:&#39;</span><span class="p">,</span> <span class="n">pred_length</span><span class="o">.</span><span class="n">days</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Train encoding: 2015-07-01 00:00:00 - 2016-09-02 00:00:00
+Train prediction: 2016-09-03 00:00:00 - 2016-11-01 00:00:00
+
+Val encoding: 2015-08-30 00:00:00 - 2016-11-01 00:00:00
+Val prediction: 2016-11-02 00:00:00 - 2016-12-31 00:00:00
+
+Encoding interval: 430
+Prediction interval: 60
+</pre></div>
+
+
+<h3>Keras Data Formatting</h3>
+<p>Now that we have the time segment dates, we'll define the functions we need to extract the data in keras friendly format. Here are the steps:</p>
+<ul>
+<li>Pull the time series into an array, save a date_to_index mapping as a utility for referencing into the array </li>
+<li>Create function to extract specified time interval from all the series </li>
+<li>Create functions to transform all the series. <ul>
+<li>Here we smooth out the scale by taking log1p and de-meaning each series using the encoder series mean, then reshape to the <strong>(n_series, n_timesteps, n_features) tensor format</strong> that keras will expect. </li>
+<li>Note that if we want to generate true predictions instead of log scale ones, we can easily apply a reverse transformation at prediction time. </li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">date_to_index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]),</span>
+                          <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))])</span>
+
+<span class="n">series_array</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="k">def</span> <span class="nf">get_time_block_series</span><span class="p">(</span><span class="n">series_array</span><span class="p">,</span> <span class="n">date_to_index</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">):</span>
+
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">date_to_index</span><span class="p">[</span><span class="n">start_date</span><span class="p">:</span><span class="n">end_date</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">series_array</span><span class="p">[:,</span><span class="n">inds</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">transform_series_encode</span><span class="p">(</span><span class="n">series_array</span><span class="p">):</span>
+
+    <span class="n">series_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">series_array</span><span class="p">))</span> <span class="c1"># filling NaN with 0</span>
+    <span class="n">series_mean</span> <span class="o">=</span> <span class="n">series_array</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> 
+    <span class="n">series_array</span> <span class="o">=</span> <span class="n">series_array</span> <span class="o">-</span> <span class="n">series_mean</span>
+    <span class="n">series_array</span> <span class="o">=</span> <span class="n">series_array</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">series_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">series_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">series_array</span><span class="p">,</span> <span class="n">series_mean</span>
+
+<span class="k">def</span> <span class="nf">transform_series_decode</span><span class="p">(</span><span class="n">series_array</span><span class="p">,</span> <span class="n">encode_series_mean</span><span class="p">):</span>
+
+    <span class="n">series_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">series_array</span><span class="p">))</span> <span class="c1"># filling NaN with 0</span>
+    <span class="n">series_array</span> <span class="o">=</span> <span class="n">series_array</span> <span class="o">-</span> <span class="n">encode_series_mean</span>
+    <span class="n">series_array</span> <span class="o">=</span> <span class="n">series_array</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">series_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">series_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">series_array</span>
+</pre></div>
+
+
+<h2>3. Building the Model - Architecture</h2>
+<p>This convolutional architecture is a full-fledged version of the <a href="https://deepmind.com/blog/wavenet-generative-model-raw-audio/">WaveNet model</a>, designed as a generative model for audio (in particular, for text-to-speech applications). The wavenet model can be abstracted beyond audio to apply to any time series forecasting problem, providing a nice structure for capturing long-term dependencies without an excessive number of learned weights.</p>
+<p>The core building block of the wavenet model is the <strong>dilated causal convolution layer</strong>, discussed in detail in the <a href="https://github.com/JEddy92/TimeSeries_Seq2Seq/blob/master/notebooks/TS_Seq2Seq_Conv_Intro.ipynb">previous notebook of this series</a> as well as the <a href="https://jeddy92.github.io/JEddy92.github.io/ts_seq2seq_conv/">accompanying blog post</a>. In summary, this style of convolution properly handles temporal flow and allows the receptive field of outputs to increase exponentially as a function of the number of layers. This structure is nicely visualized by the below diagram from the wavenet paper. </p>
+<p><img alt="dilatedconv" src="/images/WaveNet_dilatedconv.png"></p>
+<p>The model also utilizes some other key techniques: <strong>gated activations</strong>, <strong>residual connections</strong>, and <strong>skip connections</strong>. I'll introduce and explain these techniques, then show how to implement our full-fledged WaveNet architecture in keras. The WaveNet paper diagram below details how the model's components fit together block by block into a stack of operations, so we'll use it as a handy reference as we go (note that there are slight discrepancies between the diagram and what we implement, e.g. the original WaveNet has a softmax classification rather than regression output).   </p>
+<p><img alt="blocks" src="/images/WaveNet_residblock.png"></p>
+<h3><strong>Gated Activations</strong></h3>
+<p>In the boxed portion of the architecture diagram, you'll notice that the dilated convolution output splits into two branches that are later recombined via element-wise multiplication. This depicts a <em>gated activation unit</em>, where we interpret the <em>tanh</em> activation branch as a learned filter and the <em>sigmoid</em> activation branch as a learned gate that regulates the information flow from the filter. If this reminds you of the gating mechanisms used in <a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/">LSTMs or GRUs</a> you're on point, as those models use the same style of information gating to control adjustments to their cell states.</p>
+<p>In mathematical notation, this means we map a convolutional block's input $x$ to output $z$ via the below, where $W_f$ and $W_g$ correspond to (learned) dilated causal convolution weights:</p>
+<p>$$ z = tanh(W_f * x) \odot \sigma(W_g * x) $$</p>
+<p>Why use gated activations instead of the more standard <em>ReLU</em> activation? The WaveNet designers found that gated activations saw stronger performance empirically than ReLU activations for audio data, and this outperformance may extend broadly to time series data. Perhaps the <a href="http://proceedings.mlr.press/v15/glorot11a.html">sparsity induced by ReLU activations</a> is not as well suited to time series forecasting as it is to other problem domains, or gated activations allow for smoother information (gradient) flow over a many-layered WaveNet architecture. However, this choice of activation is certainly not set in stone and I'd be interested to see a results comparison when trying ReLU instead. With that caveat, we'll be sticking with the gated activations in the interest of learning about the full original architecture.            </p>
+<h3><strong>Residual and Skip Connections</strong></h3>
+<p>In traditional neural network architectures, a neuron layer takes direct input only from the layer that precedes it, so early layers influence deeper layers via a heirarchy of intermediate computations. In theory, this heirarchy allows the network to properly build up high-level predictive features off of lower-level/raw signals. For example, in image classification problems, neural nets start from raw pixel values, find generic geometric and textural patterns, then combine these generic patterns to construct fine-grained representations of the features that identify specific object types.</p>
+<p>But what if lower-level signals are actually immediately useful for prediction, and may be at risk of distortion as they're passed through a complex heirarchy of computations? We could always simplify the heirarchy by using fewer layers and units, but what if we want the best of both worlds: direct, unfiltered low-level signals and nuanced heirarchical representations? One avenue for addressing this problem is provided by <strong>skip connections</strong>, which act to preserve earlier feature layer outputs as the network passes forward signals for final prediction processing. To build intuition for why we would want a mix of feature complexities in our problem domain, consider the wide range of time series drivers - there are strong and direct autoregressive components, moderately more sophisticated trend and seasonality components, and idiosyncratic trajectories that are difficult to spot with the human eye.        </p>
+<p>To leverage skip connections, we can simply store the tensor output of each convolutional block in addition to passing it through further blocks (or choose select blocks to store output from). At the end of the block heirarchy, we then have a collection of feature outputs at <em>all levels of the heirarchy</em>, rather than a singular set of maximally complex feature outputs. This collection of outputs is then combined for final processing, typically via concatenation or addition (we'll use the latter).</p>
+<p>With this in mind, return to the WaveNet block diagram above, and notice how for each block in the stack, the post-convolution gated activations pass through to the set of skip connections. This visualizes the tensor output storage and eventual combination just described. Note that the frequency and structure of skip connections is fully customizable and can be chosen experimentally and via domain expertise - as an example of an alternate skip connection structure, check out this convolutional architecture from a <a href="https://www.researchgate.net/publication/327330378_Semantic_Segmentation_Based_on_Deep_Convolution_Neural_Network">semantic segmentation paper</a>.</p>
+<p><img alt="CNN_skips" src="/images/CNN_skips.png"></p>
+<p><strong>Residual connections</strong> are closely related to skip connections; in fact, they can be viewed as specialized, short skips further into the network (often and in our case just one layer). With residual connections, we think of mapping a network block's input to output via $x_{out} = f(x_{in}) + x_{in}$ instead of using the traditional direct mapping $x_{out} = f(x_{in})$, for some function $f$ that corresponds to the model's learned weights. This helps allow for the possibility that the model learns a mapping that acts almost as an identity function, with the input passing through nearly unchanged. In the diagram above, such connections are visualized by the rounded arrows grouped with each pair of convolutions.  </p>
+<p>Why would this be beneficial? Well, the effectiveness of residual connections is still not fully understood, but a compelling explanation is that they facilitate the use of deeper networks by allowing for more direct gradient flow in backpropagation. It's often difficult to efficienctly train the early layers of a deep network due to the length of the backpropagation chain, but residual and skip connections create an easier information highway. Intuitively, perhaps you can think of both as mechanisms for guarding against overcomputation and intermediate signal loss. You can check out the <a href="https://arxiv.org/pdf/1512.03385.pdf">ResNet paper</a> that originated the residual connection concept for more discussion and empirical results.</p>
+<p>Though our architecture will be shallower than the original WaveNet (fewer convolutional blocks), we'll likely still see some benefit from introducing skip and residual connections at every block. Returning to the WaveNet architecture diagram again, you can see how the residual connection allows each block's input to bypass the convolution stage, and then adds that input to the convolution output. A final point to note is that the diagram's <em>1x1 convolutions</em> are really just equivalent to (time-distributed) fully connected layers, and serve in post-processing and standardization capacities. Our setup will use layers of this style (with different filter dimensions) for <strong>post/pre-processing</strong> to facilitate our skip and residual connections, as well as for generating final prediction outputs.           </p>
+<h3><strong>Our Architecture</strong></h3>
+<p>With all of our components now laid out, here's what we'll use:</p>
+<ul>
+<li>16 dilated causal convolutional blocks<ul>
+<li>Preprocessing and postprocessing (time distributed) fully connected layers (convolutions with filter width 1): 16 output units</li>
+<li>32 filters of width 2 per block</li>
+<li>Exponentially increasing dilation rate with a reset (1, 2, 4, 8, ..., 128, 1, 2, ..., 128) </li>
+<li>Gated activations</li>
+<li>Residual and skip connections</li>
+</ul>
+</li>
+<li>2 (time distributed) fully connected layers to map sum of skip outputs to final output </li>
+</ul>
+<p>We'll extract the last 60 steps from the output sequence as our predicted output for training. We'll use teacher forcing again during training. Similarly to the previous notebook, we'll have a separate function that runs an inference loop to generate predictions on unseen data, iteratively filling previous predictions into the history sequence (section 4). </p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Conv1D</span><span class="p">,</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Activation</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">Lambda</span><span class="p">,</span> <span class="n">Multiply</span><span class="p">,</span> <span class="n">Add</span><span class="p">,</span> <span class="n">Concatenate</span>
+<span class="kn">from</span> <span class="nn">keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
+
+<span class="c1"># convolutional operation parameters</span>
+<span class="n">n_filters</span> <span class="o">=</span> <span class="mi">32</span> <span class="c1"># 32 </span>
+<span class="n">filter_width</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">dilation_rates</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="o">**</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)]</span> <span class="o">*</span> <span class="mi">2</span> 
+
+<span class="c1"># define an input history series and pass it through a stack of dilated causal convolution blocks. </span>
+<span class="n">history_seq</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">history_seq</span>
+
+<span class="n">skips</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">dilation_rate</span> <span class="ow">in</span> <span class="n">dilation_rates</span><span class="p">:</span>
+
+    <span class="c1"># preprocessing - equivalent to time-distributed dense</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Conv1D</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span> 
+
+    <span class="c1"># filter convolution</span>
+    <span class="n">x_f</span> <span class="o">=</span> <span class="n">Conv1D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="n">n_filters</span><span class="p">,</span>
+                 <span class="n">kernel_size</span><span class="o">=</span><span class="n">filter_width</span><span class="p">,</span> 
+                 <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;causal&#39;</span><span class="p">,</span>
+                 <span class="n">dilation_rate</span><span class="o">=</span><span class="n">dilation_rate</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># gating convolution</span>
+    <span class="n">x_g</span> <span class="o">=</span> <span class="n">Conv1D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="n">n_filters</span><span class="p">,</span>
+                 <span class="n">kernel_size</span><span class="o">=</span><span class="n">filter_width</span><span class="p">,</span> 
+                 <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;causal&#39;</span><span class="p">,</span>
+                 <span class="n">dilation_rate</span><span class="o">=</span><span class="n">dilation_rate</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># multiply filter and gating branches</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">Multiply</span><span class="p">()([</span><span class="n">Activation</span><span class="p">(</span><span class="s1">&#39;tanh&#39;</span><span class="p">)(</span><span class="n">x_f</span><span class="p">),</span>
+                    <span class="n">Activation</span><span class="p">(</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">)(</span><span class="n">x_g</span><span class="p">)])</span>
+
+    <span class="c1"># postprocessing - equivalent to time-distributed dense</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">Conv1D</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">z</span><span class="p">)</span>
+
+    <span class="c1"># residual connection</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Add</span><span class="p">()([</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>    
+
+    <span class="c1"># collect skip connections</span>
+    <span class="n">skips</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+<span class="c1"># add all skip connection outputs </span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">Activation</span><span class="p">(</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">Add</span><span class="p">()(</span><span class="n">skips</span><span class="p">))</span>
+
+<span class="c1"># final time-distributed dense layers </span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">Conv1D</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">)(</span><span class="n">out</span><span class="p">)</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">Activation</span><span class="p">(</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">out</span><span class="p">)</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="o">.</span><span class="mi">2</span><span class="p">)(</span><span class="n">out</span><span class="p">)</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">Conv1D</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">)(</span><span class="n">out</span><span class="p">)</span>
+
+<span class="c1"># extract the last 60 time steps as the training target</span>
+<span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">seq_length</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">[:,</span><span class="o">-</span><span class="n">seq_length</span><span class="p">:,:]</span>
+
+<span class="n">pred_seq_train</span> <span class="o">=</span> <span class="n">Lambda</span><span class="p">(</span><span class="nb">slice</span><span class="p">,</span> <span class="n">arguments</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;seq_length&#39;</span><span class="p">:</span><span class="mi">60</span><span class="p">})(</span><span class="n">out</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">history_seq</span><span class="p">,</span> <span class="n">pred_seq_train</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">Adam</span><span class="p">(),</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mean_absolute_error&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="o">/</span><span class="n">anaconda3</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="o">.</span><span class="mi">6</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">h5py</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">34</span><span class="p">:</span> <span class="ne">FutureWarning</span><span class="p">:</span> <span class="n">Conversion</span> <span class="n">of</span> <span class="n">the</span> <span class="n">second</span> <span class="n">argument</span> <span class="n">of</span> <span class="n">issubdtype</span> <span class="kn">from</span> <span class="sb">`float`</span> <span class="n">to</span> <span class="sb">`np.floating`</span> <span class="ow">is</span> <span class="n">deprecated</span><span class="o">.</span> <span class="n">In</span> <span class="n">future</span><span class="p">,</span> <span class="n">it</span> <span class="n">will</span> <span class="n">be</span> <span class="n">treated</span> <span class="k">as</span> <span class="sb">`np.float64 == np.dtype(float).type`</span><span class="o">.</span>
+  <span class="kn">from</span> <span class="nn">._conv</span> <span class="kn">import</span> <span class="n">register_converters</span> <span class="k">as</span> <span class="n">_register_converters</span>
+<span class="n">Using</span> <span class="n">TensorFlow</span> <span class="n">backend</span><span class="o">.</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+input_1 (InputLayer)            (None, None, 1)      0                                            
+__________________________________________________________________________________________________
+conv1d_1 (Conv1D)               (None, None, 16)     32          input_1[0][0]                    
+__________________________________________________________________________________________________
+conv1d_2 (Conv1D)               (None, None, 32)     1056        conv1d_1[0][0]                   
+__________________________________________________________________________________________________
+conv1d_3 (Conv1D)               (None, None, 32)     1056        conv1d_1[0][0]                   
+__________________________________________________________________________________________________
+activation_1 (Activation)       (None, None, 32)     0           conv1d_2[0][0]                   
+__________________________________________________________________________________________________
+activation_2 (Activation)       (None, None, 32)     0           conv1d_3[0][0]                   
+__________________________________________________________________________________________________
+multiply_1 (Multiply)           (None, None, 32)     0           activation_1[0][0]               
+                                                                 activation_2[0][0]               
+__________________________________________________________________________________________________
+conv1d_4 (Conv1D)               (None, None, 16)     528         multiply_1[0][0]                 
+__________________________________________________________________________________________________
+add_1 (Add)                     (None, None, 16)     0           conv1d_1[0][0]                   
+                                                                 conv1d_4[0][0]                   
+__________________________________________________________________________________________________
+conv1d_5 (Conv1D)               (None, None, 16)     272         add_1[0][0]                      
+__________________________________________________________________________________________________
+conv1d_6 (Conv1D)               (None, None, 32)     1056        conv1d_5[0][0]                   
+__________________________________________________________________________________________________
+conv1d_7 (Conv1D)               (None, None, 32)     1056        conv1d_5[0][0]                   
+__________________________________________________________________________________________________
+activation_3 (Activation)       (None, None, 32)     0           conv1d_6[0][0]                   
+__________________________________________________________________________________________________
+activation_4 (Activation)       (None, None, 32)     0           conv1d_7[0][0]                   
+__________________________________________________________________________________________________
+multiply_2 (Multiply)           (None, None, 32)     0           activation_3[0][0]               
+                                                                 activation_4[0][0]               
+__________________________________________________________________________________________________
+conv1d_8 (Conv1D)               (None, None, 16)     528         multiply_2[0][0]                 
+__________________________________________________________________________________________________
+add_2 (Add)                     (None, None, 16)     0           conv1d_5[0][0]                   
+                                                                 conv1d_8[0][0]                   
+__________________________________________________________________________________________________
+conv1d_9 (Conv1D)               (None, None, 16)     272         add_2[0][0]                      
+__________________________________________________________________________________________________
+conv1d_10 (Conv1D)              (None, None, 32)     1056        conv1d_9[0][0]                   
+__________________________________________________________________________________________________
+conv1d_11 (Conv1D)              (None, None, 32)     1056        conv1d_9[0][0]                   
+__________________________________________________________________________________________________
+activation_5 (Activation)       (None, None, 32)     0           conv1d_10[0][0]                  
+__________________________________________________________________________________________________
+activation_6 (Activation)       (None, None, 32)     0           conv1d_11[0][0]                  
+__________________________________________________________________________________________________
+multiply_3 (Multiply)           (None, None, 32)     0           activation_5[0][0]               
+                                                                 activation_6[0][0]               
+__________________________________________________________________________________________________
+conv1d_12 (Conv1D)              (None, None, 16)     528         multiply_3[0][0]                 
+__________________________________________________________________________________________________
+add_3 (Add)                     (None, None, 16)     0           conv1d_9[0][0]                   
+                                                                 conv1d_12[0][0]                  
+__________________________________________________________________________________________________
+conv1d_13 (Conv1D)              (None, None, 16)     272         add_3[0][0]                      
+__________________________________________________________________________________________________
+conv1d_14 (Conv1D)              (None, None, 32)     1056        conv1d_13[0][0]                  
+__________________________________________________________________________________________________
+conv1d_15 (Conv1D)              (None, None, 32)     1056        conv1d_13[0][0]                  
+__________________________________________________________________________________________________
+activation_7 (Activation)       (None, None, 32)     0           conv1d_14[0][0]                  
+__________________________________________________________________________________________________
+activation_8 (Activation)       (None, None, 32)     0           conv1d_15[0][0]                  
+__________________________________________________________________________________________________
+multiply_4 (Multiply)           (None, None, 32)     0           activation_7[0][0]               
+                                                                 activation_8[0][0]               
+__________________________________________________________________________________________________
+conv1d_16 (Conv1D)              (None, None, 16)     528         multiply_4[0][0]                 
+__________________________________________________________________________________________________
+add_4 (Add)                     (None, None, 16)     0           conv1d_13[0][0]                  
+                                                                 conv1d_16[0][0]                  
+__________________________________________________________________________________________________
+conv1d_17 (Conv1D)              (None, None, 16)     272         add_4[0][0]                      
+__________________________________________________________________________________________________
+conv1d_18 (Conv1D)              (None, None, 32)     1056        conv1d_17[0][0]                  
+__________________________________________________________________________________________________
+conv1d_19 (Conv1D)              (None, None, 32)     1056        conv1d_17[0][0]                  
+__________________________________________________________________________________________________
+activation_9 (Activation)       (None, None, 32)     0           conv1d_18[0][0]                  
+__________________________________________________________________________________________________
+activation_10 (Activation)      (None, None, 32)     0           conv1d_19[0][0]                  
+__________________________________________________________________________________________________
+multiply_5 (Multiply)           (None, None, 32)     0           activation_9[0][0]               
+                                                                 activation_10[0][0]              
+__________________________________________________________________________________________________
+conv1d_20 (Conv1D)              (None, None, 16)     528         multiply_5[0][0]                 
+__________________________________________________________________________________________________
+add_5 (Add)                     (None, None, 16)     0           conv1d_17[0][0]                  
+                                                                 conv1d_20[0][0]                  
+__________________________________________________________________________________________________
+conv1d_21 (Conv1D)              (None, None, 16)     272         add_5[0][0]                      
+__________________________________________________________________________________________________
+conv1d_22 (Conv1D)              (None, None, 32)     1056        conv1d_21[0][0]                  
+__________________________________________________________________________________________________
+conv1d_23 (Conv1D)              (None, None, 32)     1056        conv1d_21[0][0]                  
+__________________________________________________________________________________________________
+activation_11 (Activation)      (None, None, 32)     0           conv1d_22[0][0]                  
+__________________________________________________________________________________________________
+activation_12 (Activation)      (None, None, 32)     0           conv1d_23[0][0]                  
+__________________________________________________________________________________________________
+multiply_6 (Multiply)           (None, None, 32)     0           activation_11[0][0]              
+                                                                 activation_12[0][0]              
+__________________________________________________________________________________________________
+conv1d_24 (Conv1D)              (None, None, 16)     528         multiply_6[0][0]                 
+__________________________________________________________________________________________________
+add_6 (Add)                     (None, None, 16)     0           conv1d_21[0][0]                  
+                                                                 conv1d_24[0][0]                  
+__________________________________________________________________________________________________
+conv1d_25 (Conv1D)              (None, None, 16)     272         add_6[0][0]                      
+__________________________________________________________________________________________________
+conv1d_26 (Conv1D)              (None, None, 32)     1056        conv1d_25[0][0]                  
+__________________________________________________________________________________________________
+conv1d_27 (Conv1D)              (None, None, 32)     1056        conv1d_25[0][0]                  
+__________________________________________________________________________________________________
+activation_13 (Activation)      (None, None, 32)     0           conv1d_26[0][0]                  
+__________________________________________________________________________________________________
+activation_14 (Activation)      (None, None, 32)     0           conv1d_27[0][0]                  
+__________________________________________________________________________________________________
+multiply_7 (Multiply)           (None, None, 32)     0           activation_13[0][0]              
+                                                                 activation_14[0][0]              
+__________________________________________________________________________________________________
+conv1d_28 (Conv1D)              (None, None, 16)     528         multiply_7[0][0]                 
+__________________________________________________________________________________________________
+add_7 (Add)                     (None, None, 16)     0           conv1d_25[0][0]                  
+                                                                 conv1d_28[0][0]                  
+__________________________________________________________________________________________________
+conv1d_29 (Conv1D)              (None, None, 16)     272         add_7[0][0]                      
+__________________________________________________________________________________________________
+conv1d_30 (Conv1D)              (None, None, 32)     1056        conv1d_29[0][0]                  
+__________________________________________________________________________________________________
+conv1d_31 (Conv1D)              (None, None, 32)     1056        conv1d_29[0][0]                  
+__________________________________________________________________________________________________
+activation_15 (Activation)      (None, None, 32)     0           conv1d_30[0][0]                  
+__________________________________________________________________________________________________
+activation_16 (Activation)      (None, None, 32)     0           conv1d_31[0][0]                  
+__________________________________________________________________________________________________
+multiply_8 (Multiply)           (None, None, 32)     0           activation_15[0][0]              
+                                                                 activation_16[0][0]              
+__________________________________________________________________________________________________
+conv1d_32 (Conv1D)              (None, None, 16)     528         multiply_8[0][0]                 
+__________________________________________________________________________________________________
+add_8 (Add)                     (None, None, 16)     0           conv1d_29[0][0]                  
+                                                                 conv1d_32[0][0]                  
+__________________________________________________________________________________________________
+conv1d_33 (Conv1D)              (None, None, 16)     272         add_8[0][0]                      
+__________________________________________________________________________________________________
+conv1d_34 (Conv1D)              (None, None, 32)     1056        conv1d_33[0][0]                  
+__________________________________________________________________________________________________
+conv1d_35 (Conv1D)              (None, None, 32)     1056        conv1d_33[0][0]                  
+__________________________________________________________________________________________________
+activation_17 (Activation)      (None, None, 32)     0           conv1d_34[0][0]                  
+__________________________________________________________________________________________________
+activation_18 (Activation)      (None, None, 32)     0           conv1d_35[0][0]                  
+__________________________________________________________________________________________________
+multiply_9 (Multiply)           (None, None, 32)     0           activation_17[0][0]              
+                                                                 activation_18[0][0]              
+__________________________________________________________________________________________________
+conv1d_36 (Conv1D)              (None, None, 16)     528         multiply_9[0][0]                 
+__________________________________________________________________________________________________
+add_9 (Add)                     (None, None, 16)     0           conv1d_33[0][0]                  
+                                                                 conv1d_36[0][0]                  
+__________________________________________________________________________________________________
+conv1d_37 (Conv1D)              (None, None, 16)     272         add_9[0][0]                      
+__________________________________________________________________________________________________
+conv1d_38 (Conv1D)              (None, None, 32)     1056        conv1d_37[0][0]                  
+__________________________________________________________________________________________________
+conv1d_39 (Conv1D)              (None, None, 32)     1056        conv1d_37[0][0]                  
+__________________________________________________________________________________________________
+activation_19 (Activation)      (None, None, 32)     0           conv1d_38[0][0]                  
+__________________________________________________________________________________________________
+activation_20 (Activation)      (None, None, 32)     0           conv1d_39[0][0]                  
+__________________________________________________________________________________________________
+multiply_10 (Multiply)          (None, None, 32)     0           activation_19[0][0]              
+                                                                 activation_20[0][0]              
+__________________________________________________________________________________________________
+conv1d_40 (Conv1D)              (None, None, 16)     528         multiply_10[0][0]                
+__________________________________________________________________________________________________
+add_10 (Add)                    (None, None, 16)     0           conv1d_37[0][0]                  
+                                                                 conv1d_40[0][0]                  
+__________________________________________________________________________________________________
+conv1d_41 (Conv1D)              (None, None, 16)     272         add_10[0][0]                     
+__________________________________________________________________________________________________
+conv1d_42 (Conv1D)              (None, None, 32)     1056        conv1d_41[0][0]                  
+__________________________________________________________________________________________________
+conv1d_43 (Conv1D)              (None, None, 32)     1056        conv1d_41[0][0]                  
+__________________________________________________________________________________________________
+activation_21 (Activation)      (None, None, 32)     0           conv1d_42[0][0]                  
+__________________________________________________________________________________________________
+activation_22 (Activation)      (None, None, 32)     0           conv1d_43[0][0]                  
+__________________________________________________________________________________________________
+multiply_11 (Multiply)          (None, None, 32)     0           activation_21[0][0]              
+                                                                 activation_22[0][0]              
+__________________________________________________________________________________________________
+conv1d_44 (Conv1D)              (None, None, 16)     528         multiply_11[0][0]                
+__________________________________________________________________________________________________
+add_11 (Add)                    (None, None, 16)     0           conv1d_41[0][0]                  
+                                                                 conv1d_44[0][0]                  
+__________________________________________________________________________________________________
+conv1d_45 (Conv1D)              (None, None, 16)     272         add_11[0][0]                     
+__________________________________________________________________________________________________
+conv1d_46 (Conv1D)              (None, None, 32)     1056        conv1d_45[0][0]                  
+__________________________________________________________________________________________________
+conv1d_47 (Conv1D)              (None, None, 32)     1056        conv1d_45[0][0]                  
+__________________________________________________________________________________________________
+activation_23 (Activation)      (None, None, 32)     0           conv1d_46[0][0]                  
+__________________________________________________________________________________________________
+activation_24 (Activation)      (None, None, 32)     0           conv1d_47[0][0]                  
+__________________________________________________________________________________________________
+multiply_12 (Multiply)          (None, None, 32)     0           activation_23[0][0]              
+                                                                 activation_24[0][0]              
+__________________________________________________________________________________________________
+conv1d_48 (Conv1D)              (None, None, 16)     528         multiply_12[0][0]                
+__________________________________________________________________________________________________
+add_12 (Add)                    (None, None, 16)     0           conv1d_45[0][0]                  
+                                                                 conv1d_48[0][0]                  
+__________________________________________________________________________________________________
+conv1d_49 (Conv1D)              (None, None, 16)     272         add_12[0][0]                     
+__________________________________________________________________________________________________
+conv1d_50 (Conv1D)              (None, None, 32)     1056        conv1d_49[0][0]                  
+__________________________________________________________________________________________________
+conv1d_51 (Conv1D)              (None, None, 32)     1056        conv1d_49[0][0]                  
+__________________________________________________________________________________________________
+activation_25 (Activation)      (None, None, 32)     0           conv1d_50[0][0]                  
+__________________________________________________________________________________________________
+activation_26 (Activation)      (None, None, 32)     0           conv1d_51[0][0]                  
+__________________________________________________________________________________________________
+multiply_13 (Multiply)          (None, None, 32)     0           activation_25[0][0]              
+                                                                 activation_26[0][0]              
+__________________________________________________________________________________________________
+conv1d_52 (Conv1D)              (None, None, 16)     528         multiply_13[0][0]                
+__________________________________________________________________________________________________
+add_13 (Add)                    (None, None, 16)     0           conv1d_49[0][0]                  
+                                                                 conv1d_52[0][0]                  
+__________________________________________________________________________________________________
+conv1d_53 (Conv1D)              (None, None, 16)     272         add_13[0][0]                     
+__________________________________________________________________________________________________
+conv1d_54 (Conv1D)              (None, None, 32)     1056        conv1d_53[0][0]                  
+__________________________________________________________________________________________________
+conv1d_55 (Conv1D)              (None, None, 32)     1056        conv1d_53[0][0]                  
+__________________________________________________________________________________________________
+activation_27 (Activation)      (None, None, 32)     0           conv1d_54[0][0]                  
+__________________________________________________________________________________________________
+activation_28 (Activation)      (None, None, 32)     0           conv1d_55[0][0]                  
+__________________________________________________________________________________________________
+multiply_14 (Multiply)          (None, None, 32)     0           activation_27[0][0]              
+                                                                 activation_28[0][0]              
+__________________________________________________________________________________________________
+conv1d_56 (Conv1D)              (None, None, 16)     528         multiply_14[0][0]                
+__________________________________________________________________________________________________
+add_14 (Add)                    (None, None, 16)     0           conv1d_53[0][0]                  
+                                                                 conv1d_56[0][0]                  
+__________________________________________________________________________________________________
+conv1d_57 (Conv1D)              (None, None, 16)     272         add_14[0][0]                     
+__________________________________________________________________________________________________
+conv1d_58 (Conv1D)              (None, None, 32)     1056        conv1d_57[0][0]                  
+__________________________________________________________________________________________________
+conv1d_59 (Conv1D)              (None, None, 32)     1056        conv1d_57[0][0]                  
+__________________________________________________________________________________________________
+activation_29 (Activation)      (None, None, 32)     0           conv1d_58[0][0]                  
+__________________________________________________________________________________________________
+activation_30 (Activation)      (None, None, 32)     0           conv1d_59[0][0]                  
+__________________________________________________________________________________________________
+multiply_15 (Multiply)          (None, None, 32)     0           activation_29[0][0]              
+                                                                 activation_30[0][0]              
+__________________________________________________________________________________________________
+conv1d_60 (Conv1D)              (None, None, 16)     528         multiply_15[0][0]                
+__________________________________________________________________________________________________
+add_15 (Add)                    (None, None, 16)     0           conv1d_57[0][0]                  
+                                                                 conv1d_60[0][0]                  
+__________________________________________________________________________________________________
+conv1d_61 (Conv1D)              (None, None, 16)     272         add_15[0][0]                     
+__________________________________________________________________________________________________
+conv1d_62 (Conv1D)              (None, None, 32)     1056        conv1d_61[0][0]                  
+__________________________________________________________________________________________________
+conv1d_63 (Conv1D)              (None, None, 32)     1056        conv1d_61[0][0]                  
+__________________________________________________________________________________________________
+activation_31 (Activation)      (None, None, 32)     0           conv1d_62[0][0]                  
+__________________________________________________________________________________________________
+activation_32 (Activation)      (None, None, 32)     0           conv1d_63[0][0]                  
+__________________________________________________________________________________________________
+multiply_16 (Multiply)          (None, None, 32)     0           activation_31[0][0]              
+                                                                 activation_32[0][0]              
+__________________________________________________________________________________________________
+conv1d_64 (Conv1D)              (None, None, 16)     528         multiply_16[0][0]                
+__________________________________________________________________________________________________
+add_17 (Add)                    (None, None, 16)     0           conv1d_4[0][0]                   
+                                                                 conv1d_8[0][0]                   
+                                                                 conv1d_12[0][0]                  
+                                                                 conv1d_16[0][0]                  
+                                                                 conv1d_20[0][0]                  
+                                                                 conv1d_24[0][0]                  
+                                                                 conv1d_28[0][0]                  
+                                                                 conv1d_32[0][0]                  
+                                                                 conv1d_36[0][0]                  
+                                                                 conv1d_40[0][0]                  
+                                                                 conv1d_44[0][0]                  
+                                                                 conv1d_48[0][0]                  
+                                                                 conv1d_52[0][0]                  
+                                                                 conv1d_56[0][0]                  
+                                                                 conv1d_60[0][0]                  
+                                                                 conv1d_64[0][0]                  
+__________________________________________________________________________________________________
+activation_33 (Activation)      (None, None, 16)     0           add_17[0][0]                     
+__________________________________________________________________________________________________
+conv1d_65 (Conv1D)              (None, None, 128)    2176        activation_33[0][0]              
+__________________________________________________________________________________________________
+activation_34 (Activation)      (None, None, 128)    0           conv1d_65[0][0]                  
+__________________________________________________________________________________________________
+dropout_1 (Dropout)             (None, None, 128)    0           activation_34[0][0]              
+__________________________________________________________________________________________________
+conv1d_66 (Conv1D)              (None, None, 1)      129         dropout_1[0][0]                  
+__________________________________________________________________________________________________
+lambda_1 (Lambda)               (None, None, 1)      0           conv1d_66[0][0]                  
+==================================================================================================
+Total params: 48,657
+Trainable params: 48,657
+Non-trainable params: 0
+__________________________________________________________________________________________________
+</pre></div>
+
+
+<p>With our training architecture defined, we're ready to train the model! This will take quite a while if you're not running fancy hardware (read GPU). We'll leverage the transformer utility functions we defined earlier, and train using mean absolute error loss.</p>
+<p>Note that for this full-fledged model, we have more than twice as many total parameters to train as we did with the simpler WaveNet model, explaining the slower training time (along with using more training data). From the loss curve you'll see plotted below, it also seems likely that the model can continue to improve with more than 10 training epochs -- the more complex model probably needs additional time to reach its full potential. That said, from the results plots (see section 5) we can see that this full-fledged model is very capable of handling the 60-day forecast horizon and often can generate very expressive predictions. </p>
+<p>This is only a starting point, and I would encourage you to play around with this architecture to see if you can get even better results! You could try using more data, adjusting the hyperparameters, tuning the learning rate and number of epochs, etc.  </p>
+<div class="highlight"><pre><span></span><span class="n">first_n_samples</span> <span class="o">=</span> <span class="mi">120000</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">11</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># sample of series from train_enc_start to train_enc_end  </span>
+<span class="n">encoder_input_data</span> <span class="o">=</span> <span class="n">get_time_block_series</span><span class="p">(</span><span class="n">series_array</span><span class="p">,</span> <span class="n">date_to_index</span><span class="p">,</span> 
+                                           <span class="n">train_enc_start</span><span class="p">,</span> <span class="n">train_enc_end</span><span class="p">)[:</span><span class="n">first_n_samples</span><span class="p">]</span>
+<span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">encode_series_mean</span> <span class="o">=</span> <span class="n">transform_series_encode</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">)</span>
+
+<span class="c1"># sample of series from train_pred_start to train_pred_end </span>
+<span class="n">decoder_target_data</span> <span class="o">=</span> <span class="n">get_time_block_series</span><span class="p">(</span><span class="n">series_array</span><span class="p">,</span> <span class="n">date_to_index</span><span class="p">,</span> 
+                                            <span class="n">train_pred_start</span><span class="p">,</span> <span class="n">train_pred_end</span><span class="p">)[:</span><span class="n">first_n_samples</span><span class="p">]</span>
+<span class="n">decoder_target_data</span> <span class="o">=</span> <span class="n">transform_series_decode</span><span class="p">(</span><span class="n">decoder_target_data</span><span class="p">,</span> <span class="n">encode_series_mean</span><span class="p">)</span>
+
+<span class="c1"># we append a lagged history of the target series to the input data, </span>
+<span class="c1"># so that we can train with teacher forcing</span>
+<span class="n">lagged_target_history</span> <span class="o">=</span> <span class="n">decoder_target_data</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">encoder_input_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">lagged_target_history</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">Adam</span><span class="p">(),</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mean_absolute_error&#39;</span><span class="p">)</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">decoder_target_data</span><span class="p">,</span>
+                    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                    <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
+                    <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>  
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Train on 96000 samples, validate on 24000 samples
+Epoch 1/10
+96000/96000 [==============================] - 1443s 15ms/step - loss: 0.4242 - val_loss: 0.2930
+Epoch 2/10
+96000/96000 [==============================] - 1408s 15ms/step - loss: 0.3065 - val_loss: 0.2724
+Epoch 3/10
+96000/96000 [==============================] - 1392s 14ms/step - loss: 0.2884 - val_loss: 0.2588
+Epoch 4/10
+96000/96000 [==============================] - 1399s 15ms/step - loss: 0.2800 - val_loss: 0.2535
+Epoch 5/10
+96000/96000 [==============================] - 1379s 14ms/step - loss: 0.2750 - val_loss: 0.2505
+Epoch 6/10
+96000/96000 [==============================] - 1401s 15ms/step - loss: 0.2719 - val_loss: 0.2483
+Epoch 7/10
+96000/96000 [==============================] - 1431s 15ms/step - loss: 0.2699 - val_loss: 0.2466
+Epoch 8/10
+96000/96000 [==============================] - 1428s 15ms/step - loss: 0.2684 - val_loss: 0.2457
+Epoch 9/10
+96000/96000 [==============================] - 1431s 15ms/step - loss: 0.2673 - val_loss: 0.2440
+Epoch 10/10
+96000/96000 [==============================] - 1434s 15ms/step - loss: 0.2662 - val_loss: 0.2431
+</pre></div>
+
+
+<p>It's typically a good idea to look at the convergence curve of train/validation loss.</p>
+<div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_loss&#39;</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Epoch&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Mean Absolute Error Loss&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Loss Over Time&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Train&#39;</span><span class="p">,</span><span class="s1">&#39;Valid&#39;</span><span class="p">])</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>&amp;lt;matplotlib.legend.Legend at 0x1a2fc58d30&amp;gt;
+</pre></div>
+
+
+<p><img alt="png" src="/images/output_19_1d.png"></p>
+<h2>4. Building the Model - Inference Loop</h2>
+<p>Like in the previous notebook, we'll generate predictions by running our model from section 3 in a loop, using each iteration to extract the prediction for the time step one beyond our current history then append it to our history sequence. With 60 iterations, this lets us generate predictions for the full interval we've chosen. </p>
+<p>Recall that we designed our model to output predictions for 60 time steps at once in order to use teacher forcing for training. So if we start from a history sequence and want to predict the first future time step, we can run the model on the history sequence and take the last time step of the output, which corresponds to one time step beyond the history sequence. </p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">predict_sequence</span><span class="p">(</span><span class="n">input_sequence</span><span class="p">):</span>
+
+    <span class="n">history_sequence</span> <span class="o">=</span> <span class="n">input_sequence</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">pred_sequence</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">pred_steps</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="c1"># initialize output (pred_steps time steps)  </span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pred_steps</span><span class="p">):</span>
+
+        <span class="c1"># record next time step prediction (last time step of model output) </span>
+        <span class="n">last_step_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">history_sequence</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pred_sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_step_pred</span>
+
+        <span class="c1"># add the next time step prediction to the history sequence</span>
+        <span class="n">history_sequence</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">history_sequence</span><span class="p">,</span> 
+                                           <span class="n">last_step_pred</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pred_sequence</span>
+</pre></div>
+
+
+<h2>5. Generating and Plotting Predictions</h2>
+<p>Now we have everything we need to generate predictions for encoder (history) /target series pairs that we didn't train on (note again we're using "encoder"/"decoder" terminology to stay consistent with notebook 1 -- here it's more like history/target). We'll pull out our set of validation encoder/target series (recall that these are shifted forward in time). Then using a plotting utility function, we can look at the tail end of the encoder series, the true target series, and the predicted target series. This gives us a feel for how our predictions are doing.  </p>
+<div class="highlight"><pre><span></span><span class="n">encoder_input_data</span> <span class="o">=</span> <span class="n">get_time_block_series</span><span class="p">(</span><span class="n">series_array</span><span class="p">,</span> <span class="n">date_to_index</span><span class="p">,</span> <span class="n">val_enc_start</span><span class="p">,</span> <span class="n">val_enc_end</span><span class="p">)</span>
+<span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">encode_series_mean</span> <span class="o">=</span> <span class="n">transform_series_encode</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">)</span>
+
+<span class="n">decoder_target_data</span> <span class="o">=</span> <span class="n">get_time_block_series</span><span class="p">(</span><span class="n">series_array</span><span class="p">,</span> <span class="n">date_to_index</span><span class="p">,</span> <span class="n">val_pred_start</span><span class="p">,</span> <span class="n">val_pred_end</span><span class="p">)</span>
+<span class="n">decoder_target_data</span> <span class="o">=</span> <span class="n">transform_series_decode</span><span class="p">(</span><span class="n">decoder_target_data</span><span class="p">,</span> <span class="n">encode_series_mean</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">predict_and_plot</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">decoder_target_data</span><span class="p">,</span> <span class="n">sample_ind</span><span class="p">,</span> <span class="n">enc_tail_len</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+
+    <span class="n">encode_series</span> <span class="o">=</span> <span class="n">encoder_input_data</span><span class="p">[</span><span class="n">sample_ind</span><span class="p">:</span><span class="n">sample_ind</span><span class="o">+</span><span class="mi">1</span><span class="p">,:,:]</span> 
+    <span class="n">pred_series</span> <span class="o">=</span> <span class="n">predict_sequence</span><span class="p">(</span><span class="n">encode_series</span><span class="p">)</span>
+
+    <span class="n">encode_series</span> <span class="o">=</span> <span class="n">encode_series</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pred_series</span> <span class="o">=</span> <span class="n">pred_series</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>   
+    <span class="n">target_series</span> <span class="o">=</span> <span class="n">decoder_target_data</span><span class="p">[</span><span class="n">sample_ind</span><span class="p">,:,:</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> 
+
+    <span class="n">encode_series_tail</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">encode_series</span><span class="p">[</span><span class="o">-</span><span class="n">enc_tail_len</span><span class="p">:],</span><span class="n">target_series</span><span class="p">[:</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="n">x_encode</span> <span class="o">=</span> <span class="n">encode_series_tail</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>   
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">x_encode</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="n">encode_series_tail</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">x_encode</span><span class="p">,</span><span class="n">x_encode</span><span class="o">+</span><span class="n">pred_steps</span><span class="p">),</span><span class="n">target_series</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">x_encode</span><span class="p">,</span><span class="n">x_encode</span><span class="o">+</span><span class="n">pred_steps</span><span class="p">),</span><span class="n">pred_series</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;teal&#39;</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Encoder Series Tail of Length </span><span class="si">%d</span><span class="s1">, Target Series, and Predictions&#39;</span> <span class="o">%</span> <span class="n">enc_tail_len</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Encoding Series&#39;</span><span class="p">,</span><span class="s1">&#39;Target Series&#39;</span><span class="p">,</span><span class="s1">&#39;Predictions&#39;</span><span class="p">])</span>
+</pre></div>
+
+
+<p>Generating some plots as below, we can see that our longer time horizon predictions (60 days) are often strong and expressive. Our full-fledged model is able to effectively capture weekly seasonality patterns and long term trends, and does a very nice job adapting to the varying levels of fluctuation in each series.   </p>
+<p>Still, we can do even better! We'd benefit from increasing the sample size for training and fine-tuning our hyperparameters, but also by giving the model access to additional relevant information. So far we've only fed the model raw time series data, but it can likely benefit from the inclusion of <strong>exogenous variables</strong> such as the day of the week and the language of the webpage corresponding to each series. To see how these exogenous variables can be incorporated directly into the model <strong>check out the next notebook in this series</strong>. </p>
+<p>If you're interested in digging even deeper into state of the art WaveNet style architectures, I also highly recommend checking out <a href="https://github.com/sjvasquez/web-traffic-forecasting">Sean Vasquez's model</a> that was designed for this data set. He implements a customized seq2seq WaveNet architecture in tensorflow.    </p>
+<div class="highlight"><pre><span></span><span class="n">predict_and_plot</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">decoder_target_data</span><span class="p">,</span> 
+                 <span class="n">sample_ind</span><span class="o">=</span><span class="mi">16534</span><span class="p">,</span> <span class="n">enc_tail_len</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/output_26_0d.png"></p>
+<div class="highlight"><pre><span></span><span class="n">predict_and_plot</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">decoder_target_data</span><span class="p">,</span> 
+                 <span class="n">sample_ind</span><span class="o">=</span><span class="mi">16555</span><span class="p">,</span> <span class="n">enc_tail_len</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/output_27_0d.png"></p>
+<div class="highlight"><pre><span></span><span class="n">predict_and_plot</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">decoder_target_data</span><span class="p">,</span> 
+                 <span class="n">sample_ind</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span> <span class="n">enc_tail_len</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/output_28_0d.png"></p>
+<div class="highlight"><pre><span></span><span class="n">predict_and_plot</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">decoder_target_data</span><span class="p">,</span> 
+                 <span class="n">sample_ind</span><span class="o">=</span><span class="mi">68000</span><span class="p">,</span> <span class="n">enc_tail_len</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/output_29_0d.png"></p>
+<div class="highlight"><pre><span></span><span class="n">predict_and_plot</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">decoder_target_data</span><span class="p">,</span> 
+                 <span class="n">sample_ind</span><span class="o">=</span><span class="mi">6007</span><span class="p">,</span> <span class="n">enc_tail_len</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/output_30_0d.png"></p>
+<div class="highlight"><pre><span></span><span class="n">predict_and_plot</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">decoder_target_data</span><span class="p">,</span> 
+                 <span class="n">sample_ind</span><span class="o">=</span><span class="mi">70450</span><span class="p">,</span> <span class="n">enc_tail_len</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/output_31_0d.png"></p>
+<div class="highlight"><pre><span></span><span class="n">predict_and_plot</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">decoder_target_data</span><span class="p">,</span> 
+                 <span class="n">sample_ind</span><span class="o">=</span><span class="mi">16551</span><span class="p">,</span> <span class="n">enc_tail_len</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/output_32_0d.png"></p>
+            <div class="hr"></div>
+            <a href="#" class="go-top">Go Top</a>
+<div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div><footer class="footer">
+    <p>&copy; Mohcine Madkour &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+</div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>
