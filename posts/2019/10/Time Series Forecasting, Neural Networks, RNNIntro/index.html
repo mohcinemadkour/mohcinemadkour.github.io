@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+
+
+        <title>An Introduction to High-Dimensional Time Series Forecasting with Neural Networks // Mohcine Madkour // Big Data Architectures and more</title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../../../theme/css/pure.css">
+    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+<div class="pure-g-r" id="layout">
+    <div class="sidebar sidebar-article pure-u">
+        <header class="header-article">
+            <hgroup>
+                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine Madkour">
+                        <img class="avatar" alt="Mohcine Madkour" src="http://www.gravatar.com/avatar/ae08847efc1a85b710f326eb8ee2e907">
+                </a>
+                <h2 class="article-info">Mohcine Madkour</h2>
+                <small class="about-author"></small>
+                <h5>Published</h5>
+                <p>Mon 14 October 2019</p>
+                <a href="/">&larr;Home</a>
+            </hgroup>
+        </header>
+    </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>An Introduction to High-Dimensional Time Series Forecasting with Neural Networks</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="../../../../tag/time-series-forecasting/">Time Series Forecasting</a>
+                                <a class="post-category" href="../../../../tag/neural-networks/">Neural Networks</a>
+                                <a class="post-category" href="../../../../tag/rnn/">RNN</a>
+                        </p>
+                </header>
+            </section>
+            <p>This blog aims to demonstrate in python/keras code how a sequence-to-sequence neural network can be built for the purpose of time series forecasting. In particular, it explores the "high-dimensional" time series setting, where a high quantity (100,000s+) of series must be forecast simultaneously. This is where a modern technique like neural networks can truly shine vs. more traditional series-specific methods like ARIMA - we don't need to create a massive set of fine-tuned, series specific parameters.</p>
+<p>In this notebook I'll be using a dataset of daily wikipedia web page traffic, available <a href="https://www.kaggle.com/c/web-traffic-time-series-forecasting/data">here on Kaggle</a>. The corresponding competition called for forecasting 60 days into the future, but for this demonstration we'll simplify to forecasting only 14 days. However, we will use all of the series history available in "train_1.csv" for the encoding stage of the model. </p>
+<p>Our goal here is not to create an optimal model - check out later notebooks in this series for that. Instead, the focus is on showing a relatively simple implimentation of the core seq2seq architecture.</p>
+<p>Here's a section breakdown of this notebook -- enjoy!</p>
+<p><strong>1. Loading and Previewing the Data</strong> <br>
+<strong>2. Formatting the Data for Modeling</strong><br>
+<strong>3. Building the Model - Training Architecture</strong><br>
+<strong>4. Building the Model - Inference Architecture</strong><br>
+<strong>5. Generating and Plotting Predictions</strong></p>
+<h2>1. Loading and Previewing the Data</h2>
+<p>First thing's first, let's load up the data and get a quick feel for it (reminder that the dataset is available <a href="https://www.kaggle.com/c/web-traffic-time-series-forecasting/data">here</a>). </p>
+<p>Note that there are a good number of NaN values in the data that don't disambiguate missing from zero. For the sake of simplicity in this tutorial, we'll naively fill these with 0 later on.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="kn">as</span> <span class="nn">sns</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;../data/train_1.csv&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Page</th>
+      <th>2015-07-01</th>
+      <th>2015-07-02</th>
+      <th>2015-07-03</th>
+      <th>2015-07-04</th>
+      <th>2015-07-05</th>
+      <th>2015-07-06</th>
+      <th>2015-07-07</th>
+      <th>2015-07-08</th>
+      <th>2015-07-09</th>
+      <th>...</th>
+      <th>2016-12-22</th>
+      <th>2016-12-23</th>
+      <th>2016-12-24</th>
+      <th>2016-12-25</th>
+      <th>2016-12-26</th>
+      <th>2016-12-27</th>
+      <th>2016-12-28</th>
+      <th>2016-12-29</th>
+      <th>2016-12-30</th>
+      <th>2016-12-31</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>2NE1_zh.wikipedia.org_all-access_spider</td>
+      <td>18.0</td>
+      <td>11.0</td>
+      <td>5.0</td>
+      <td>13.0</td>
+      <td>14.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
+      <td>22.0</td>
+      <td>26.0</td>
+      <td>...</td>
+      <td>32.0</td>
+      <td>63.0</td>
+      <td>15.0</td>
+      <td>26.0</td>
+      <td>14.0</td>
+      <td>20.0</td>
+      <td>22.0</td>
+      <td>19.0</td>
+      <td>18.0</td>
+      <td>20.0</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>2PM_zh.wikipedia.org_all-access_spider</td>
+      <td>11.0</td>
+      <td>14.0</td>
+      <td>15.0</td>
+      <td>18.0</td>
+      <td>11.0</td>
+      <td>13.0</td>
+      <td>22.0</td>
+      <td>11.0</td>
+      <td>10.0</td>
+      <td>...</td>
+      <td>17.0</td>
+      <td>42.0</td>
+      <td>28.0</td>
+      <td>15.0</td>
+      <td>9.0</td>
+      <td>30.0</td>
+      <td>52.0</td>
+      <td>45.0</td>
+      <td>26.0</td>
+      <td>20.0</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>3C_zh.wikipedia.org_all-access_spider</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>...</td>
+      <td>3.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>7.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>6.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>17.0</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>4minute_zh.wikipedia.org_all-access_spider</td>
+      <td>35.0</td>
+      <td>13.0</td>
+      <td>10.0</td>
+      <td>94.0</td>
+      <td>4.0</td>
+      <td>26.0</td>
+      <td>14.0</td>
+      <td>9.0</td>
+      <td>11.0</td>
+      <td>...</td>
+      <td>32.0</td>
+      <td>10.0</td>
+      <td>26.0</td>
+      <td>27.0</td>
+      <td>16.0</td>
+      <td>11.0</td>
+      <td>17.0</td>
+      <td>19.0</td>
+      <td>10.0</td>
+      <td>11.0</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>52_Hz_I_Love_You_zh.wikipedia.org_all-access_s...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>...</td>
+      <td>48.0</td>
+      <td>9.0</td>
+      <td>25.0</td>
+      <td>13.0</td>
+      <td>3.0</td>
+      <td>11.0</td>
+      <td>27.0</td>
+      <td>13.0</td>
+      <td>36.0</td>
+      <td>10.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 551 columns</p>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>&amp;lt;class &#39;pandas.core.frame.DataFrame&#39;&amp;gt;
+RangeIndex: 145063 entries, 0 to 145062
+Columns: 551 entries, Page to 2016-12-31
+dtypes: float64(550), object(1)
+memory usage: 609.8+ MB
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">data_start_date</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">data_end_date</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Data ranges from </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_start_date</span><span class="p">,</span> <span class="n">data_end_date</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Data ranges from 2015-07-01 to 2016-12-31
+</pre></div>
+
+
+<p>We can define a function that lets us visualize some random webpage series as below. For the sake of smoothing out the scale of traffic across different series, we apply a log1p transformation before plotting - i.e. take $\log(1+x)$ for each value $x$ in a series.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_random_series</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">n_series</span><span class="p">):</span>
+
+    <span class="n">sample</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n_series</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+    <span class="n">page_labels</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="s1">&#39;Page&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">series_samples</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="n">data_start_date</span><span class="p">:</span><span class="n">data_end_date</span><span class="p">]</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">series_samples</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">series_samples</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Randomly Selected Wikipedia Page Daily Views Over Time (Log(views) + 1)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">page_labels</span><span class="p">)</span>
+
+<span class="n">plot_random_series</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:211: RuntimeWarning: Glyph 12501 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:211: RuntimeWarning: Glyph 12521 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:211: RuntimeWarning: Glyph 12531 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:211: RuntimeWarning: Glyph 12465 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:211: RuntimeWarning: Glyph 12523 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:211: RuntimeWarning: Glyph 31478 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:211: RuntimeWarning: Glyph 36208 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:211: RuntimeWarning: Glyph 39340 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:211: RuntimeWarning: Glyph 39321 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:211: RuntimeWarning: Glyph 28207 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:211: RuntimeWarning: Glyph 28040 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:211: RuntimeWarning: Glyph 38450 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:211: RuntimeWarning: Glyph 34389 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:180: RuntimeWarning: Glyph 12501 missing from current font.
+  font.set_text(s, 0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:180: RuntimeWarning: Glyph 12521 missing from current font.
+  font.set_text(s, 0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:180: RuntimeWarning: Glyph 12531 missing from current font.
+  font.set_text(s, 0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:180: RuntimeWarning: Glyph 12465 missing from current font.
+  font.set_text(s, 0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:180: RuntimeWarning: Glyph 12523 missing from current font.
+  font.set_text(s, 0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:180: RuntimeWarning: Glyph 31478 missing from current font.
+  font.set_text(s, 0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:180: RuntimeWarning: Glyph 36208 missing from current font.
+  font.set_text(s, 0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:180: RuntimeWarning: Glyph 39340 missing from current font.
+  font.set_text(s, 0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:180: RuntimeWarning: Glyph 39321 missing from current font.
+  font.set_text(s, 0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:180: RuntimeWarning: Glyph 28207 missing from current font.
+  font.set_text(s, 0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:180: RuntimeWarning: Glyph 28040 missing from current font.
+  font.set_text(s, 0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:180: RuntimeWarning: Glyph 38450 missing from current font.
+  font.set_text(s, 0, flags=flags)
+C:\ProgramData\Anaconda3\lib\site-packages\matplotlib\backends\backend_agg.py:180: RuntimeWarning: Glyph 34389 missing from current font.
+  font.set_text(s, 0, flags=flags)
+</pre></div>
+
+
+<p><img alt="png" src="/images/output_6_1.png"></p>
+<h2>2. Formatting the Data for Modeling</h2>
+<p>Sadly we can't just throw the dataframe we've created into keras and let it work its magic. Instead, we have to set up a few data transformation steps to extract nice numpy arrays that we can pass to keras. But even before doing that, we have to know how to appropriately partition the time series into encoding and decoding (prediction) intervals for the purposes of training and validation.</p>
+<p>We'll use a style of <strong>walk-forward validation</strong>, where our validation set spans the same time-range as our training set, but shifted forward in time (in this case by 14 days). This way, we simulate how our model will perform on unseen data that comes in the future. </p>
+<p><a href="https://github.com/Arturus/kaggle-web-traffic/blob/master/how_it_works.md">Artur Suilin</a> has created a very nice image that visualizes this validation style and contrasts it with traditional validation. I highly recommend checking out his entire repo, as he's implemented a truly state of the art (and competition winning) seq2seq model on this data set. </p>
+<p><img alt="architecture" src="/images/ArturSuilin_validation.png"></p>
+<h3>Train and Validation Series Partioning</h3>
+<p>We need to create 4 sub-segments of the data:</p>
+<div class="highlight"><pre><span></span>1. Train encoding period
+2. Train decoding period (train targets, 14 days)
+3. Validation encoding period
+4. Validation decoding period (validation targets, 14 days)
+</pre></div>
+
+
+<p>We'll do this by finding the appropriate start and end dates for each segment. Starting from the end of the data we've loaded, we'll work backwards to get validation and training prediction intervals. Then we'll work forward from the start to get training and validation encoding intervals. </p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+
+<span class="n">pred_steps</span> <span class="o">=</span> <span class="mi">14</span>
+<span class="n">pred_length</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">pred_steps</span><span class="p">)</span>
+
+<span class="n">first_day</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">data_start_date</span><span class="p">)</span> 
+<span class="n">last_day</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">data_end_date</span><span class="p">)</span>
+
+<span class="n">val_pred_start</span> <span class="o">=</span> <span class="n">last_day</span> <span class="o">-</span> <span class="n">pred_length</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">val_pred_end</span> <span class="o">=</span> <span class="n">last_day</span>
+
+<span class="n">train_pred_start</span> <span class="o">=</span> <span class="n">val_pred_start</span> <span class="o">-</span> <span class="n">pred_length</span>
+<span class="n">train_pred_end</span> <span class="o">=</span> <span class="n">val_pred_start</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> 
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">enc_length</span> <span class="o">=</span> <span class="n">train_pred_start</span> <span class="o">-</span> <span class="n">first_day</span>
+
+<span class="n">train_enc_start</span> <span class="o">=</span> <span class="n">first_day</span>
+<span class="n">train_enc_end</span> <span class="o">=</span> <span class="n">train_enc_start</span> <span class="o">+</span> <span class="n">enc_length</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">val_enc_start</span> <span class="o">=</span> <span class="n">train_enc_start</span> <span class="o">+</span> <span class="n">pred_length</span>
+<span class="n">val_enc_end</span> <span class="o">=</span> <span class="n">val_enc_start</span> <span class="o">+</span> <span class="n">enc_length</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> 
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Train encoding:&#39;</span><span class="p">,</span> <span class="n">train_enc_start</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">train_enc_end</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Train prediction:&#39;</span><span class="p">,</span> <span class="n">train_pred_start</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">train_pred_end</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Val encoding:&#39;</span><span class="p">,</span> <span class="n">val_enc_start</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">val_enc_end</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Val prediction:&#39;</span><span class="p">,</span> <span class="n">val_pred_start</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">val_pred_end</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Encoding interval:&#39;</span><span class="p">,</span> <span class="n">enc_length</span><span class="o">.</span><span class="n">days</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Prediction interval:&#39;</span><span class="p">,</span> <span class="n">pred_length</span><span class="o">.</span><span class="n">days</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Train encoding: 2015-07-01 00:00:00 - 2016-12-03 00:00:00
+Train prediction: 2016-12-04 00:00:00 - 2016-12-17 00:00:00
+
+Val encoding: 2015-07-15 00:00:00 - 2016-12-17 00:00:00
+Val prediction: 2016-12-18 00:00:00 - 2016-12-31 00:00:00
+
+Encoding interval: 522
+Prediction interval: 14
+</pre></div>
+
+
+<h3>Keras Data Formatting</h3>
+<p>Now that we have the time segment dates, we'll define the functions we need to extract the data in keras friendly format. Here are the steps:</p>
+<ul>
+<li>Pull the time series into an array, save a date_to_index mapping as a utility for referencing into the array </li>
+<li>Create function to extract specified time interval from all the series </li>
+<li>Create functions to transform all the series. <ul>
+<li>Here we smooth out the scale by taking log1p and de-meaning each series using the encoder series mean, then reshape to the <strong>(n_series, n_timesteps, n_features) tensor format</strong> that keras will expect. </li>
+<li>Note that if we want to generate true predictions instead of log scale ones, we can easily apply a reverse transformation at prediction time. </li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">date_to_index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]),</span>
+                          <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))])</span>
+
+<span class="n">series_array</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="k">def</span> <span class="nf">get_time_block_series</span><span class="p">(</span><span class="n">series_array</span><span class="p">,</span> <span class="n">date_to_index</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">):</span>
+
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">date_to_index</span><span class="p">[</span><span class="n">start_date</span><span class="p">:</span><span class="n">end_date</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">series_array</span><span class="p">[:,</span><span class="n">inds</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">transform_series_encode</span><span class="p">(</span><span class="n">series_array</span><span class="p">):</span>
+
+    <span class="n">series_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">series_array</span><span class="p">))</span> <span class="c1"># filling NaN with 0</span>
+    <span class="n">series_mean</span> <span class="o">=</span> <span class="n">series_array</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> 
+    <span class="n">series_array</span> <span class="o">=</span> <span class="n">series_array</span> <span class="o">-</span> <span class="n">series_mean</span>
+    <span class="n">series_array</span> <span class="o">=</span> <span class="n">series_array</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">series_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">series_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">series_array</span><span class="p">,</span> <span class="n">series_mean</span>
+
+<span class="k">def</span> <span class="nf">transform_series_decode</span><span class="p">(</span><span class="n">series_array</span><span class="p">,</span> <span class="n">encode_series_mean</span><span class="p">):</span>
+
+    <span class="n">series_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">series_array</span><span class="p">))</span> <span class="c1"># filling NaN with 0</span>
+    <span class="n">series_array</span> <span class="o">=</span> <span class="n">series_array</span> <span class="o">-</span> <span class="n">encode_series_mean</span>
+    <span class="n">series_array</span> <span class="o">=</span> <span class="n">series_array</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">series_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">series_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">series_array</span>
+</pre></div>
+
+
+<h2>3. Building the Model - Training Architecture</h2>
+<p>This architecture / code is adapted from the excellent <a href="https://blog.keras.io/a-ten-minute-introduction-to-sequence-to-sequence-learning-in-keras.html">keras blog introduction to seq2seq</a>. Chollet's piece shows the more classic seq2seq application to machine translation, but the steps we need to take here are very similar.</p>
+<p>Note that we'll use <strong>teacher forcing</strong>, where during training, the true series values (lagged by one time step) are fed as inputs to the decoder. Intuitively, we are trying to teach the NN how to condition on previous time steps to predict the next. At prediction time, the true values in this process will be replaced by predicted values for each previous time step.</p>
+<p>This image created by <a href="https://github.com/Arturus/kaggle-web-traffic/blob/master/how_it_works.md">Artur Suilin</a> captures the architecture we use well (we use LSTM instead of GRU).</p>
+<p><img alt="architecture" src="/images/ArturSuilin_encoder-decoder.png"></p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">LSTM</span><span class="p">,</span> <span class="n">Dense</span>
+<span class="kn">from</span> <span class="nn">keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
+
+<span class="n">latent_dim</span> <span class="o">=</span> <span class="mi">50</span> <span class="c1"># LSTM hidden units</span>
+<span class="n">dropout</span> <span class="o">=</span> <span class="o">.</span><span class="mi">20</span> 
+
+<span class="c1"># Define an input series and encode it with an LSTM. </span>
+<span class="n">encoder_inputs</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> 
+<span class="n">encoder</span> <span class="o">=</span> <span class="n">LSTM</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">,</span> <span class="n">return_state</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">encoder_outputs</span><span class="p">,</span> <span class="n">state_h</span><span class="p">,</span> <span class="n">state_c</span> <span class="o">=</span> <span class="n">encoder</span><span class="p">(</span><span class="n">encoder_inputs</span><span class="p">)</span>
+
+<span class="c1"># We discard `encoder_outputs` and only keep the final states. These represent the &quot;context&quot;</span>
+<span class="c1"># vector that we use as the basis for decoding.</span>
+<span class="n">encoder_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">state_h</span><span class="p">,</span> <span class="n">state_c</span><span class="p">]</span>
+
+<span class="c1"># Set up the decoder, using `encoder_states` as initial state.</span>
+<span class="c1"># This is where teacher forcing inputs are fed in.</span>
+<span class="n">decoder_inputs</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> 
+
+<span class="c1"># We set up our decoder using `encoder_states` as initial state.  </span>
+<span class="c1"># We return full output sequences and return internal states as well. </span>
+<span class="c1"># We don&#39;t use the return states in the training model, but we will use them in inference.</span>
+<span class="n">decoder_lstm</span> <span class="o">=</span> <span class="n">LSTM</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">return_state</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">decoder_outputs</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">decoder_lstm</span><span class="p">(</span><span class="n">decoder_inputs</span><span class="p">,</span>
+                                     <span class="n">initial_state</span><span class="o">=</span><span class="n">encoder_states</span><span class="p">)</span>
+
+<span class="n">decoder_dense</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># 1 continuous output at each timestep</span>
+<span class="n">decoder_outputs</span> <span class="o">=</span> <span class="n">decoder_dense</span><span class="p">(</span><span class="n">decoder_outputs</span><span class="p">)</span>
+
+<span class="c1"># Define the model that will turn</span>
+<span class="c1"># `encoder_input_data` &amp; `decoder_input_data` into `decoder_target_data`</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">([</span><span class="n">encoder_inputs</span><span class="p">,</span> <span class="n">decoder_inputs</span><span class="p">],</span> <span class="n">decoder_outputs</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Using TensorFlow backend.
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Model: &quot;model_1&quot;
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+input_1 (InputLayer)            (None, None, 1)      0                                            
+__________________________________________________________________________________________________
+input_2 (InputLayer)            (None, None, 1)      0                                            
+__________________________________________________________________________________________________
+lstm_1 (LSTM)                   [(None, 50), (None,  10400       input_1[0][0]                    
+__________________________________________________________________________________________________
+lstm_2 (LSTM)                   [(None, None, 50), ( 10400       input_2[0][0]                    
+                                                                 lstm_1[0][1]                     
+                                                                 lstm_1[0][2]                     
+__________________________________________________________________________________________________
+dense_1 (Dense)                 (None, None, 1)      51          lstm_2[0][0]                     
+==================================================================================================
+Total params: 20,851
+Trainable params: 20,851
+Non-trainable params: 0
+__________________________________________________________________________________________________
+</pre></div>
+
+
+<p>With our training architecture defined, we're ready to train the model! This will take some time if you're not running fancy hardware (read GPU). We'll leverage the transformer utility functions we defined earlier, and train using mean absolute error loss. </p>
+<p>For better results, you could try using more data, adjusting the hyperparameters, tuning the learning rate and number of epochs, etc.  </p>
+<div class="highlight"><pre><span></span><span class="n">first_n_samples</span> <span class="o">=</span> <span class="mi">20000</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">11</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="c1"># sample of series from train_enc_start to train_enc_end  </span>
+<span class="n">encoder_input_data</span> <span class="o">=</span> <span class="n">get_time_block_series</span><span class="p">(</span><span class="n">series_array</span><span class="p">,</span> <span class="n">date_to_index</span><span class="p">,</span> 
+                                           <span class="n">train_enc_start</span><span class="p">,</span> <span class="n">train_enc_end</span><span class="p">)[:</span><span class="n">first_n_samples</span><span class="p">]</span>
+<span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">encode_series_mean</span> <span class="o">=</span> <span class="n">transform_series_encode</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">)</span>
+
+<span class="c1"># sample of series from train_pred_start to train_pred_end </span>
+<span class="n">decoder_target_data</span> <span class="o">=</span> <span class="n">get_time_block_series</span><span class="p">(</span><span class="n">series_array</span><span class="p">,</span> <span class="n">date_to_index</span><span class="p">,</span> 
+                                            <span class="n">train_pred_start</span><span class="p">,</span> <span class="n">train_pred_end</span><span class="p">)[:</span><span class="n">first_n_samples</span><span class="p">]</span>
+<span class="n">decoder_target_data</span> <span class="o">=</span> <span class="n">transform_series_decode</span><span class="p">(</span><span class="n">decoder_target_data</span><span class="p">,</span> <span class="n">encode_series_mean</span><span class="p">)</span>
+
+<span class="c1"># lagged target series for teacher forcing</span>
+<span class="n">decoder_input_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">decoder_target_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">decoder_input_data</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">decoder_target_data</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">decoder_input_data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">encoder_input_data</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">Adam</span><span class="p">(),</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mean_absolute_error&#39;</span><span class="p">)</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">([</span><span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">decoder_input_data</span><span class="p">],</span> <span class="n">decoder_target_data</span><span class="p">,</span>
+                     <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                     <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
+                     <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</pre></div>
+
+
+<p>It's typically a good idea to look at the convergence curve of train/validation loss.</p>
+<div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_loss&#39;</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Epoch&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Mean Absolute Error Loss&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Loss Over Time&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Train&#39;</span><span class="p">,</span><span class="s1">&#39;Valid&#39;</span><span class="p">])</span>
+</pre></div>
+
+
+<h2>4. Building the Model - Inference Architecture</h2>
+<p>Not done with architecture yet! We need to use keras to define an inference model that draws on our neural network to actually generate predictions. In a nutshell, this architecture starts by encoding the input series, then generates predictions one by one. The decoder gets fed initial state vectors from the encoder, but the state vectors are then iteratively updated as the decoder generates a prediction for each time step.   </p>
+<div class="highlight"><pre><span></span><span class="c1"># from our previous model - mapping encoder sequence to state vectors</span>
+<span class="n">encoder_model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">encoder_inputs</span><span class="p">,</span> <span class="n">encoder_states</span><span class="p">)</span>
+
+<span class="c1"># A modified version of the decoding stage that takes in predicted target inputs</span>
+<span class="c1"># and encoded state vectors, returning predicted target outputs and decoder state vectors.</span>
+<span class="c1"># We need to hang onto these state vectors to run the next step of the inference loop.</span>
+<span class="n">decoder_state_input_h</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">,))</span>
+<span class="n">decoder_state_input_c</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">,))</span>
+<span class="n">decoder_states_inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">decoder_state_input_h</span><span class="p">,</span> <span class="n">decoder_state_input_c</span><span class="p">]</span>
+
+<span class="n">decoder_outputs</span><span class="p">,</span> <span class="n">state_h</span><span class="p">,</span> <span class="n">state_c</span> <span class="o">=</span> <span class="n">decoder_lstm</span><span class="p">(</span><span class="n">decoder_inputs</span><span class="p">,</span> <span class="n">initial_state</span><span class="o">=</span><span class="n">decoder_states_inputs</span><span class="p">)</span>
+<span class="n">decoder_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">state_h</span><span class="p">,</span> <span class="n">state_c</span><span class="p">]</span>
+
+<span class="n">decoder_outputs</span> <span class="o">=</span> <span class="n">decoder_dense</span><span class="p">(</span><span class="n">decoder_outputs</span><span class="p">)</span>
+<span class="n">decoder_model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">([</span><span class="n">decoder_inputs</span><span class="p">]</span> <span class="o">+</span> <span class="n">decoder_states_inputs</span><span class="p">,</span>
+                      <span class="p">[</span><span class="n">decoder_outputs</span><span class="p">]</span> <span class="o">+</span> <span class="n">decoder_states</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">decode_sequence</span><span class="p">(</span><span class="n">input_seq</span><span class="p">):</span>
+
+    <span class="c1"># Encode the input as state vectors.</span>
+    <span class="n">states_value</span> <span class="o">=</span> <span class="n">encoder_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">input_seq</span><span class="p">)</span>
+
+    <span class="c1"># Generate empty target sequence of length 1.</span>
+    <span class="n">target_seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># Populate the first target sequence with end of encoding series pageviews</span>
+    <span class="n">target_seq</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_seq</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Sampling loop for a batch of sequences - we will fill decoded_seq with predictions</span>
+    <span class="c1"># (to simplify, here we assume a batch of size 1).</span>
+
+    <span class="n">decoded_seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">pred_steps</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pred_steps</span><span class="p">):</span>
+
+        <span class="n">output</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">decoder_model</span><span class="o">.</span><span class="n">predict</span><span class="p">([</span><span class="n">target_seq</span><span class="p">]</span> <span class="o">+</span> <span class="n">states_value</span><span class="p">)</span>
+
+        <span class="n">decoded_seq</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Update the target sequence (of length 1).</span>
+        <span class="n">target_seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">target_seq</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Update states</span>
+        <span class="n">states_value</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">decoded_seq</span>
+</pre></div>
+
+
+<h2>5. Generating and Plotting Predictions</h2>
+<p>Now we have everything we need to generate predictions for encoder/target series pairs that we didn't train on. We'll pull out our set of validation encoder/target series (recall that these are shifted forward in time). Then using a plotting utility function, we can look at the tail end of the encoder series, the true target series, and the predicted target series. This gives us a feel for how our predictions are doing.  </p>
+<div class="highlight"><pre><span></span><span class="n">encoder_input_data</span> <span class="o">=</span> <span class="n">get_time_block_series</span><span class="p">(</span><span class="n">series_array</span><span class="p">,</span> <span class="n">date_to_index</span><span class="p">,</span> <span class="n">val_enc_start</span><span class="p">,</span> <span class="n">val_enc_end</span><span class="p">)</span>
+<span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">encode_series_mean</span> <span class="o">=</span> <span class="n">transform_series_encode</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">)</span>
+
+<span class="n">decoder_target_data</span> <span class="o">=</span> <span class="n">get_time_block_series</span><span class="p">(</span><span class="n">series_array</span><span class="p">,</span> <span class="n">date_to_index</span><span class="p">,</span> <span class="n">val_pred_start</span><span class="p">,</span> <span class="n">val_pred_end</span><span class="p">)</span>
+<span class="n">decoder_target_data</span> <span class="o">=</span> <span class="n">transform_series_decode</span><span class="p">(</span><span class="n">decoder_target_data</span><span class="p">,</span> <span class="n">encode_series_mean</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">predict_and_plot</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">decoder_target_data</span><span class="p">,</span> <span class="n">sample_ind</span><span class="p">,</span> <span class="n">enc_tail_len</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+
+    <span class="n">encode_series</span> <span class="o">=</span> <span class="n">encoder_input_data</span><span class="p">[</span><span class="n">sample_ind</span><span class="p">:</span><span class="n">sample_ind</span><span class="o">+</span><span class="mi">1</span><span class="p">,:,:]</span> 
+    <span class="n">pred_series</span> <span class="o">=</span> <span class="n">decode_sequence</span><span class="p">(</span><span class="n">encode_series</span><span class="p">)</span>
+
+    <span class="n">encode_series</span> <span class="o">=</span> <span class="n">encode_series</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pred_series</span> <span class="o">=</span> <span class="n">pred_series</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>   
+    <span class="n">target_series</span> <span class="o">=</span> <span class="n">decoder_target_data</span><span class="p">[</span><span class="n">sample_ind</span><span class="p">,:,:</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> 
+
+    <span class="n">encode_series_tail</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">encode_series</span><span class="p">[</span><span class="o">-</span><span class="n">enc_tail_len</span><span class="p">:],</span><span class="n">target_series</span><span class="p">[:</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="n">x_encode</span> <span class="o">=</span> <span class="n">encode_series_tail</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>   
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">x_encode</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="n">encode_series_tail</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">x_encode</span><span class="p">,</span><span class="n">x_encode</span><span class="o">+</span><span class="n">pred_steps</span><span class="p">),</span><span class="n">target_series</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">x_encode</span><span class="p">,</span><span class="n">x_encode</span><span class="o">+</span><span class="n">pred_steps</span><span class="p">),</span><span class="n">pred_series</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;teal&#39;</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Encoder Series Tail of Length </span><span class="si">%d</span><span class="s1">, Target Series, and Predictions&#39;</span> <span class="o">%</span> <span class="n">enc_tail_len</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Encoding Series&#39;</span><span class="p">,</span><span class="s1">&#39;Target Series&#39;</span><span class="p">,</span><span class="s1">&#39;Predictions&#39;</span><span class="p">])</span>
+</pre></div>
+
+
+<p>Generating some plots as below, we can see that our predictions manage to effectively anticipate some trends in the data and can understand when certain patterns should remain fairly steady. </p>
+<p>However, our predictions look overly conservative and clearly fail to capture a lot of the choppy variability in the data. We would likely stand to gain from increasing the sample size for training, tuning the network architecture/hyperparameters, and training for more epochs.  </p>
+<p><strong>Check out the next notebook in this series</strong> for fancier architectures and more expressive predictions.  </p>
+<div class="highlight"><pre><span></span><span class="n">predict_and_plot</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">decoder_target_data</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">predict_and_plot</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">decoder_target_data</span><span class="p">,</span> <span class="mi">6007</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">predict_and_plot</span><span class="p">(</span><span class="n">encoder_input_data</span><span class="p">,</span> <span class="n">decoder_target_data</span><span class="p">,</span> <span class="mi">33000</span><span class="p">)</span>
+</pre></div>
+
+
+<p><strong>Note</strong>: if you’re interested in building seq2seq time series models yourself using keras, check out the <a href="https://github.com/mohcinemadkour/TimeSeries_Seq2Seq/blob/master/notebooks/TS_Seq2Seq_Intro.ipynb">introductory notebook</a> that I’ve posted on github.</p>
+<div class="highlight"><pre><span></span>
+</pre></div>
+            <div class="hr"></div>
+            <a href="#" class="go-top">Go Top</a>
+<div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div><footer class="footer">
+    <p>&copy; Mohcine Madkour &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+</div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>
