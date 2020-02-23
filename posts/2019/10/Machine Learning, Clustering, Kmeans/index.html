@@ -1,57 +1,43 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+          <title>Mohcine Madkour</title>
+        <meta charset="utf-8" />
 
 
-        <title>In-depth EDA and K-Means Clustering // Mohcine Madkour // Big Data Architectures and more</title>
+    <meta name="tags" content="Machine Learning" />
+    <meta name="tags" content="Clustering" />
+    <meta name="tags" content="Kmeans" />
 
-
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../../../../theme/css/pure.css">
-    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
-
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            $(".content").fitVids();
-        });
-    </script>
 </head>
 
-<body>
-<div class="pure-g-r" id="layout">
-    <div class="sidebar sidebar-article pure-u">
-        <header class="header-article">
-            <hgroup>
-                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine Madkour">
-                        <img class="avatar" alt="Mohcine Madkour" src="http://www.gravatar.com/avatar/ae08847efc1a85b710f326eb8ee2e907">
-                </a>
-                <h2 class="article-info">Mohcine Madkour</h2>
-                <small class="about-author"></small>
-                <h5>Published</h5>
-                <p>Fri 11 October 2019</p>
-                <a href="/">&larr;Home</a>
-            </hgroup>
-        </header>
-    </div>
-    <div class="pure-u">
-        <div class="content">
-            <section class="post">
-                <header class="post-header">
-                    <h1>In-depth EDA and K-Means Clustering</h1>
-                        <p class="post-meta">
-                            // under                                 <a class="post-category" href="../../../../tag/machine-learning/">Machine Learning</a>
-                                <a class="post-category" href="../../../../tag/clustering/">Clustering</a>
-                                <a class="post-category" href="../../../../tag/kmeans/">Kmeans</a>
-                        </p>
-                </header>
-            </section>
-            <p>Our world population is expected to grow from 7.3 billion today to 9.7 billion in the year 2050. Finding solutions for feeding the growing world population has become a hot topic for food and agriculture organizations, entrepreneurs and philanthropists. These solutions range from changing the way we grow our food to changing the way we eat. To make things harder, the world's climate is changing and it is both affecting and affected by the way we grow our food – agriculture. This dataset provides an insight on our worldwide food production - focusing on a comparison between food produced for human consumption and feed produced for animals.</p>
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="../../../../">Mohcine Madkour <strong></strong></a></h1>
+        </header><!-- /#banner -->
+        <nav id="menu"><ul>
+            <li><a href="pages/about.html">About</a></li>
+            <li><a href="pages/biography.html">Biography</a></li>
+            <li><a href="../../../../pages/about.html">About</a></li>
+            <li><a href="../../../../pages/biography.html">Biography</a></li>
+        </ul></nav><!-- /#menu -->
+<section id="content" class="body">
+  <header>
+    <h2 class="entry-title">
+      <a href="../../../../posts/2019/10/Machine Learning, Clustering, Kmeans/" rel="bookmark"
+         title="Permalink to In-depth EDA and K-Means Clustering">In-depth EDA and K-Means Clustering</a></h2>
+ 
+  </header>
+  <footer class="post-info">
+    <time class="published" datetime="2019-10-11T13:01:00-04:00">
+      Fri 11 October 2019
+    </time>
+    <address class="vcard author">
+      By           <a class="url fn" href="../../../../author/mohcine-madkour.html">Mohcine Madkour</a>
+    </address>
+  </footer><!-- /.post-info -->
+  <div class="entry-content">
+    <p>Our world population is expected to grow from 7.3 billion today to 9.7 billion in the year 2050. Finding solutions for feeding the growing world population has become a hot topic for food and agriculture organizations, entrepreneurs and philanthropists. These solutions range from changing the way we grow our food to changing the way we eat. To make things harder, the world's climate is changing and it is both affecting and affected by the way we grow our food – agriculture. This dataset provides an insight on our worldwide food production - focusing on a comparison between food produced for human consumption and feed produced for animals.</p>
 <p>The Food and Agriculture Organization of the United Nations provides free access to food and agriculture data for over 245 countries and territories, from the year 1961 to the most recent update (depends on the dataset). One dataset from the FAO's database is the Food Balance Sheets. It presents a comprehensive picture of the pattern of a country's food supply during a specified reference period, the last time an update was loaded to the FAO database was in 2013. The food balance sheet shows for each food item the sources of supply and its utilization. This chunk of the dataset is focused on two utilizations of each food item available:</p>
 <p>Food - refers to the total amount of the food item available as human food during the reference period.
 Feed - refers to the quantity of the food item available for feeding to the livestock and poultry during the reference period.
@@ -282,7 +268,7 @@ Production per year - Amount of food item produced in 1000 tonnes</p>
 </pre></div>
 
 
-<div class="highlight"><pre><span></span>&amp;lt;seaborn.axisgrid.FacetGrid at 0x7fe39e56a5f8&amp;gt;
+<div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.FacetGrid at 0x7fe39e56a5f8&gt;
 </pre></div>
 
 
@@ -1223,7 +1209,7 @@ Name: Item_Name, dtype: object
 </pre></div>
 
 
-<div class="highlight"><pre><span></span>&amp;lt;matplotlib.axes._subplots.AxesSubplot at 0x7fe3a58530b8&amp;gt;
+<div class="highlight"><pre><span></span>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7fe3a58530b8&gt;
 </pre></div>
 
 
@@ -1451,17 +1437,17 @@ There has been exceptional growth in production of onions, cream, sugar crops, t
 
 AttributeError                            Traceback (most recent call last)
 
-&amp;lt;ipython-input-23-ebc6771564a7&amp;gt; in &amp;lt;module&amp;gt;
+&lt;ipython-input-23-ebc6771564a7&gt; in &lt;module&gt;
       2 
       3 X = pd.DataFrame(X)
-----&amp;gt; 4 X = X.convert_objects(convert_numeric=True)
+----&gt; 4 X = X.convert_objects(convert_numeric=True)
       5 X.columns = year_list
 
 
 /opt/conda/lib/python3.6/site-packages/pandas/core/generic.py in __getattr__(self, name)
    5177             if self._info_axis._can_hold_identifiers_and_holds_name(name):
    5178                 return self[name]
--&amp;gt; 5179             return object.__getattribute__(self, name)
+-&gt; 5179             return object.__getattribute__(self, name)
    5180 
    5181     def __setattr__(self, name, value):
 
@@ -1510,54 +1496,13 @@ Now, we apply k-means algorithm.</p>
 This result was highly probable. Just take a look at the plot of cell 3 above. See how China, USA and India stand out. That has been observed here in clustering too.</p>
 <p>You should try this algorithm for 3 or 4 clusters. Looking at the distribution, you will realise why 2 clusters is the best choice for the given data</p>
 <p>This is not the end! More is yet to come.</p>
-            <div class="hr"></div>
-            <a href="#" class="go-top">Go Top</a>
-<div class="comments">
-    <div id="disqus_thread"></div>
-    <script type="text/javascript">
-        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
-
-        /* * * DON'T EDIT BELOW THIS LINE * * */
-        (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-    </script>
-    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-</div><footer class="footer">
-    <p>&copy; Mohcine Madkour &ndash;
-        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
-        for <a href="http://blog.getpelican.com/">Pelican</a>
-    </p>
-</footer>        </div>
-    </div>
-</div>
-    <script>
-        var $top = $('.go-top');
-
-        // Show or hide the sticky footer button
-        $(window).scroll(function() {
-            if ($(this).scrollTop() > 200) {
-                $top.fadeIn(200);
-            } else {
-                $top.fadeOut(200);
-            }
-        });
-
-        // Animate the scroll to top
-        $top.click(function(event) {
-            event.preventDefault();
-            $('html, body').animate({scrollTop: 0}, 300);
-        })
-
-        // Makes sure that the href="#" attached to the <a> elements
-        // don't scroll you back up the page.
-        $('body').on('click', 'a[href="#"]', function(event) {
-            event.preventDefault();
-        });
-    </script>
+  </div><!-- /.entry-content -->
+</section>
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>,
+                which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+        </footer><!-- /#contentinfo -->
 </body>
 </html>

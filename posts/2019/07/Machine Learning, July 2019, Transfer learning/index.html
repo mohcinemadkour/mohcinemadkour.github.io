@@ -1,57 +1,43 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+          <title>Mohcine Madkour</title>
+        <meta charset="utf-8" />
 
 
-        <title>Transfer learning in NLP Part I : Pre-trained embeddings // Mohcine Madkour // Big Data Architectures and more</title>
+    <meta name="tags" content="NLP" />
+    <meta name="tags" content="July 2019" />
+    <meta name="tags" content="Transfer learning" />
 
-
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../../../../theme/css/pure.css">
-    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
-
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            $(".content").fitVids();
-        });
-    </script>
 </head>
 
-<body>
-<div class="pure-g-r" id="layout">
-    <div class="sidebar sidebar-article pure-u">
-        <header class="header-article">
-            <hgroup>
-                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine Madkour">
-                        <img class="avatar" alt="Mohcine Madkour" src="http://www.gravatar.com/avatar/ae08847efc1a85b710f326eb8ee2e907">
-                </a>
-                <h2 class="article-info">Mohcine Madkour</h2>
-                <small class="about-author"></small>
-                <h5>Published</h5>
-                <p>Sun 07 July 2019</p>
-                <a href="/">&larr;Home</a>
-            </hgroup>
-        </header>
-    </div>
-    <div class="pure-u">
-        <div class="content">
-            <section class="post">
-                <header class="post-header">
-                    <h1>Transfer learning in NLP Part I : Pre-trained embeddings</h1>
-                        <p class="post-meta">
-                            // under                                 <a class="post-category" href="../../../../tag/nlp/">NLP</a>
-                                <a class="post-category" href="../../../../tag/july-2019/">July 2019</a>
-                                <a class="post-category" href="../../../../tag/transfer-learning/">Transfer learning</a>
-                        </p>
-                </header>
-            </section>
-            <p>We are going to build some PyTorch models that are commonly used for text classification.  We also need to build out some infrastructure to run these models.</p>
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="../../../../">Mohcine Madkour <strong></strong></a></h1>
+        </header><!-- /#banner -->
+        <nav id="menu"><ul>
+            <li><a href="pages/about.html">About</a></li>
+            <li><a href="pages/biography.html">Biography</a></li>
+            <li><a href="../../../../pages/about.html">About</a></li>
+            <li><a href="../../../../pages/biography.html">Biography</a></li>
+        </ul></nav><!-- /#menu -->
+<section id="content" class="body">
+  <header>
+    <h2 class="entry-title">
+      <a href="../../../../posts/2019/07/Machine Learning, July 2019, Transfer learning/" rel="bookmark"
+         title="Permalink to Transfer learning in NLP Part I : Pre-trained embeddings">Transfer learning in NLP Part I : Pre-trained embeddings</a></h2>
+ 
+  </header>
+  <footer class="post-info">
+    <time class="published" datetime="2019-07-07T13:01:00-04:00">
+      Sun 07 July 2019
+    </time>
+    <address class="vcard author">
+      By           <a class="url fn" href="../../../../author/mohcine-madkour.html">Mohcine Madkour</a>
+    </address>
+  </footer><!-- /.post-info -->
+  <div class="entry-content">
+    <p>We are going to build some PyTorch models that are commonly used for text classification.  We also need to build out some infrastructure to run these models.</p>
 <p>Once we have the models and the boilerplate stuff out of the way, we can see the impact of pre-trained embeddings for classification tasks. Pre-training methods like word2vec are context-limited language models whose goal is to predict a word given a fixed context, or a fixed context given a word. Pre-trained embeddings are particularly useful for smaller datasets.</p>
 <p>Most of this code is inspired or derived from <a href="https://github.com/dpressel/baseline/">Baseline</a> (Pressel et al, 2018), an open source project for building and evaluating NLP models across a variety of NLP tasks.  For this tutorial, we will only concern ourselves with Text Classification using a few useful models.</p>
 <h2>Word Embeddings in NLP</h2>
@@ -100,7 +86,7 @@ HTTP request sent, awaiting response... 200 OK
 Length: 1759259 (1.7M) [application/binary]
 Saving to: ‘sst2.tar.gz?dl=1’
 
-sst2.tar.gz?dl=1    100%[===================&amp;gt;]   1.68M   935KB/s    in 1.8s
+sst2.tar.gz?dl=1    100%[===================&gt;]   1.68M   935KB/s    in 1.8s
 
 2019-07-08 00:32:48 (935 KB/s) - ‘sst2.tar.gz?dl=1’ saved [1759259/1759259]
 
@@ -120,7 +106,7 @@ HTTP request sent, awaiting response... 200 OK
 Length: 117253 (115K) [application/binary]
 Saving to: ‘trec.tar.gz?dl=1’
 
-trec.tar.gz?dl=1    100%[===================&amp;gt;] 114.50K  --.-KB/s    in 0.09s
+trec.tar.gz?dl=1    100%[===================&gt;] 114.50K  --.-KB/s    in 0.09s
 
 2019-07-08 00:32:49 (1.21 MB/s) - ‘trec.tar.gz?dl=1’ saved [117253/117253]
 
@@ -140,7 +126,7 @@ HTTP request sent, awaiting response... 200 OK
 Length: 1743563840 (1.6G) [application/binary]
 Saving to: ‘GoogleNews-vectors-negative300.bin.gz?dl=1’
 
-GoogleNews-vectors-  12%[=&amp;gt;                  ] 209.10M   708KB/s    eta 24m 28s
+GoogleNews-vectors-  12%[=&gt;                  ] 209.10M   708KB/s    eta 24m 28s
 </pre></div>
 
 
@@ -1090,54 +1076,13 @@ Final result
 <li>https://ronxin.github.io/lamvi/dist/#model=word2vec&amp;backend=browser&amp;query_in=darcy&amp;query_out=G_bennet,B_circumstances</li>
 <li>Accompanying paper for Lamvi <a href="http://www.cond.org/ICML16_NeuralVis.pdf">Visual Tools for Debugging Neural Language Models, Rong &amp; Adar, 2016</a></li>
 </ul>
-            <div class="hr"></div>
-            <a href="#" class="go-top">Go Top</a>
-<div class="comments">
-    <div id="disqus_thread"></div>
-    <script type="text/javascript">
-        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
-
-        /* * * DON'T EDIT BELOW THIS LINE * * */
-        (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-    </script>
-    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-</div><footer class="footer">
-    <p>&copy; Mohcine Madkour &ndash;
-        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
-        for <a href="http://blog.getpelican.com/">Pelican</a>
-    </p>
-</footer>        </div>
-    </div>
-</div>
-    <script>
-        var $top = $('.go-top');
-
-        // Show or hide the sticky footer button
-        $(window).scroll(function() {
-            if ($(this).scrollTop() > 200) {
-                $top.fadeIn(200);
-            } else {
-                $top.fadeOut(200);
-            }
-        });
-
-        // Animate the scroll to top
-        $top.click(function(event) {
-            event.preventDefault();
-            $('html, body').animate({scrollTop: 0}, 300);
-        })
-
-        // Makes sure that the href="#" attached to the <a> elements
-        // don't scroll you back up the page.
-        $('body').on('click', 'a[href="#"]', function(event) {
-            event.preventDefault();
-        });
-    </script>
+  </div><!-- /.entry-content -->
+</section>
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>,
+                which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+        </footer><!-- /#contentinfo -->
 </body>
 </html>

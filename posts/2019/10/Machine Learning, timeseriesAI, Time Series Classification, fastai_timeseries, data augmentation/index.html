@@ -1,59 +1,45 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+          <title>Mohcine Madkour</title>
+        <meta charset="utf-8" />
 
 
-        <title>New data augmentation techniques: cutout, mixup & cutmix: Part 3 // Mohcine Madkour // Big Data Architectures and more</title>
+    <meta name="tags" content="Machine Learning" />
+    <meta name="tags" content="timeseriesAI" />
+    <meta name="tags" content="Time Series Classification" />
+    <meta name="tags" content="fastai_timeseries" />
+    <meta name="tags" content="data augmentation" />
 
-
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../../../../theme/css/pure.css">
-    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
-
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            $(".content").fitVids();
-        });
-    </script>
 </head>
 
-<body>
-<div class="pure-g-r" id="layout">
-    <div class="sidebar sidebar-article pure-u">
-        <header class="header-article">
-            <hgroup>
-                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine Madkour">
-                        <img class="avatar" alt="Mohcine Madkour" src="http://www.gravatar.com/avatar/ae08847efc1a85b710f326eb8ee2e907">
-                </a>
-                <h2 class="article-info">Mohcine Madkour</h2>
-                <small class="about-author"></small>
-                <h5>Published</h5>
-                <p>Sat 12 October 2019</p>
-                <a href="/">&larr;Home</a>
-            </hgroup>
-        </header>
-    </div>
-    <div class="pure-u">
-        <div class="content">
-            <section class="post">
-                <header class="post-header">
-                    <h1>New data augmentation techniques: cutout, mixup & cutmix: Part 3</h1>
-                        <p class="post-meta">
-                            // under                                 <a class="post-category" href="../../../../tag/machine-learning/">Machine Learning</a>
-                                <a class="post-category" href="../../../../tag/timeseriesai/">timeseriesAI</a>
-                                <a class="post-category" href="../../../../tag/time-series-classification/">Time Series Classification</a>
-                                <a class="post-category" href="../../../../tag/fastai_timeseries/">fastai_timeseries</a>
-                                <a class="post-category" href="../../../../tag/data-augmentation/">data augmentation</a>
-                        </p>
-                </header>
-            </section>
-            <p>As you may know, Jeremy Howard claims in his excellent fastai course that data augmentation is perhaps the most important regularization technique when training a model for Computer Vision, second only to getting more data samples (which is often costly or just impossible).</p>
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="../../../../">Mohcine Madkour <strong></strong></a></h1>
+        </header><!-- /#banner -->
+        <nav id="menu"><ul>
+            <li><a href="pages/about.html">About</a></li>
+            <li><a href="pages/biography.html">Biography</a></li>
+            <li><a href="../../../../pages/about.html">About</a></li>
+            <li><a href="../../../../pages/biography.html">Biography</a></li>
+        </ul></nav><!-- /#menu -->
+<section id="content" class="body">
+  <header>
+    <h2 class="entry-title">
+      <a href="../../../../posts/2019/10/Machine Learning, timeseriesAI, Time Series Classification, fastai_timeseries, data augmentation/" rel="bookmark"
+         title="Permalink to New data augmentation techniques: cutout, mixup & cutmix: Part 3">New data augmentation techniques: cutout, mixup & cutmix: Part 3</a></h2>
+ 
+  </header>
+  <footer class="post-info">
+    <time class="published" datetime="2019-10-12T13:01:00-04:00">
+      Sat 12 October 2019
+    </time>
+    <address class="vcard author">
+      By           <a class="url fn" href="../../../../author/mohcine-madkour.html">Mohcine Madkour</a>
+    </address>
+  </footer><!-- /.post-info -->
+  <div class="entry-content">
+    <p>As you may know, Jeremy Howard claims in his excellent fastai course that data augmentation is perhaps the most important regularization technique when training a model for Computer Vision, second only to getting more data samples (which is often costly or just impossible).</p>
 <p>During the last 2 years a number of data augmentation techniques have been developed with excellent results in vision datasets.</p>
 <p>In this notebook we'll see how you can easily apply some of this new data augmentation techniques to time series using fastai, fastai_timeseries and torchtimeseries.models library available at <a href="https://github.com/timeseriesAI/timeseriesAI">timeseriesAI</a></p>
 <div class="highlight"><pre><span></span><span class="o">%%</span><span class="nx">javascript</span>
@@ -67,7 +53,7 @@
 </pre></div>
 
 
-<div class="highlight"><pre><span></span>&amp;lt;IPython.core.display.Javascript object&amp;gt;
+<div class="highlight"><pre><span></span>&lt;IPython.core.display.Javascript object&gt;
 </pre></div>
 
 
@@ -5933,8 +5919,8 @@ This is something to take into account when designing your experiments.</p>
 
 
 <p><img alt="png" src="/images/TSC/output_62_1.png"></p>
-<div class="highlight"><pre><span></span><span class="s s-Atom">&amp;lt</span><span class="p">;</span><span class="o">div</span><span class="s s-Atom">&amp;gt</span><span class="p">;</span>
-    <span class="s s-Atom">&amp;lt</span><span class="p">;</span><span class="s s-Atom">style&amp;gt</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="o">&lt;div&gt;</span>
+    <span class="o">&lt;</span><span class="s s-Atom">style</span><span class="o">&gt;</span>
         <span class="cm">/* Turns off some styling */</span>
         <span class="s s-Atom">progress</span> <span class="p">{</span>
             <span class="cm">/* gets rid of default border in Firefox and Opera. */</span>
@@ -5945,10 +5931,10 @@ This is something to take into account when designing your experiments.</p>
         <span class="p">.</span><span class="s s-Atom">progress</span><span class="o">-</span><span class="s s-Atom">bar</span><span class="o">-</span><span class="s s-Atom">interrupted</span><span class="p">,</span> <span class="p">.</span><span class="s s-Atom">progress</span><span class="o">-</span><span class="s s-Atom">bar</span><span class="o">-</span><span class="nn">interrupted</span><span class="p">::-</span><span class="s s-Atom">webkit</span><span class="o">-</span><span class="s s-Atom">progress</span><span class="o">-</span><span class="s s-Atom">bar</span> <span class="p">{</span>
             <span class="nn">background</span><span class="p">:</span> <span class="s s-Atom">#</span><span class="nv">F44336</span><span class="p">;</span>
         <span class="p">}</span>
-    <span class="s s-Atom">&amp;lt</span><span class="p">;</span><span class="o">/</span><span class="s s-Atom">style&amp;gt</span><span class="p">;</span>
-  <span class="s s-Atom">&amp;lt</span><span class="p">;</span><span class="s s-Atom">progress</span> <span class="s s-Atom">value=&#39;0&#39;</span> <span class="s s-Atom">class=&#39;&#39;</span> <span class="s s-Atom">max=&#39;200&#39;</span><span class="p">,</span> <span class="s s-Atom">style=&#39;width:300px; height:20px; vertical-align: middle;&#39;&amp;gt</span><span class="p">;</span><span class="s s-Atom">&amp;lt</span><span class="p">;</span><span class="o">/</span><span class="s s-Atom">progress&amp;gt</span><span class="p">;</span>
-  <span class="mf">0.00</span><span class="c1">% [0/200 00:00&amp;lt;00:00]</span>
-<span class="s s-Atom">&amp;lt</span><span class="p">;</span><span class="o">/div</span><span class="s s-Atom">&amp;gt</span><span class="p">;</span>
+    <span class="s s-Atom">&lt;/style</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="s s-Atom">progress</span> <span class="s s-Atom">value=&#39;0&#39;</span> <span class="s s-Atom">class=&#39;&#39;</span> <span class="s s-Atom">max=&#39;200&#39;</span><span class="p">,</span> <span class="s s-Atom">style=&#39;width:300px; height:20px; vertical-align: middle;&#39;&gt;&lt;/progress</span><span class="o">&gt;</span>
+  <span class="mf">0.00</span><span class="c1">% [0/200 00:00&lt;00:00]</span>
+<span class="s s-Atom">&lt;/</span><span class="o">div&gt;</span>
 </pre></div>
 
 
@@ -5989,7 +5975,23 @@ This is something to take into account when designing your experiments.</p>
 
 
 
-wzxhzdk:21
+<div class="highlight"><pre><span></span><span class="n">learn</span> <span class="o">=</span> <span class="n">Learner</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">InceptionTime</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">c</span><span class="p">),</span> <span class="n">metrics</span><span class="o">=</span><span class="n">accuracy</span><span class="p">,</span>
+               <span class="n">loss_func</span><span class="o">=</span><span class="n">LabelSmoothingCrossEntropy</span><span class="p">())</span>
+
+<span class="n">tfm_fn</span> <span class="o">=</span> <span class="n">mixup</span>
+<span class="n">sch_param</span><span class="o">=</span><span class="s1">&#39;alpha&#39;</span>
+<span class="n">sch_val</span> <span class="o">=</span> <span class="p">(</span><span class="o">.</span><span class="mo">001</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span>              <span class="c1"># values of parameter alpha (initial, final)</span>
+<span class="n">sch_iter</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="o">.</span><span class="mi">7</span><span class="p">)</span>               <span class="c1"># percent of training epochs (start, end)</span>
+<span class="n">sch_func</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">annealing_cos</span><span class="p">)</span> <span class="c1"># annealing_cos, None = annealing_linear, cosine_annealing</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">test</span> <span class="o">=</span> <span class="bp">False</span>                      <span class="c1"># set to True for adjusting the values. When ready to train set to False</span>
+<span class="n">sch_tfm_cb</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">TfmScheduler</span><span class="p">,</span> <span class="n">tfm_fn</span><span class="o">=</span><span class="n">tfm_fn</span><span class="p">,</span> <span class="n">sch_param</span><span class="o">=</span><span class="n">sch_param</span><span class="p">,</span> <span class="n">sch_val</span><span class="o">=</span><span class="n">sch_val</span><span class="p">,</span> 
+                      <span class="n">sch_iter</span><span class="o">=</span><span class="n">sch_iter</span><span class="p">,</span> <span class="n">sch_func</span><span class="o">=</span><span class="n">sch_func</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="n">plot</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">)</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">callback_fns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sch_tfm_cb</span><span class="p">)</span>
+
+<span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+</pre></div>
+
 
 
 
@@ -7422,55 +7424,15 @@ This is all for now! I hope you find this as useful as I have.
 
 
 
-wzxhzdk:22
-            <div class="hr"></div>
-            <a href="#" class="go-top">Go Top</a>
-<div class="comments">
-    <div id="disqus_thread"></div>
-    <script type="text/javascript">
-        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
-
-        /* * * DON'T EDIT BELOW THIS LINE * * */
-        (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-    </script>
-    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-</div><footer class="footer">
-    <p>&copy; Mohcine Madkour &ndash;
-        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
-        for <a href="http://blog.getpelican.com/">Pelican</a>
-    </p>
-</footer>        </div>
-    </div>
-</div>
-    <script>
-        var $top = $('.go-top');
-
-        // Show or hide the sticky footer button
-        $(window).scroll(function() {
-            if ($(this).scrollTop() > 200) {
-                $top.fadeIn(200);
-            } else {
-                $top.fadeOut(200);
-            }
-        });
-
-        // Animate the scroll to top
-        $top.click(function(event) {
-            event.preventDefault();
-            $('html, body').animate({scrollTop: 0}, 300);
-        })
-
-        // Makes sure that the href="#" attached to the <a> elements
-        // don't scroll you back up the page.
-        $('body').on('click', 'a[href="#"]', function(event) {
-            event.preventDefault();
-        });
-    </script>
+<div class="highlight"><pre><span></span>
+</pre></div>
+  </div><!-- /.entry-content -->
+</section>
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>,
+                which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+        </footer><!-- /#contentinfo -->
 </body>
 </html>

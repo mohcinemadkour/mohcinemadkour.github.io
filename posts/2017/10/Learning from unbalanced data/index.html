@@ -1,61 +1,47 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+          <title>Mohcine Madkour</title>
+        <meta charset="utf-8" />
 
 
-        <title>Building Machine Learning models with Imbalanced data // Mohcine Madkour // Big Data Architectures and more</title>
+    <meta name="tags" content="unbalanced data" />
+    <meta name="tags" content="ROC" />
+    <meta name="tags" content="AUROC" />
+    <meta name="tags" content="AUCPR" />
+    <meta name="tags" content="F1 Score" />
+    <meta name="tags" content="Recall" />
+    <meta name="tags" content="Precision" />
 
-
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../../../../theme/css/pure.css">
-    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
-
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            $(".content").fitVids();
-        });
-    </script>
 </head>
 
-<body>
-<div class="pure-g-r" id="layout">
-    <div class="sidebar sidebar-article pure-u">
-        <header class="header-article">
-            <hgroup>
-                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine Madkour">
-                        <img class="avatar" alt="Mohcine Madkour" src="http://www.gravatar.com/avatar/ae08847efc1a85b710f326eb8ee2e907">
-                </a>
-                <h2 class="article-info">Mohcine Madkour</h2>
-                <small class="about-author"></small>
-                <h5>Published</h5>
-                <p>Mon 09 October 2017</p>
-                <a href="/">&larr;Home</a>
-            </hgroup>
-        </header>
-    </div>
-    <div class="pure-u">
-        <div class="content">
-            <section class="post">
-                <header class="post-header">
-                    <h1>Building Machine Learning models with Imbalanced data</h1>
-                        <p class="post-meta">
-                            // under                                 <a class="post-category" href="../../../../tag/unbalanced-data/">unbalanced data</a>
-                                <a class="post-category" href="../../../../tag/roc/">ROC</a>
-                                <a class="post-category" href="../../../../tag/auroc/">AUROC</a>
-                                <a class="post-category" href="../../../../tag/aucpr/">AUCPR</a>
-                                <a class="post-category" href="../../../../tag/f1-score/">F1 Score</a>
-                                <a class="post-category" href="../../../../tag/recall/">Recall</a>
-                                <a class="post-category" href="../../../../tag/precision/">Precision</a>
-                        </p>
-                </header>
-            </section>
-            <p>In this blog post, I'll discuss a number of considerations and techniques for dealing with imbalanced data when training a machine learning model. The blog post will rely heavily on a sklearn contributor package called <a href="https://imbalanced-learn.org/en/stable/index.html">imbalanced-learn</a> to implement the discussed techniques.
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="../../../../">Mohcine Madkour <strong></strong></a></h1>
+        </header><!-- /#banner -->
+        <nav id="menu"><ul>
+            <li><a href="pages/about.html">About</a></li>
+            <li><a href="pages/biography.html">Biography</a></li>
+            <li><a href="../../../../pages/about.html">About</a></li>
+            <li><a href="../../../../pages/biography.html">Biography</a></li>
+        </ul></nav><!-- /#menu -->
+<section id="content" class="body">
+  <header>
+    <h2 class="entry-title">
+      <a href="../../../../posts/2017/10/Learning from unbalanced data/" rel="bookmark"
+         title="Permalink to Building Machine Learning models with Imbalanced data">Building Machine Learning models with Imbalanced data</a></h2>
+ 
+  </header>
+  <footer class="post-info">
+    <time class="published" datetime="2017-10-09T12:00:00-04:00">
+      Mon 09 October 2017
+    </time>
+    <address class="vcard author">
+      By           <a class="url fn" href="../../../../author/mohcine-madkour.html">Mohcine Madkour</a>
+    </address>
+  </footer><!-- /.post-info -->
+  <div class="entry-content">
+    <p>In this blog post, I'll discuss a number of considerations and techniques for dealing with imbalanced data when training a machine learning model. The blog post will rely heavily on a sklearn contributor package called <a href="https://imbalanced-learn.org/en/stable/index.html">imbalanced-learn</a> to implement the discussed techniques.
 Training a machine learning model on an imbalanced dataset can introduce unique challenges to the learning problem. Imbalanced data typically refers to a classification problem where the number of observations per class is not equally distributed; often you'll have a large amount of data/observations for one class (referred to as the majority class), and much fewer observations for one or more other classes (referred to as the minority classes). For example, suppose you're building a classifier to classify a credit card transaction a fraudulent or authentic - you'll likely have 10,000 authentic transactions for every 1 fraudulent transaction, that's quite an imbalance!
 To understand the challenges that a class imbalance imposes, let's consider two common ways we'll train a model: tree-based logical rules developed according to some splitting criterion, and parameterized models updated by gradient descent.
 When building a tree-based model (such as a decision tree), our objective is to find logical rules which are capable of taking the full dataset and separating out the observations into their different classes. In other words, we'd like each split in the tree to increase the purity of observations such that the data is filtered into homogeneous groups. If we have a majority class present, the top of the decision tree is likely to learn splits which separate out the majority class into pure groups at the expense of learning rules which separate the minority class.</p>
@@ -204,54 +190,13 @@ I provide the notebook I wrote to explore these techniques in a <a href="https:/
 <li>[Learning from imbalanced data: open challenges and future directions] (https://rd.springer.com/article/10.1007/s13748-016-0094-0?utm_medium=affiliate&amp;utm_source=commission_junction&amp;utm_campaign=3_nsn6445_brand_PID4003003&amp;utm_content=de_textlink)</li>
 <li>[Handling imbalanced datasets in machine learning] (https://towardsdatascience.com/handling-imbalanced-datasets-in-machine-learning-7a0e84220f28)</li>
 </ul>
-            <div class="hr"></div>
-            <a href="#" class="go-top">Go Top</a>
-<div class="comments">
-    <div id="disqus_thread"></div>
-    <script type="text/javascript">
-        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
-
-        /* * * DON'T EDIT BELOW THIS LINE * * */
-        (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-    </script>
-    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-</div><footer class="footer">
-    <p>&copy; Mohcine Madkour &ndash;
-        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
-        for <a href="http://blog.getpelican.com/">Pelican</a>
-    </p>
-</footer>        </div>
-    </div>
-</div>
-    <script>
-        var $top = $('.go-top');
-
-        // Show or hide the sticky footer button
-        $(window).scroll(function() {
-            if ($(this).scrollTop() > 200) {
-                $top.fadeIn(200);
-            } else {
-                $top.fadeOut(200);
-            }
-        });
-
-        // Animate the scroll to top
-        $top.click(function(event) {
-            event.preventDefault();
-            $('html, body').animate({scrollTop: 0}, 300);
-        })
-
-        // Makes sure that the href="#" attached to the <a> elements
-        // don't scroll you back up the page.
-        $('body').on('click', 'a[href="#"]', function(event) {
-            event.preventDefault();
-        });
-    </script>
+  </div><!-- /.entry-content -->
+</section>
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>,
+                which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+        </footer><!-- /#contentinfo -->
 </body>
 </html>
