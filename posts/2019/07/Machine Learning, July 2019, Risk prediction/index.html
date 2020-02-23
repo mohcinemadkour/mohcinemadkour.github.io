@@ -1,43 +1,57 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-          <title>Mohcine Madkour</title>
-        <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
 
 
-    <meta name="tags" content="Machine Learning" />
-    <meta name="tags" content="July 2019" />
-    <meta name="tags" content="Risk prediction" />
+        <title>Type 2 Diabetes - Risk Predictions // Mohcine Madkour // Big Data Architectures and more</title>
 
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../../../theme/css/pure.css">
+    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
 </head>
 
-<body id="index" class="home">
-        <header id="banner" class="body">
-                <h1><a href="../../../../">Mohcine Madkour <strong></strong></a></h1>
-        </header><!-- /#banner -->
-        <nav id="menu"><ul>
-            <li><a href="pages/about.html">About</a></li>
-            <li><a href="pages/biography.html">Biography</a></li>
-            <li><a href="../../../../pages/about.html">About</a></li>
-            <li><a href="../../../../pages/biography.html">Biography</a></li>
-        </ul></nav><!-- /#menu -->
-<section id="content" class="body">
-  <header>
-    <h2 class="entry-title">
-      <a href="../../../../posts/2019/07/Machine Learning, July 2019, Risk prediction/" rel="bookmark"
-         title="Permalink to Type 2 Diabetes - Risk Predictions">Type 2 Diabetes - Risk Predictions</a></h2>
- 
-  </header>
-  <footer class="post-info">
-    <time class="published" datetime="2019-07-12T13:01:00-04:00">
-      Fri 12 July 2019
-    </time>
-    <address class="vcard author">
-      By           <a class="url fn" href="../../../../author/mohcine-madkour.html">Mohcine Madkour</a>
-    </address>
-  </footer><!-- /.post-info -->
-  <div class="entry-content">
-    <p>Type 2 diabetes is a chronic condition that affects the way the body metabolizes sugar (glucose). With type 2 diabetes, the body either resists the effects of insulin (a hormone that regulates the movement of sugar into cells) or it doesn't produce enough insulin to maintain normal glucose levels. Type 2 diabetes occurs more commonly in middle-aged and elderly people. Uncontrolled it can cause all sorts of very bad things: infections, damaged kidneys, vision loss and blindness, amputations and many more. So, there is no question that type 2 diabetes needs to be taken seriously and treated. Type 2 diabetes is usually diagnosed using the <strong>glycated hemoglobin (A1C)</strong> test. This blood test indicates the average blood sugar level for the past two to three months. Normal levels are below 5.7 percent, and a result between 5.7 and 6.4 percent is considered prediabetes. An A1C level of 6.5 percent or higher on two separate tests means you have diabetes.</p>
+<body>
+<div class="pure-g-r" id="layout">
+    <div class="sidebar sidebar-article pure-u">
+        <header class="header-article">
+            <hgroup>
+                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine Madkour">
+                        <img class="avatar" alt="Mohcine Madkour" src="http://www.gravatar.com/avatar/ae08847efc1a85b710f326eb8ee2e907">
+                </a>
+                <h2 class="article-info">Mohcine Madkour</h2>
+                <small class="about-author"></small>
+                <h5>Published</h5>
+                <p>Fri 12 July 2019</p>
+                <a href="/">&larr;Home</a>
+            </hgroup>
+        </header>
+    </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>Type 2 Diabetes - Risk Predictions</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="../../../../tag/machine-learning/">Machine Learning</a>
+                                <a class="post-category" href="../../../../tag/july-2019/">July 2019</a>
+                                <a class="post-category" href="../../../../tag/risk-prediction/">Risk prediction</a>
+                        </p>
+                </header>
+            </section>
+            <p>Type 2 diabetes is a chronic condition that affects the way the body metabolizes sugar (glucose). With type 2 diabetes, the body either resists the effects of insulin (a hormone that regulates the movement of sugar into cells) or it doesn't produce enough insulin to maintain normal glucose levels. Type 2 diabetes occurs more commonly in middle-aged and elderly people. Uncontrolled it can cause all sorts of very bad things: infections, damaged kidneys, vision loss and blindness, amputations and many more. So, there is no question that type 2 diabetes needs to be taken seriously and treated. Type 2 diabetes is usually diagnosed using the <strong>glycated hemoglobin (A1C)</strong> test. This blood test indicates the average blood sugar level for the past two to three months. Normal levels are below 5.7 percent, and a result between 5.7 and 6.4 percent is considered prediabetes. An A1C level of 6.5 percent or higher on two separate tests means you have diabetes.</p>
 <p>People who have diabetes need this test regularly to see if their levels are staying within range and if they need to adjust their diabetes medicines. To treat type 2 diabetes lifestyle changes are very effective, and the side effects of eating more healthfully and staying more active are positive ones. In this project I will try to predict A1C levels: no-diabetes, pre-diabetes and diabetes. I will transform the dataset from a regression task (A1C) into a multi-class classification task (3 A1C levels).</p>
 <p><img alt="png" src="/images/A1c_normal_to_high_ranges.png"></p>
 <h3>Diabetes Dataset</h3>
@@ -49,7 +63,7 @@
 <p>There are 403 observations and 19 features in this dataset, maximum # NaNs:262.</p>
 <p><img alt="png" src="/images/anonymous2x.png"></p>
 <h3>Challenges</h3>
-<p>I were facing two challenegs with my dataset:</p>
+<p>I was facing two challenegs with my dataset:</p>
 <ul>
 <li>relatively small number of observations </li>
 <li>imbalanced classes (A1C levels)</li>
@@ -70,7 +84,7 @@
 <li>AdaBoost</li>
 </ol>
 <p>All together, I have trained 22 models.</p>
-<h3>FindingsWe</h3>
+<h3>Findings</h3>
 <ul>
 <li>From my limited sample I could not find any single condition that would alone increase the risk for type 2 diabetes.</li>
 <li>I found that several factors could impact risks for the person to be diagnosed with diabetes: age, high cholesterol ratio, high blood presure, increased weight... </li>
@@ -186,13 +200,54 @@ The chosen algorithms are all known to work well in this kind of task:</p>
 <li><a href="https://www.healthline.com/health/blood-pressure-chart">Hypertension Chart - Understanding Your Blood Pressure</a></li>
 <li><a href="https://www.webmd.com/diabetes/news/20050310/waist-size-predicts-diabetes-risk?print=true">Waist Size Predicts Diabetes Risk</a></li>
 </ul>
-  </div><!-- /.entry-content -->
-</section>
-        <footer id="contentinfo" class="body">
-                <address id="about" class="vcard body">
-                Proudly powered by <a href="http://getpelican.com/">Pelican</a>,
-                which takes great advantage of <a href="http://python.org">Python</a>.
-                </address><!-- /#about -->
-        </footer><!-- /#contentinfo -->
+            <div class="hr"></div>
+            <a href="#" class="go-top">Go Top</a>
+<div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div><footer class="footer">
+    <p>&copy; Mohcine Madkour &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+</div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
 </body>
 </html>

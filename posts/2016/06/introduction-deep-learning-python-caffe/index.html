@@ -1,44 +1,58 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-          <title>Mohcine Madkour</title>
-        <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
 
 
-    <meta name="tags" content="deep learning" />
-    <meta name="tags" content="machine learning" />
-    <meta name="tags" content="python" />
-    <meta name="tags" content="caffe" />
+        <title>A Practical Introduction to Deep Learning with Caffe and Python // Mohcine Madkour // Big Data Architectures and more</title>
 
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../../../theme/css/pure.css">
+    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
 </head>
 
-<body id="index" class="home">
-        <header id="banner" class="body">
-                <h1><a href="../../../../">Mohcine Madkour <strong></strong></a></h1>
-        </header><!-- /#banner -->
-        <nav id="menu"><ul>
-            <li><a href="pages/about.html">About</a></li>
-            <li><a href="pages/biography.html">Biography</a></li>
-            <li><a href="../../../../pages/about.html">About</a></li>
-            <li><a href="../../../../pages/biography.html">Biography</a></li>
-        </ul></nav><!-- /#menu -->
-<section id="content" class="body">
-  <header>
-    <h2 class="entry-title">
-      <a href="../../../../posts/2016/06/introduction-deep-learning-python-caffe/" rel="bookmark"
-         title="Permalink to A Practical Introduction to Deep Learning with Caffe and Python">A Practical Introduction to Deep Learning with Caffe and Python</a></h2>
- 
-  </header>
-  <footer class="post-info">
-    <time class="published" datetime="2016-06-26T00:00:00-04:00">
-      Sun 26 June 2016
-    </time>
-    <address class="vcard author">
-      By           <a class="url fn" href="../../../../author/mohcine-madkour.html">Mohcine Madkour</a>
-    </address>
-  </footer><!-- /.post-info -->
-  <div class="entry-content">
-    <p>Deep learning is the new big trend in machine learning. It had many recent successes in computer vision, automatic speech recognition and natural language processing.</p>
+<body>
+<div class="pure-g-r" id="layout">
+    <div class="sidebar sidebar-article pure-u">
+        <header class="header-article">
+            <hgroup>
+                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine Madkour">
+                        <img class="avatar" alt="Mohcine Madkour" src="http://www.gravatar.com/avatar/ae08847efc1a85b710f326eb8ee2e907">
+                </a>
+                <h2 class="article-info">Mohcine Madkour</h2>
+                <small class="about-author"></small>
+                <h5>Published</h5>
+                <p>Sun 26 June 2016</p>
+                <a href="/">&larr;Home</a>
+            </hgroup>
+        </header>
+    </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>A Practical Introduction to Deep Learning with Caffe and Python</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="../../../../tag/deep-learning/">deep learning</a>
+                                <a class="post-category" href="../../../../tag/machine-learning/">machine learning</a>
+                                <a class="post-category" href="../../../../tag/python/">python</a>
+                                <a class="post-category" href="../../../../tag/caffe/">caffe</a>
+                        </p>
+                </header>
+            </section>
+            <p>Deep learning is the new big trend in machine learning. It had many recent successes in computer vision, automatic speech recognition and natural language processing.</p>
 <p>The goal of this blog post is to give you a hands-on introduction to deep learning. To do this, we will build a Cat/Dog image classifier using a deep learning algorithm called convolutional neural network (CNN) and a <a href="https://www.kaggle.com/c/dogs-vs-cats">Kaggle dataset</a>.</p>
 <p>This post is divided into 2 main parts. The first part covers some core concepts behind deep learning, while the second part is structured in a hands-on tutorial format.</p>
 <p>In the first part of the hands-on tutorial (section 4), we will build a Cat/Dog image classifier using a convolutional neural network from scratch. In the second part of the tutorial (section 5), we will cover an advanced technique for training convolutional neural networks called transfer learning. We will use some Python code and a popular open source deep learning framework called Caffe to build the classifier. Our classifier will be able to achieve a classification accuracy of 97%.</p>
@@ -394,13 +408,54 @@ We need to make the following change to the original bvlc_reference_caffenet mod
 <li><a href="https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/">A Step by Step Backpropagation Example</a></li>
 <li><a href="http://cs231n.github.io/">CS231n Convolutional Neural Networks for Visual Recognition</a></li>
 </ol>
-  </div><!-- /.entry-content -->
-</section>
-        <footer id="contentinfo" class="body">
-                <address id="about" class="vcard body">
-                Proudly powered by <a href="http://getpelican.com/">Pelican</a>,
-                which takes great advantage of <a href="http://python.org">Python</a>.
-                </address><!-- /#about -->
-        </footer><!-- /#contentinfo -->
+            <div class="hr"></div>
+            <a href="#" class="go-top">Go Top</a>
+<div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div><footer class="footer">
+    <p>&copy; Mohcine Madkour &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+</div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
 </body>
 </html>

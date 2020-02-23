@@ -13986,7 +13986,7 @@ This result was highly probable. Just take a look at the plot of cell 3 above. S
 &lt;p&gt;There are 403 observations and 19 features in this dataset, maximum # NaNs:262.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="png" src="/images/anonymous2x.png"&gt;&lt;/p&gt;
 &lt;h3&gt;Challenges&lt;/h3&gt;
-&lt;p&gt;I were facing two challenegs with my dataset:&lt;/p&gt;
+&lt;p&gt;I was facing two challenegs with my dataset:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;relatively small number of observations &lt;/li&gt;
 &lt;li&gt;imbalanced classes (A1C levels)&lt;/li&gt;
@@ -14007,7 +14007,7 @@ This result was highly probable. Just take a look at the plot of cell 3 above. S
 &lt;li&gt;AdaBoost&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;All together, I have trained 22 models.&lt;/p&gt;
-&lt;h3&gt;FindingsWe&lt;/h3&gt;
+&lt;h3&gt;Findings&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;From my limited sample I could not find any single condition that would alone increase the risk for type 2 diabetes.&lt;/li&gt;
 &lt;li&gt;I found that several factors could impact risks for the person to be diagnosed with diabetes: age, high cholesterol ratio, high blood presure, increased weight... &lt;/li&gt;
