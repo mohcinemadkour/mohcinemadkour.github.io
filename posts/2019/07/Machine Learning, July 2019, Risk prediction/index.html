@@ -54,6 +54,7 @@
             <p>Type 2 diabetes is a chronic condition that affects the way the body metabolizes sugar (glucose). With type 2 diabetes, the body either resists the effects of insulin (a hormone that regulates the movement of sugar into cells) or it doesn't produce enough insulin to maintain normal glucose levels. Type 2 diabetes occurs more commonly in middle-aged and elderly people. Uncontrolled it can cause all sorts of very bad things: infections, damaged kidneys, vision loss and blindness, amputations and many more. So, there is no question that type 2 diabetes needs to be taken seriously and treated. Type 2 diabetes is usually diagnosed using the <strong>glycated hemoglobin (A1C)</strong> test. This blood test indicates the average blood sugar level for the past two to three months. Normal levels are below 5.7 percent, and a result between 5.7 and 6.4 percent is considered prediabetes. An A1C level of 6.5 percent or higher on two separate tests means you have diabetes.</p>
 <p>People who have diabetes need this test regularly to see if their levels are staying within range and if they need to adjust their diabetes medicines. To treat type 2 diabetes lifestyle changes are very effective, and the side effects of eating more healthfully and staying more active are positive ones. In this project I will try to predict A1C levels: no-diabetes, pre-diabetes and diabetes. I will transform the dataset from a regression task (A1C) into a multi-class classification task (3 A1C levels).</p>
 <p><img alt="png" src="/images/A1c_normal_to_high_ranges.png"></p>
+<p>Notebook of this article can be found in this link : https://github.com/mohcinemadkour/Type-2-Diabetes-Risk-Prediction</p>
 <h3>Diabetes Dataset</h3>
 <p>These data are courtesy of Dr John Schorling, Department of Medicine, University of Virginia School of Medicine which can be obtained from http://biostat.mc.vanderbilt.edu/DataSets.</p>
 <p>The data consist of <strong>19</strong> variables on <strong>403</strong> subjects from <strong>1046</strong> subjects who were interviewed in a study to understand the prevalence of obesity, diabetes, and other cardiovascular risk factors in central Virginia for African Americans. According to Dr John Hong, Diabetes Mellitus Type II (adult onset diabetes) is associated most strongly with obesity. The waist/hip ratio may be a predictor in diabetes and heart disease. Type 2 Diabetes is also associated with hypertension - they may both be part of <strong>Metabolic Syndrome</strong>.</p>
@@ -89,7 +90,7 @@
 <li>From my limited sample I could not find any single condition that would alone increase the risk for type 2 diabetes.</li>
 <li>I found that several factors could impact risks for the person to be diagnosed with diabetes: age, high cholesterol ratio, high blood presure, increased weight... </li>
 <li>Even if you have all these conditions it does not mean you will have type 2 diabetes. This will make very difficult for my models to predict A1C levels.</li>
-<li>Due to imbalanced data, all models had problems with predicting minority classes: <code>pre_diabetes</code> and <code>diabetes</code>. They were mostly predicting the majority class, <code>no_diabetes</code>.</li>
+<li>Due to imbalanced data, all models had problems with predicting minority classes: <code>pre_diabetes<strong> and <code>diabetes</strong>. They were mostly predicting the majority class, <code>no_diabetes**.</li>
 <li>At the end, I found that Random Forest algorithm with <strong>cost_sensitive learning</strong> did the best with <strong>f1 macro score</strong> of 0.56.</li>
 </ul>
 <h2>Exploratory Analysis</h2>
@@ -99,46 +100,46 @@
 <li>There are 16 numerical features and 3 categorical features. All data types are correct</li>
 </ul>
 <p><strong>Unused Features</strong></p>
-<p>To make dataframe easily readable I will remove unused features like <code style="color:steelblue">id</code> and <code style="color:steelblue">location</code>.</p>
+<p>To make dataframe easily readable I will remove unused features like <strong>id</strong> and <strong>location</strong>.</p>
 <p>The goal of this project is to predict ranges of A1C. From a quick look through my dataframe I could see that the postprandial time when labs were drawn varies. So, let's check its distribution.</p>
 <p><img alt="png" src="/images/o_output_24_1.png"></p>
-<p>Since the postprandial time when labs were drawn has very wide range, from 5 minutes to 26 hours, I could remove <code style="color:steelblue">stab_glu</code> and <code style="color:steelblue">time_ppn</code> features.</p>
+<p>Since the postprandial time when labs were drawn has very wide range, from 5 minutes to 26 hours, I could remove <strong>stab_glu</strong> and <strong>time_ppn</strong> features.</p>
 <p>The number of features has been decreased to 15.</p>
 <h3>Distributions of Numeric Features</h3>
 <p><strong>Plotting the histogram grid</strong></p>
 <p><img alt="png" src="/images/output_31_0.png"></p>
-<p>All distributions look OK. Only for <code style="color:steelblue">a1c</code> I could see many observations around 5% (healthy range). This might be an indication of imbalanced data classes once I transfer <code style="color:steelblue">a1c</code> to 3 classes.</p>
+<p>All distributions look OK. Only for <strong>a1c</strong> I could see many observations around 5% (healthy range). This might be an indication of imbalanced data classes once I transfer <strong>a1c</strong> to 3 classes.</p>
 <p><strong>Summary statistics for the numeric features</strong></p>
 <p><img alt="png" src="/images/Screenshot_from_2020_02_23_00_13_09.png"></p>
 <p>From the summary statistics and the visualizations I can conclude that all features look OK. I do not see any extreme values for any feature.</p>
-<p>This time I can see from the plot and from grouping that average <code style="color:steelblue">a1c</code> increases with body frame size.</p>
-<p>I will keep all outliers. They just represent high and, for some observations, extreme values of <code style="color:steelblue">a1c</code>.</p>
+<p>This time I can see from the plot and from grouping that average <strong>a1c</strong> increases with body frame size.</p>
+<p>I will keep all outliers. They just represent high and, for some observations, extreme values of <strong>a1c</strong>.</p>
 <h3>Correlations</h3>
 <p>Let's calculate correlations to take a look at the relationships between numeric features and other numeric features.</p>
-<p>I are going to sort features in order of their correlation with <code style="color:steelblue">a1c</code>. This will make easier to see stronger correlations for <code style="color:steelblue">a1c</code>.</p>
+<p>I are going to sort features in order of their correlation with <strong>a1c</strong>. This will make easier to see stronger correlations for <strong>a1c</strong>.</p>
 <p>It is not easy to digest this big dataframe.
-Let's use Seaborn's <code>.heatmap()</code> function to visualize the correlation grid.</p>
+Let's use Seaborn's <code>.heatmap()** function to visualize the correlation grid.</p>
 <p><img alt="png" src="/images/output_56_0.png"></p>
 <p>I can see few obvious stronger correlations:
-* <code style="color:steelblue">weight</code> and <code style="color:steelblue">waist</code> and <code style="color:steelblue">hip</code>
+* <strong>weight</strong> and <strong>waist</strong> and <strong>hip</strong>
 * blood presure measurements
-* cholesterol ratio and <code style="color:steelblue">chol</code> and <code style="color:steelblue">hdl</code></p>
-<p>But there are only few week correlations with <code style="color:steelblue">a1c</code>:
-* <code style="color:steelblue">chol_ratio</code>, <code style="color:steelblue">age</code>, <code style="color:steelblue">waist</code> ...</p>
+* cholesterol ratio and <strong>chol</strong> and <strong>hdl</strong></p>
+<p>But there are only few week correlations with <strong>a1c</strong>:
+* <strong>chol_ratio</strong>, <strong>age</strong>, <strong>waist</strong> ...</p>
 <p><img alt="png" src="/images/pairplot_health_risk_r.png"></p>
 <p><img alt="png" src="/images/output_162_0.png"></p>
 <p>The above plot is showing us that age is one of the key factors for diabetes risk. The age median and mean for risk classes are separated, but the variance is so high. That means that I have to look at many other factors that could contribute to higher risks for diabetes.</p>
 <p><img alt="png" src="/images/output_164_0.png"></p>
 <p>Similar to the previous plot, higher bmi could lead to diabetes risk increase. But the variance is high and there is no strong direct correlation for that.</p>
-<p>Let's now plot a bivariate segmentation for <code style="color:steelblue">bmi</code> and <code style="color:steelblue">age</code> segmented by <code style="color:steelblue">health_risk</code>.</p>
+<p>Let's now plot a bivariate segmentation for <strong>bmi</strong> and <strong>age</strong> segmented by <strong>health_risk</strong>.</p>
 <p><img alt="png" src="/images/output_166_0.png"></p>
-<p>From this chart I can see less <code>diabetes</code> and <code>pre_diabetes</code> observations and more <code>no_diabetes</code> observations for lower <code style="color:steelblue">age</code> and lower <code style="color:steelblue">bmi</code>. </p>
+<p>From this chart I can see less <code>diabetes<strong> and <code>pre_diabetes</strong> observations and more <code>no_diabetes<strong> observations for lower </strong>age<strong> and lower </strong>bmi**. </p>
 <h2>Algorithm Selection</h2>
 <p>I have transformed the original dataset to the <strong>multi-class classification task</strong>.
 The chosen algorithms are all known to work well in this kind of task:</p>
 <ol>
-<li>$L_1$-regularized Logistic Regression</li>
-<li>$L_2$-regularized Logistic Regression</li>
+<li>L_1-regularized Logistic Regression</li>
+<li>L_2-regularized Logistic Regression</li>
 <li>Support Vector Machine (SVM)</li>
 <li>Random Forest</li>
 <li>Gradient Boosting</li>
