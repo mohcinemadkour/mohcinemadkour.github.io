@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+
+
+        <title>Time Series Clustering and Classification using sequence-to-sequence modeling. // Mohcine Madkour // Big Data Architectures and more</title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../../../theme/css/pure.css">
+    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+<div class="pure-g-r" id="layout">
+    <div class="sidebar sidebar-article pure-u">
+        <header class="header-article">
+            <hgroup>
+                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine Madkour">
+                        <img class="avatar" alt="Mohcine Madkour" src="http://www.gravatar.com/avatar/ae08847efc1a85b710f326eb8ee2e907">
+                </a>
+                <h2 class="article-info">Mohcine Madkour</h2>
+                <small class="about-author"></small>
+                <h5>Published</h5>
+                <p>Sat 12 October 2019</p>
+                <a href="/">&larr;Home</a>
+            </hgroup>
+        </header>
+    </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>Time Series Clustering and Classification using sequence-to-sequence modeling.</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="../../../../tag/sequence-to-sequence/">sequence-to-sequence</a>
+                                <a class="post-category" href="../../../../tag/time-series-classification/">Time Series Classification</a>
+                        </p>
+                </header>
+            </section>
+            <p>What I want to do is build a model for sequence-to-sequence type prediction on the Dow Jones Industrial Average (DJI). However, rather than treat this as a regression problem, I want to discretize the problem, so that what I am predicting is one of a set number of possible “types” of predictions. Using SAX and PAA, I can take the closing prices of the DJI on 50 consecutive days. I do this by using PAA to reduce the window of 50 points to 3 points, and use the letters ‘a’ and ‘b’ (below mean, above mean) to describe this windows as a three letter word such as ‘aab’ or ‘aba’. Since I am only using ‘a’ and ‘b’, I have 8 possibilities, though only 6 show up in the data (from 1970–present). Here’s how I did this: first, I used the <a href="https://github.com/manu-mannattil/nolitsa">nolitsa</a> library to do some simple moving average smoothing on the data. Then I created the 50 time step windows with a stride of 1 (so lots of overlapping) using the <a href="https://pypi.org/project/pyentrp/">pyentrp</a>. Finally, I used saxpy to do PAA (reducing 50 to 3) and then SAX to create symbolic representation using 2 letters.</p>
+<p>Data can be found in the the Kaggle competition: <a href="https://www.kaggle.com/szrlee/stock-time-series-20050101-to-20171231">DJIA 30 Stock Time Series</a></p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pyentrp</span> <span class="kn">import</span> <span class="n">entropy</span> <span class="k">as</span> <span class="n">ent</span>
+<span class="kn">from</span> <span class="nn">saxpy.znorm</span> <span class="kn">import</span> <span class="n">znorm</span>
+<span class="kn">from</span> <span class="nn">saxpy.paa</span> <span class="kn">import</span> <span class="n">paa</span>
+<span class="kn">from</span> <span class="nn">saxpy.sax</span> <span class="kn">import</span> <span class="n">ts_to_string</span>
+<span class="kn">from</span> <span class="nn">saxpy.alphabet</span> <span class="kn">import</span> <span class="n">cuts_for_asize</span>
+<span class="n">words</span> <span class="o">=</span> <span class="p">[]</span> 
+<span class="n">dow_df</span> <span class="o">=</span> <span class="n">ent</span><span class="o">.</span><span class="n">util_pattern_space</span><span class="p">(</span><span class="n">hist_sma</span><span class="p">,</span> <span class="n">lag</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dim</span> <span class="o">=</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">dow_df</span> <span class="o">=</span> <span class="n">dow_df</span><span class="p">[:]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dow_df</span><span class="p">)):</span>
+    <span class="n">dat_znorm</span> <span class="o">=</span> <span class="n">znorm</span><span class="p">(</span><span class="n">dow_df</span><span class="p">[</span><span class="n">i</span><span class="p">,:])</span>
+    <span class="n">dat_paa</span><span class="o">=</span> <span class="n">paa</span><span class="p">(</span><span class="n">dat_znorm</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="c1">#three letter words</span>
+    <span class="n">word</span> <span class="o">=</span> <span class="n">ts_to_string</span><span class="p">(</span><span class="n">dat_paa</span><span class="p">,</span> <span class="n">cuts_for_asize</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="c1"># 2 let alphabet</span>
+    <span class="n">words</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+</pre></div>
+
+
+<p><a href="https://jmotif.github.io/sax-vsm_site/morea/algorithm/SAX.html">Symbolic Aggregate Approximation (SAX)</a> is a way of discretizing a time series so that it can be represented with a sequence of alphabetical letters, forming a “word”. <a href="https://jmotif.github.io/sax-vsm_site/morea/algorithm/PAA.html">Piecewise Aggregate Approximation (PAA)</a> shortens the time series.</p>
+<p>I used a standard Bidirectional LSTM with one layer and then a Dense/Softmax layer and a sequence of anything from 3–10 timesteps to make the prediction of the next step.</p>
+<div class="highlight"><pre><span></span>model = Sequential()
+model.add(Bidirectional(LSTM(32, kernel_initializer = &quot;he_normal&quot;,return_sequences=False),
+                           input_shape=(n_timesteps, output)))
+#model.add(Bidirectional(LSTM(32, return_sequences = False)))                     
+model.add(Dense(output, activation=&#39;softmax&#39;))
+model.summary()
+model.compile(loss=&#39;categorical_crossentropy&#39;, optimizer=Adam(lr=.001), metrics=[&#39;acc&#39;])
+</pre></div>
+
+
+<p>With early stopping, you can get around 84% F1-score, so that’s not too bad, though the sequence itself is not that varied. Of the 6 “labels” you will find that it stays this way for quite a number of steps (at least more than 10) before changing into another label. When you look at the predictions and the ground-truth, you will find that the transitions are always off — that’s where the model makes a bunch of mistakes. It tends to “figure out” the change 1 or 2 steps after it happens in ground-truth.</p>
+<p>Next, I decided to use the tslearn package to cluster the 50 time step windows; using the Euclidean metric (the fastest one by a long shot). I wanted to see what I would get if I demanded 6 clusters.</p>
+<div class="highlight"><pre><span></span>km = TimeSeriesKMeans(n_clusters=6,verbose=True, random_state=seed)
+y_pred = km.fit_predict(df)
+</pre></div>
+
+
+<p>This is what came out:
+<img alt="png" src="/images/1_I2etnM2Qm9ifnDFUG2INeg.png"></p>
+<p>There is some level of resemblance between the ‘words’ and the ‘clusters’. If you were just dealing with clusters; you could either train a model to learn the sequence of clusters, or else just create a classification model that takes maybe 20–30 points of your current window, and classify with one of the 6 labels so that you had some idea of where it might go in the near future.
+Lastly, I’ll just say that it would be interesting to see what would happen if you either wanted more clusters or if you changed the time period…and also what would happen if you used a stride &gt; 1, thereby downsampling and using less of the data. Maybe some other time.</p>
+<h2>Conclusion</h2>
+<p>The Deep Learning models are very powerful solutions to a wide range of Data Science projects. However, even these powerful solutions can't show good results if used naively and without additional efforts to make a proper preparation of the data. The more work we spend to help our models, the better results they will show.</p>
+<h2>References</h2>
+<p>https://machinelearningmastery.com/develop-bidirectional-lstm-sequence-classification-python-keras/</p>
+            <div class="hr"></div>
+            <a href="#" class="go-top">Go Top</a>
+<div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div><footer class="footer">
+    <p>&copy; Mohcine Madkour &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+</div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>
