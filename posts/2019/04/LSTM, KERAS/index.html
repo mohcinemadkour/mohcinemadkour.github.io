@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+
+
+        <title>Modeling Time Series Data with Recurrent Neural Networks in Keras // Mohcine Madkour // Big Data Architectures and more</title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../../../theme/css/pure.css">
+    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+<div class="pure-g-r" id="layout">
+    <div class="sidebar sidebar-article pure-u">
+        <header class="header-article">
+            <hgroup>
+                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine Madkour">
+                        <img class="avatar" alt="Mohcine Madkour" src="http://www.gravatar.com/avatar/ae08847efc1a85b710f326eb8ee2e907">
+                </a>
+                <h2 class="article-info">Mohcine Madkour</h2>
+                <small class="about-author"></small>
+                <h5>Published</h5>
+                <p>Fri 12 April 2019</p>
+                <a href="/">&larr;Home</a>
+            </hgroup>
+        </header>
+    </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>Modeling Time Series Data with Recurrent Neural Networks in Keras</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="../../../../tag/lstm/">LSTM</a>
+                                <a class="post-category" href="../../../../tag/keras/">KERAS</a>
+                        </p>
+                </header>
+            </section>
+            <p>Electronic Health Records (EHRs) contain a wealth of patient medical information that can: save valuable time when an emergency arises; eliminate unnecesary treatment and tests; prevent potentially life-threatening mistakes; and, can improve the overall quality of care a patient receives when seeking medical assistance.  Children's Hospital Los Angeles (CHLA) wanted to know if the records could be mined to yield early warning signs of patients that may require extra care or an indication of the severity of a patient's illness.  In this lab we have access to the work and results of CHLA's applied use of deep neural networks on EHRs belonging to roughly 5,000 pediatric ICU patients.</p>
+<p>We will use deep learning techniques to provide medical professionals an analytic framework to predict patient mortality at any time of interest. Such a solution provides essential feedback to clinicians when trying to assess the impact of treatment decisions or raise early warning signs to flag at risk patients in a busy hospital care setting.  </p>
+<p>In this lab we will use the python library <a href="http://pandas.pydata.org"><code>pandas</code></a> to manage the dataset provided in <a href="https://en.wikipedia.org/wiki/Hierarchical_Data_Format">HDF5</a> format and deep learning library <a href="https://keras.io"><code>Keras</code></a> to build recurrent neural networks (<a href="https://en.wikipedia.org/wiki/Recurrent_neural_network">RNN</a>).  In particular, this lab will construct a special kind of deep recurrent neural network that is called a long-short term memory network (<a href="https://en.wikipedia.org/wiki/Long_short-term_memory">LSTM</a>). Finally, we will compare the performance of this LSTM approach to standard mortality indices such as PIM2 and PRISM3 as well as contrast alternative solutions using more traditional machine learning methods like logistic regression.</p>
+<h2>Process</h2>
+<p>We will go through the following steps in this lab to show you the work CHLA performed.  These steps are meant as an example of the steps that you may take when applying deep neural networks to your data.  As such, their steps do not represent an absolute or mechanical approach to using deep neural networks - every project will vary in approach.</p>
+<ol>
+<li>Setup
+a)  Configure Theano options
+a)  Import Numpy, Pandas and Matplotlib
+a)  Define folders which contain training / testing datasets
+a)  Load data using Pandas API</li>
+<li>Data preparation<br>
+a)  Data review
+a)  Data normalization
+a)  Filling data gaps
+a)  Data sequencing</li>
+<li>Architect LSTM network using Keras and Theano</li>
+<li>Build the model (feed data into network for training)</li>
+<li>Evaluate model using validation (test) data</li>
+<li>Visualize results</li>
+<li>Compare baseline to PRISM3 and PIM2</li>
+</ol>
+<h2>Getting Started</h2>
+<p>The first thing we do is import libraries into our Python workspace.  We import the usual suspects such as NumPy for numerical calculations, pandas for data management, Matplotlib for visualizations, and Keras for building LSTM networks.  More on these in a bit ...</p>
+<div class="highlight"><pre><span></span><span class="c1"># configure Theano options</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;THEANO_FLAGS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mode=FAST_RUN,device=gpu,floatX=float32&quot;</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>          
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>              
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>  
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="c1"># configure notebook to display plots</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+
+
+<p>Next we define a folder which contains both training and testing datasets stored in HDF5 format. Using this folder we define file paths inputs (X) and their associated labels (y).  <a href="http://www.hdfgroup.org/">HDF5</a> stands for hierarchical data format version number 5.  The HDF format is designed specifically to store and organize large amounts of scientific data and was originally designed by <a href="https://en.wikipedia.org/wiki/National_Center_for_Supercomputing_Applications">National Center for Supercomputing Applications</a>.  Common file extensions include <code>.hdf</code>, <code>.hdf5</code>, or simply <code>.h5</code>.  The HDF format has become very popular and is well maintained.  As a result, HDF5 is a flexible and robust format having API support in most languages and library compatibilty with Windows, OS X and Linux. It is important to note that HDF is a binary format and hence lacks the human readable transparency of text based CSV files.  However, HDF file format is much faster in performance, efficient in storage size, and scales well from small proof of concept ideas to <a href="https://www.hdfgroup.org/eos_vignette/">very large operational projects</a>.</p>
+<div class="highlight"><pre><span></span><span class="c1"># set up user paths</span>
+<span class="n">data_dir</span> <span class="o">=</span> <span class="s1">&#39;/dli/data/hx_series&#39;</span>
+<span class="n">csv_dir</span> <span class="o">=</span> <span class="s1">&#39;/dli/tasks/task1/task/csv&#39;</span>
+
+<span class="c1"># training data inputs: x and targets: y</span>
+<span class="n">x_train_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;X_train.hdf&#39;</span><span class="p">)</span>
+<span class="n">y_train_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;y_train.hdf&#39;</span><span class="p">)</span>
+
+<span class="c1"># validation data inputs: x and targest: y</span>
+<span class="n">x_valid_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;X_test.hdf&#39;</span><span class="p">)</span>
+<span class="n">y_valid_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;y_test.hdf&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Finally, we load the data using <code>pandas</code> API for reading in HDF files.  Python with pandas is used in a wide variety of academic and commercial domains, including Finance, Neuroscience, Economics, Statistics, Advertising, Web Analytics, and more. The pandas library is an open source, BSD-licensed project providing easy-to-use data structures and analysis tools for the Python programming language. The pandas library features a fast and efficient DataFrame object for data manipulation with integrated indexing as well as tools for reading and writing data between in-memory data structures and different formats such as CSV and text files, Microsoft Excel, SQL databases, and the fast HDF5 format. Check out the <a href="http://pandas.pydata.org">pandas documentation</a> for more info.</p>
+<div class="highlight"><pre><span></span><span class="n">X_train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="n">x_train_path</span><span class="p">)</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="n">y_train_path</span><span class="p">)</span>
+
+<span class="n">X_valid</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="n">x_valid_path</span><span class="p">)</span>
+<span class="n">y_valid</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="n">y_valid_path</span><span class="p">)</span>
+</pre></div>
+
+
+<h3>The Data</h3>
+<p>This electronic health records (EHR) database contains medical treatments and histories of patients collected over time. The EHRs used here consists of 10 years worth of patient data in the Pediatric Intensive Care Unit (PICU) at Children's Hospital Los Angeles, curated by the virtual PICU (<a href="http://vpicu.net">vPICU</a>) team. This dataset contains 76,693 observations over 5,000 unique patient encounters.  </p>
+<p><img style="float: right;" src="/images/ehr.svg" width="450" height="300">
+This data is an irregular time series of measurements taken over the course of a patient's stay in the PICU. Time between measurements can vary from minutes to hours. A simplified diagram of the data can be seen on the right. Measurements include:</p>
+<ul>
+<li><strong>Statics</strong> <em>(e.g. gender, age, weight)</em></li>
+<li><strong>Vitals</strong> <em>(e.g. heart rate, respiratory rate)</em></li>
+<li><strong>Labs</strong> <em>(e.g. glucose, creatinine)</em></li>
+<li><strong>Interventions</strong> <em>(e.g. intubation, O2)</em></li>
+<li><strong>Drugs</strong> <em>(e.g. dopamine, epinephrine)</em></li>
+</ul>
+<p>One thing to note is that in addition to the non-uniform sampling, not all measurements were taken for all patients.
+If we just have a look at the training data, it's clear that we have a collection of patient encounters with a set of variables observed at different times during each encounter.  But again, not all variables are measured at each epoch (row entry).
+Finally, the label (y) for each patient encounter is the ultimate result of alive (1) or not alive (0). 
+Let's take a look at the data.</p>
+<p>Notice here that there are 265 variables / columns in total.  We could also ask directly using <code>len(X_train.columns)</code>.</p>
+<p>The data imported by pandas is a multi-index dataframe where index level 0 is the unique patient encounter identifier 
+and index level 1 is the time of each measurement in units of hours since first measurement. To demonstrate how these dataframes are manipulated, we can select various encounters and extract specific variables, for example:</p>
+<p>Note that the mean number of observations per encounter, (given by <code>np.mean(nobs)</code>), is 223 and the median count is 94.
+Can we do a similar analysis to determine the observation timespan over all patient encounters?</p>
+<p>Finally, to get a look at a variable for a particular patient encounter simply extract that variable from an encounter and plot it using the <code>pandas</code> plot function.</p>
+<div class="highlight"><pre><span></span><span class="n">X_train</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;Heart rate (bpm)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Heart rate (bpm)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Hours since first encounter&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Now that we've loaded and visualized the data, we'll prepare it to train our model.</p>
+<h3>Data Normalization</h3>
+<p>We normalize each observed feature / variable by subtracting its mean and dividing the result by the standard deviation.  </p>
+<p>Why?</p>
+<p>We want small variations in one variable to be treated with the same emphasis as HUGE variations of another. Keep in mind that the network just sees a bunch of numbers - it doesn't actually "know" anything about predictors, factors, variables, obervations and so on and so forth. Emperically, normalization seems to facilitate training but this kind of normalization is probably not appropriate for multimodal data (or non-Gaussian data in general).</p>
+<p>Let's find the distribution of these variables:</p>
+<div class="highlight"><pre><span></span><span class="c1"># create file path for csv file with metadata about variables</span>
+<span class="n">metadata</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">csv_dir</span><span class="p">,</span> <span class="s1">&#39;ehr_features.csv&#39;</span><span class="p">)</span>
+
+<span class="c1"># read in variables from csv file (using pandas) since each varable there is tagged with a category</span>
+<span class="n">variables</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># next, select only variables of a particular category for normalization</span>
+<span class="n">normvars</span> <span class="o">=</span> <span class="n">variables</span><span class="p">[</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">&#39;Interventions&#39;</span><span class="p">,</span> <span class="s1">&#39;Labs&#39;</span><span class="p">,</span> <span class="s1">&#39;Vitals&#39;</span><span class="p">])]</span>
+
+<span class="c1"># finally, iterate over each variable in both training and validation data</span>
+<span class="k">for</span> <span class="n">vId</span><span class="p">,</span> <span class="n">dat</span> <span class="ow">in</span> <span class="n">normvars</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+
+    <span class="n">X_train</span><span class="p">[</span><span class="n">vId</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[</span><span class="n">vId</span><span class="p">]</span> <span class="o">-</span> <span class="n">dat</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span>
+    <span class="n">X_valid</span><span class="p">[</span><span class="n">vId</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_valid</span><span class="p">[</span><span class="n">vId</span><span class="p">]</span> <span class="o">-</span> <span class="n">dat</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span>
+    <span class="n">X_train</span><span class="p">[</span><span class="n">vId</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[</span><span class="n">vId</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="s1">&#39;std&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span>
+    <span class="n">X_valid</span><span class="p">[</span><span class="n">vId</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_valid</span><span class="p">[</span><span class="n">vId</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="s1">&#39;std&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span>
+</pre></div>
+
+
+<h3>Filling Data Gaps</h3>
+<p>Finally, having normalized the data we still need to fill in all the data gaps since not every variable was observed at each epoch of the patient encounter.  Filling in the gaps of missing data is a very active area of research and there is currently no standard practice for time series analysis using deep learning.  For this tutorial, we will simply forward fill existing measurements for each patient, and fill any variable entries with no previous measurement to 0 as illustrated below.</p>
+<p><img src="/images/imputation_diagram.svg" width="800" height="200"></p>
+<div class="highlight"><pre><span></span><span class="c1"># first select variables which will be filled in</span>
+<span class="n">fillvars</span> <span class="o">=</span> <span class="n">variables</span><span class="p">[</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">&#39;Vitals&#39;</span><span class="p">,</span> <span class="s1">&#39;Labs&#39;</span><span class="p">])]</span><span class="o">.</span><span class="n">index</span>
+
+<span class="c1"># next forward fill any missing values with more recently observed value</span>
+<span class="n">X_train</span><span class="p">[</span><span class="n">fillvars</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="n">fillvars</span><span class="p">]</span><span class="o">.</span><span class="n">ffill</span><span class="p">()</span>
+<span class="n">X_valid</span><span class="p">[</span><span class="n">fillvars</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_valid</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="n">fillvars</span><span class="p">]</span><span class="o">.</span><span class="n">ffill</span><span class="p">()</span>
+
+<span class="c1"># finally, fill in any still missing values with 0 (i.e. values that could not be filled forward)</span>
+<span class="n">X_train</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">X_valid</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Quickly, lets have a look at the "Heart rate" variable after data normalization and missing values have been filled in.</p>
+<div class="highlight"><pre><span></span><span class="n">X_train</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;Heart rate (bpm)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Normalized and FFill&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Heart rate (bpm)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Hours since first encounter&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Also, try dumping the X_train vector to the screen again and you will see that all those NaN values have been filled in with zeros.</p>
+<div class="highlight"><pre><span></span><span class="n">X_train</span>
+</pre></div>
+
+
+<h3>Data Sequencing</h3>
+<p>The final data preparation task is to pad every patient encounter so that all encounters have the same number of observations. Note from the histogram that there are many encounters with less than 100 observation vectors. Therefore we are going to zero pad each encounter (i.e. insert rows of zeros).</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">keras</span>
+<span class="kn">from</span> <span class="nn">keras.preprocessing</span> <span class="kn">import</span> <span class="n">sequence</span>
+
+<span class="c1"># max number of sequence length</span>
+<span class="n">maxlen</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="c1"># get a list of unique patient encounter IDs</span>
+<span class="n">teId</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">veId</span> <span class="o">=</span> <span class="n">X_valid</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># pad every patient sequence with 0s to be the same length, </span>
+<span class="c1"># then transforms the list of sequences to one numpy array</span>
+<span class="c1"># this is for efficient minibatching and GPU computations </span>
+<span class="n">X_train</span> <span class="o">=</span> <span class="p">[</span><span class="n">X_train</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="n">teId</span><span class="p">]</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_train</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="n">teId</span><span class="p">]</span>
+
+<span class="n">X_train</span> <span class="o">=</span> <span class="n">sequence</span><span class="o">.</span><span class="n">pad_sequences</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">maxlen</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">,</span> <span class="n">truncating</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">)</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">sequence</span><span class="o">.</span><span class="n">pad_sequences</span><span class="p">(</span><span class="n">y_train</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">maxlen</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">,</span> <span class="n">truncating</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">)</span>
+
+<span class="c1"># repeat for the validation data</span>
+
+<span class="n">X_valid</span> <span class="o">=</span> <span class="p">[</span><span class="n">X_valid</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="n">veId</span><span class="p">]</span>
+<span class="n">y_valid</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_valid</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">patient</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="n">veId</span><span class="p">]</span>
+
+<span class="n">X_valid</span> <span class="o">=</span> <span class="n">sequence</span><span class="o">.</span><span class="n">pad_sequences</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">maxlen</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">,</span> <span class="n">truncating</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">)</span>
+<span class="n">y_valid</span> <span class="o">=</span> <span class="n">sequence</span><span class="o">.</span><span class="n">pad_sequences</span><span class="p">(</span><span class="n">y_valid</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">maxlen</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">,</span> <span class="n">truncating</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Okay, a lot just happened here:  </p>
+<ol>
+<li>We converted the <code>pandas</code> data frame into a Python <code>list</code> which contained lists of values (a list of list of values).  </li>
+<li>Using  <code>keras.preprocessing.sequence.pad_sequences</code> we converted the value lists into a <code>numpy.array</code> of type <code>float32</code> having a maximum length of 500.  </li>
+<li>If the patient encounter didn't have 500 encounters (most don't, see previous histogram) then we apply <code>padding='post'</code> which says to pad with zeros.  That is add extra rows (observation vectors) of all zeros.</li>
+<li>The option <code>truncating='post'</code> just says if there are more than 500 observations then take the first 500 and drop everything after.  </li>
+</ol>
+<p>Together, this says: <em>force patient encounter records of dimension 500x265 and use zero padding to inflate the size if needed</em>.  We could do something similar in <code>pandas</code> but not with only a single command.</p>
+<div class="highlight"><pre><span></span><span class="c1"># print the shape of the array which will be used by the network</span>
+<span class="c1"># the shape is of the form (# of encounters, length of sequence, # of features)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;X_train shape: </span><span class="si">%s</span><span class="s2"> | y_train shape: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">y_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;X_valid shape: </span><span class="si">%s</span><span class="s2"> | y_valid shape: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">X_valid</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">y_valid</span><span class="o">.</span><span class="n">shape</span><span class="p">)))</span>
+</pre></div>
+
+
+<p>Note that the type of X_train has changed to <code>numpy.ndarray</code>:</p>
+<div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Now we can plot the full patient encounter as a matrix plot.  Try a few times to get a feel for what the charts look like.</p>
+<div class="highlight"><pre><span></span><span class="c1"># figure out how many encounters we have</span>
+<span class="n">numencnt</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># choose a random patient encounter to plot</span>
+<span class="n">ix</span> <span class="o">=</span> <span class="c1">#Try a few different index values between 0 and 4999</span>
+
+<span class="c1"># plot a matrix of observation values</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">pcolor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">X_train</span><span class="p">[</span><span class="n">ix</span><span class="p">,:,:]))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;variable&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;time/epoch&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">265</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Keep in mind here that these data are zero padded by <code>sequence.pad_sequences</code>.  Try a few different index values between 0 and 4999 to get a feel for what the matrix plots look like. These matricies are what will be fed as input into the LSTM model for training. Notice that we can plot a variable in a similar fashion by selecting along the third axis instead of the first axis. This provides a view of a particular variable over all patient encounters. Give it a try!</p>
+<h2>Recurrent Neural Network Models</h2>
+<p>The recurrent neural network (<a href="https://en.wikipedia.org/wiki/Recurrent_neural_network">RNN</a>) is effectively a traditional feed-forward network with feedback.  In a traditional feed-forward network all inputs are considered independent.  However, the input to an RNNs also includes the previous output state.  This allows RNNs to model very complex sequences of input and it can be shown that RNNs are, in fact, <a href="https://en.wikipedia.org/wiki/Turing_completeness">Turing complete</a> (see <a href="http://binds.cs.umass.edu/papers/1995_Siegelmann_Science.pdf">here</a>).
+<img src="/images/rnn.jpg" width="500">
+<p style="text-align: center;"><em>image credit: wildml.com</em></p></p>
+<p>In theory RNNs can make use of information in arbitrarily long sequences, but in practice they are limited to looking back only a few steps due to what is called the <a href="https://en.wikipedia.org/wiki/Vanishing_gradient_problem"><em>vanishing gradient</em></a> problem.  In essence, during the traning process, as errors are backpropagated through time, inputs from previous time steps get exponentially down weighted and are eventually driven to zero (i.e. vanish).  </p>
+<p>There is a variant of the RNN called the <a href="https://en.wikipedia.org/wiki/Long_short-term_memory">Long Short Term Memory (LSTM)</a> network published by <a href="http://www.bioinf.jku.at/publications/older/2604.pdf">Hochreiter &amp; Schmidhuber</a> in 1997. LSTMs do not have vanishing gradient problems.  LSTM is normally augmented by recurrent gates called <a href="http://www.jmlr.org/papers/volume3/gers02a/gers02a.pdf">forget gates</a>. As mentioned, a defining feature of the LSTM is that it prevents backpropagated errors from vanishing (or exploding) and instead allow errors to flow backwards through unlimited numbers of "virtual layers" unfolded in time. That is, the LSTM can learn "<a href="https://arxiv.org/abs/1404.7828">very deep</a>" tasks that require memories of events that happened thousands or even millions of discrete time steps ago. Problem-specific LSTM-like topologies can be <a href="http://link.springer.com/chapter/10.1007/978-3-642-04277-5_76">evolved</a> and can work even when signals contain long delays or have a mix of low and high frequency components.</p>
+<p>We will now construct a RNN in order to ingest the data and make a prediction at each timestep of the patient's probability of survival. The image below shows an abstract representation of the model to be constructed using <code>Keras</code>.</p>
+<p><img src="/images/drted_rnn.svg" width="800"></p>
+<p>At each time step the measurements recorded will be used as input and a probability of survival prediction will be generated. It is important to note that this enables a real time monitor of the patient's probability of survival and insight into the patient's trajectory.</p>
+<h3>Constructing LSTM Network with Keras</h3>
+<p><a href="https://keras.io">Keras</a> is a minimalist but modular neural networks library written in Python.   <code>Keras</code> is capable of running on top of either the <a href="https://www.tensorflow.org">TensorFlow</a> or <a href="http://deeplearning.net/software/theano/">Theano</a> frameworks.  Here we are interested in using Theano as it excels at RNNs in general and LSTM in particular.  Note that some frameworks such as <a href="http://caffe.berkeleyvision.org">Caffe</a> do not support RNNs.  Keras was developed with a focus on enabling fast experimentation. Being able to go from idea to result with the least possible delay is key to doing good research.  The <code>Keras</code> library allows for easy and fast prototyping of solutions and supports both convolutional networks and recurrent networks, as well as combinations of the two.  Furthermore, <code>Keras</code> supports arbitrary connectivity schemes (including multi-input and multi-output training).
+Finally, <code>Keras</code> runs on either CPU or GPU and is compatible with Python 2.7-3.5.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">LSTM</span><span class="p">,</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">TimeDistributed</span><span class="p">,</span> <span class="n">Masking</span>
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">keras.optimizers</span> <span class="kn">import</span> <span class="n">RMSprop</span>
+
+<span class="c1"># Note: building model using Keras Functional API (version &gt; 1.0)</span>
+
+<span class="c1"># construct inputs</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">Input</span><span class="p">((</span><span class="bp">None</span><span class="p">,</span> <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">)</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="n">Masking</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_masked&#39;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># stack LSTMs</span>
+<span class="n">lstm_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;dropout_W&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span> <span class="s1">&#39;dropout_U&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;return_sequences&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span> <span class="s1">&#39;consume_less&#39;</span><span class="p">:</span> <span class="s1">&#39;gpu&#39;</span><span class="p">}</span>
+<span class="n">lstm1</span> <span class="o">=</span> <span class="n">LSTM</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lstm1&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">lstm_kwargs</span><span class="p">)(</span><span class="n">mask</span><span class="p">)</span>
+
+<span class="c1"># output: sigmoid layer</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">TimeDistributed</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output&#39;</span><span class="p">)(</span><span class="n">lstm1</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+
+<span class="c1"># compile model</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">RMSprop</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;binary_crossentropy&#39;</span><span class="p">)</span>
+
+<span class="c1"># print layer shapes and model parameters</span>
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+
+
+<h3>Decisions made while architecting the model</h3>
+<p>We created a single LSTM.</p>
+<p><em>Binary cross entropy loss function</em> is used because it is the theoretically optimal cost function for a binary classification problem (in this case, mortality). However, occasionally the Mean Squared Error (MSE) cost function is used since it tends to be a bit more stable numerically.</p>
+<p><em>Dropout W</em> is used because it randomly drops elements of the input vector (It drops the same elements of the vector for every time step of the sequence). This forces the network to leverage information contained in potentially covariate variables (for instance – for a particular sample Heart Rate may be ‘dropped’, but a combination of systolic/diastolic blood pressure and breathing rate may provide a reasonable proxy).</p>
+<p><em>Dropout U</em> is used for similar reasons to traditional dropout in CNNs. It forces the network to utilize all of the hidden nodes such that too much information is not contained in a single hidden unit. In practice this tends to lead to more stable networks.</p>
+<p><em>RMSprop</em> optimizer is selected because it is a good general optimizer for LSTMs.  See <a href="http://karpathy.github.io/2015/05/21/rnn-effectiveness/">here</a> for more details.  </p>
+<p><em>LR=0.005</em> is selected in order to find a reasonable local minimum within a small number of epochs for time consideration.  Typically one would likely use an even smaller LR and allow the network to take smaller ‘learning steps’ but that choice requires more training rounds to converge (i.e. slower training).</p>
+<p>As always with neural networks, there was some amount of hyper-parameter tuning.  It is important to keep in mind that this network has not been optimally tuned.  A handful of reasonable default values were chosen to create a state-of-the-art mortality predictor in the least amount of GPU cycles possible (for tutorial purposes).</p>
+<p>Read the <a href="https://keras.io/layers/core/">docs</a> for more information on core layers in <code>Keras</code>. </p>
+<p>Now, lets feed some data into the network for training. We use a batch size of 128 which means that we update parameters every 128 images.  For demonstration purposes we will use only 5 training epochs, which means that we run through the data 5 times.  Finally, the verbose option just says to produce status / summary information during the training.</p>
+<div class="highlight"><pre><span></span><span class="c1"># this will take a while...</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">nb_epoch</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+
+<h3>Evaluate Model &amp; Compare with Baselines</h3>
+<p>Our first task in evaluating the model performance is to predict mortality using the hold out dataset (i.e. validation data).</p>
+<div class="highlight"><pre><span></span><span class="c1"># generate RNN results on holdout validation set</span>
+<span class="n">preds</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_valid</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Notice that size of the predictions.</p>
+<div class="highlight"><pre><span></span><span class="n">preds</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+
+<p>That is, we have 2,690 patient encounters for testing, and at each of the observations the model predicts survivability.  Lets plot some predictions!</p>
+<div class="highlight"><pre><span></span><span class="c1"># figure out how many encounters we have</span>
+<span class="n">numencnt</span> <span class="o">=</span> <span class="n">X_valid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># choose a random patient encounter to plot</span>
+<span class="n">ix</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">numencnt</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># create axis side by side</span>
+<span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># plot the obs chart for patient encounter</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">pcolor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">X_valid</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="mi">50</span><span class="p">,:]))</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">265</span><span class="p">)</span>
+
+<span class="c1"># plot the patient survivability prediction</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">preds</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="mi">50</span><span class="p">]);</span>
+</pre></div>
+
+
+<h2>Comparison against baselines: PRISM3 and PIM2.</h2>
+<p>Both PIM2 and PRISM3 are scoring systems for ICU and surgical patients.  Models that predict the risk of death of groups of patients admitted to intensive care are available for adult, pediatric and neonatal intensive care. By adjusting for differences in severity of illness and diagnosis, these models can be used to compare the standard of care between units and within units over time. They can also be used to compare different methods of organising intensive care. Estimating mortality risk is also an important component of comparing groups of patients in research trials.  </p>
+<p>The Pediatric Index of Mortality (PIM) was originally developed as a simple model that requires variables collected at the time of admission to intensive care. The original PIM was developed predominantly in Australian units; in the first report only one of the eight units was actually available in the United Kingdom. The PIM2 is a revised mortality index using a more recent data set from 14 intensive care units, eight in Australia, four in the UK, and two in New Zealand. In the analysis for PIM2, 20,787 patient admissions of children less than 16 years of age were included. Since PIM2 estimates mortality risk from data readily available at the time of ICU admission it is therefore suitable for continuous monitoring of the quality of paediatric intensive care. PIM2 uses the first value of each variable measured within the period from the time of first contact to one hour after arrival in the ICU.  If information is missing (e.g. Base Excess is not measured) PIM2 records zero, except for systolic blood pressure, which should be recorded as 120. All consecutive admissions are included.  See <a href="https://www.ncbi.nlm.nih.gov/pubmed/12541154">Slater et al.</a> for full details.</p>
+<p>Similarly, the Pediatric Risk of Mortality (<a href="http://www.ncbi.nlm.nih.gov/pubmed/3048900">PRISM</a>) score was originally developed around 1988 from the Physiologic Stability Index (<a href="http://www.ncbi.nlm.nih.gov/pubmed/6728571">PSI</a>) to reduce the number of variables required for pediatric ICU mortality risk assessment, from 34 (in the PSI) to 14 and to obtain an objective weighting of the remaining variables.  Here <a href="http://www.jpeds.com/article/S0022-3476(97)70065-9/abstract">PRISM3</a> is an updated version of the scoring system published in 1996 which has several improvements over the original model. However, it is only available under licence and is not widely used outside of the United States.  The PRISM3 score has 17 physiologic variables subdivided into 26 ranges. The variables determined most predictive of mortality were minimum systolic blood pressure, abnormal pupillary reflexes, and stupor/coma.</p>
+<p>First, we'd compute <a href="http://gim.unmc.edu/dxtests/roc2.htm">ROC</a> information for the predictions.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">roc_curve</span><span class="p">,</span> <span class="n">auc</span>
+
+<span class="c1"># get 0/1 binary lable for each patient encounter</span>
+<span class="n">label</span> <span class="o">=</span> <span class="n">y_valid</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">();</span>
+
+<span class="c1"># get the last prediction in [0,1] for the patient</span>
+<span class="n">prediction</span> <span class="o">=</span> <span class="n">preds</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+
+<span class="c1"># compute ROC curve for predictions</span>
+<span class="n">rnn_roc</span> <span class="o">=</span> <span class="n">roc_curve</span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">prediction</span><span class="p">)</span>
+
+<span class="c1"># compute the area under the curve of prediction ROC</span>
+<span class="n">rnn_auc</span> <span class="o">=</span> <span class="n">auc</span><span class="p">(</span><span class="n">rnn_roc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rnn_roc</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+
+
+<p>Next we'd extract precompute PIM2 and PRISM3 estimates from CSV file.</p>
+<div class="highlight"><pre><span></span><span class="c1"># scores for baselines PRISM3 and PIM2 were aggregated and stored in `data/pim2prism3.csv`.</span>
+<span class="c1"># load the scores and then compute the ROC curves and AUC</span>
+<span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">csv_dir</span><span class="p">,</span> <span class="s1">&#39;pim2prism3.csv&#39;</span><span class="p">))</span>
+
+<span class="c1"># get the mortality reponse for each patient</span>
+<span class="n">mortrep</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="s1">&#39;mortalityResponse&#39;</span><span class="p">];</span>
+
+<span class="c1"># generate ROC curves for each index</span>
+<span class="n">pim2_roc</span>   <span class="o">=</span> <span class="n">roc_curve</span><span class="p">(</span><span class="n">mortrep</span><span class="p">,</span> <span class="o">-</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;PIM2&#39;</span>  <span class="p">])</span>
+<span class="n">prism3_roc</span> <span class="o">=</span> <span class="n">roc_curve</span><span class="p">(</span><span class="n">mortrep</span><span class="p">,</span> <span class="o">-</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;PRISM3&#39;</span><span class="p">])</span>
+
+<span class="c1"># compute the area under the curve for each index</span>
+<span class="n">pim2_auc</span>   <span class="o">=</span> <span class="n">auc</span><span class="p">(</span>  <span class="n">pim2_roc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>   <span class="n">pim2_roc</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">prism3_auc</span> <span class="o">=</span> <span class="n">auc</span><span class="p">(</span><span class="n">prism3_roc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">prism3_roc</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+
+
+<p>Let's now plot these ROC curves against our RNN for comparison.</p>
+<div class="highlight"><pre><span></span><span class="c1"># plot rocs &amp; display AUCs</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">line_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">}</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">prism3_roc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">prism3_roc</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;prism3: </span><span class="si">%0.3f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">prism3_auc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#4A86E8&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">line_kwargs</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pim2_roc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pim2_roc</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;pim2: </span><span class="si">%0.3f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">pim2_auc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#FF9900&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">line_kwargs</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">rnn_roc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rnn_roc</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;rnn: </span><span class="si">%0.3f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">rnn_auc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#6AA84F&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">line_kwargs</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">((</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">((</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;False Positive Rate&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;True Positive Rate&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Severity of Illness ROC Curves&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Notice how good this is considering we only did a few rounds of training!</p>
+<h2>Conclusions</h2>
+<p>RNNs provide a method to quickly extract clinically significant information and insights from available EHR data.</p>
+<p>The amount of data, model complexity, number of features, and number of epochs have been reduced in this tutorial to  reduce computational burden.  The examples below display the performance of a fully trained RNN on a larger dataset.  They also show the performance of PIM2 and PRISM3, two standard scoring systems,  as well as the performance of a logistic regression model and a multi-layer perceptron (MLP).  </p>
+<p>The temporally dynamic nature of the RNN enables it to extract more information from the underlying EHR than an MLP.  The MLP's complexity is similar to the RNN's, but the former is limited to instantaneous information.</p>
+<p><img src="/images/RNN_performance.svg" width="500" height="500"></p>
+<p>Below shows the temporal trajectory of the fully trained RNN's probability of survival predictions. The capability to provide a prediction at any timestep of interest provides valuable feedback to a clinician working to asses the impact of treatment decisions.   </p>
+<p><img src="/images/MortalityThroughTime.svg" width="500" height="500"></p>
+<h2>Discovery Requires Experimentation</h2>
+<p>Here are a few ideas for how to 'turn knobs' and 'push buttons'.  How do these modifications effect training and performance w.r.t PIM2 and PRISM3?
+-Go and add a second and third LSTM layer to the network.
+-Change the number of layers and the number of neurons in those layers.
+-How about changing some of the meta parameters in the network configuration like dropout or learning rate etc.?
+-[Question] How about trying a CNN?  That is, does the RNN / LSTM model out perform a vanilla CNN model?
+-[Something to think about] Does this dataset suffer from too few negative / fatality cases?  ICU survivability is 96%.  How might this affect training?</p>
+            <div class="hr"></div>
+            <a href="#" class="go-top">Go Top</a>
+<div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div><footer class="footer">
+    <p>&copy; Mohcine Madkour &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+</div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+
+
+        <title>Assets Management and energy demand forecasting using Matrix Profile // Mohcine Madkour // Big Data Architectures and more</title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../../../theme/css/pure.css">
+    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+<div class="pure-g-r" id="layout">
+    <div class="sidebar sidebar-article pure-u">
+        <header class="header-article">
+            <hgroup>
+                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine Madkour">
+                        <img class="avatar" alt="Mohcine Madkour" src="http://www.gravatar.com/avatar/ae08847efc1a85b710f326eb8ee2e907">
+                </a>
+                <h2 class="article-info">Mohcine Madkour</h2>
+                <small class="about-author"></small>
+                <h5>Published</h5>
+                <p>Sat 01 February 2020</p>
+                <a href="/">&larr;Home</a>
+            </hgroup>
+        </header>
+    </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>Assets Management and energy demand forecasting using Matrix Profile</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="../../../../tag/matrix-profile/">Matrix Profile</a>
+                        </p>
+                </header>
+            </section>
+            <p>Today's companies hold enormous value in the form of equipment and plants. Research suggests that on average, 5 to 15 % of a manufacturing company's global asset base is idle [], with most not having good visibility of these underutilized assets. In pharmaceutical industry for example, finding and repurposing under-utilized assets is seen to deliver the highest value and proven to avoid $ Millions of capital expenditures.</p>
+<p>Recent advances in time series classification and forecasting such as Prophet, Matrix Profile, RNN brought sophisticated tools to the support of the visibility and control of energy consumption at the device level. For example, identifying pattern of usage episodes overlaid on asset energy consumption can help to compare usage periods by location, type of equipment, and even individual device. However in real-life problem domain every situation is different and therefore using frequency domain or statistically modeling techniques, for example, to find  patterns of energy consumption will require domain specific knowledge and to have labels on data which sometimes can bottleneck the motif search process. In this paper we show a new technique that’s based on matrix profile </p>
+<h2>Data set and problem description</h2>
+<p>In this example we show energy consumption data from a pharmaceutical equipment over the course of a typical 24-hour day. Power consumption is measured in watts. The behavior of the device being measured is fairly typical: during episodes of active usage, power consumption quickly increases from an “idle” or background level of consumption, and then returns to idle power draw after usage ceases. Power consumption is noisy and variable in general. It is also fairly common for the “background” consumption of equipment to be variable over time, noisy, and to change such that you cannot rely on a single measurement or value. </p>
+<p><img alt="png" src="/images/plot_image.svg"></p>
+<h2>Calculation of Matrix Profile</h2>
+<p>The Matrix Profile is a relatively new data structure for time series analysis developed by Eamonn Keogh at the University of California Riverside and Abdullah Mueen at the University of New Mexico []. Some of the advantages of using the Matrix Profile is that it is domain agnostic, fast, provides an exact solution (approximate when desired) and only requires a single parameter.
+The algorithms that compute the Matrix Profile use a sliding window approach. With a window size of m, the algorithm:
+- Computes the distances for the windowed sub-sequence against the entire time series
+- Sets an exclusion zone to ignore trivial matches
+- Updates the distance profile with the minimal values
+- Sets the first nearest-neighbor index
+The distance calculations outlined above occur n-m + 1 times; where n is the length of the time series and m is the window size. Since the sub-sequences are pulled from the time series itself, an exclusion zone is required to prevent trivial matches. For example, a snippet matching itself or a snippet very close to itself is considered a trivial match. The exclusion zone is simply half of the window size (m) both before and after the current window index. The values at these indices are ignored when computing the minimum distance and the nearest-neighbor index. A visualization showing the computation of a distance profile starting at the second window is shown below. </p>
+<p><img alt="png" src="/images/E1jkPS6DbqgoR-1tpr3lyA.gif"></p>
+<p>The second window of values, X2 through X5, slides across the time series computing the dot product for each sub-sequence. Once all of the dot products are computed, the exclusion zone is applied to the distances and the minimum distance is stored in the Matrix Profile. Throwing away the extra distances and only keeping the minimum distance reduces the space complexity to 0(n).</p>
+<h3>Motif (and Anomaly) Definitions</h3>
+<p>A motif is a repeated pattern in a time series and a discord is an anomaly. With the Matrix Profile computed, it is simple to find the top-K number of motifs or discords. The Matrix Profile stores the distances in Euclidean space meaning that a distance close to 0 is most similar to another sub-sequence in the time series and a distance far away from 0, say 100, is unlike any other sub-sequence. Extracting the lowest distances gives the motifs and the largest distances gives the discords.</p>
+<div class="highlight"><pre><span></span>def calc_mp_cac(df,m):
+    warnings.filterwarnings(&#39;ignore&#39;)
+    pattern = df.power.values
+    mp = matrixProfile.stomp(pattern,m)
+    # Bonus: calculate the corrected arc curve (CAC) to do semantic segmantation.
+    cac = fluss.fluss(mp[1], m)
+    #Append np.nan to Matrix profile to enable plotting against raw data
+    mp_adj = np.append(mp[0],np.zeros(m-1)+np.nan)
+    #Plot the signal data
+    fig, (ax1, ax2, ax3) = plt.subplots(3,1,sharex=True,figsize=(20,10))
+    ax1.plot(np.arange(len(pattern)),pattern, label=&quot;Power Consumption Data&quot;)
+    ax1.set_ylabel(&#39;Signal&#39;, size=22)
+    #Plot the Matrix Profile
+    ax2.plot(np.arange(len(mp_adj)),mp_adj, label=&quot;Matrix Profile&quot;, color=&#39;red&#39;)
+    ax2.set_ylabel(&#39;Matrix Profile&#39;, size=22)
+    ax2.set_xlabel(&quot;Sequence window={}&quot;.format(m), size=22)
+    #Plot the CAC
+    ax3.plot(np.arange(len(cac)),cac, label=&quot;CAC&quot;, color=&#39;green&#39;)
+    ax3.set_ylabel(&#39;CAC&#39;, size=22)
+    ax3.set_xlabel(&quot;Sequence window={}&quot;.format(m), size=22)
+    return mp
+
+def plot_mp_cac(df,m, feature,mp):
+    warnings.filterwarnings(&#39;ignore&#39;)
+    pattern = df[feature].values
+    # Bonus: calculate the corrected arc curve (CAC) to do semantic segmantation.
+    cac = fluss.fluss(mp[1], m)
+
+    #Append np.nan to Matrix profile to enable plotting against raw data
+    mp_adj = np.append(mp[0],np.zeros(m-1)+np.nan)
+
+    #Plot the signal data
+    fig, (ax1, ax2, ax3) = plt.subplots(3,1,sharex=True,figsize=(20,10))
+    ax1.plot(np.arange(len(pattern)),pattern, label=&quot;Power Consumption Data&quot;)
+    ax1.set_ylabel(&#39;Signal&#39;, size=22)
+
+    #Plot the Matrix Profile
+    ax2.plot(np.arange(len(mp_adj)),mp_adj, label=&quot;Matrix Profile&quot;, color=&#39;red&#39;)
+    ax2.set_ylabel(&#39;Matrix Profile&#39;, size=22)
+    ax2.set_xlabel(&quot;Sequence window={}&quot;.format(m), size=22)
+
+    #Plot the CAC
+    ax3.plot(np.arange(len(cac)),cac, label=&quot;CAC&quot;, color=&#39;green&#39;)
+    ax3.set_ylabel(&#39;CAC&#39;, size=22)
+    ax3.set_xlabel(&quot;Sequence window={}&quot;.format(m), size=22)
+    return mp
+
+def plot_signal_mp(df,m, feature,mp):
+    warnings.filterwarnings(&#39;ignore&#39;)
+    pattern = df[feature].values
+
+    #Append np.nan to Matrix profile to enable plotting against raw data
+    mp_adj = np.append(mp[0],np.zeros(m-1)+np.nan)
+
+    #Plot the signal data
+    fig, (ax1, ax2) = plt.subplots(2,1,sharex=True,figsize=(20,10))
+    ax1.plot(np.arange(len(pattern)),pattern, label=&quot;Power Consumption Data&quot;)
+    ax1.set_ylabel(&#39;Signal&#39;, size=22)
+
+    #Plot the Matrix Profile
+    ax2.plot(np.arange(len(mp_adj)),mp_adj, label=&quot;Matrix Profile&quot;, color=&#39;red&#39;)
+    ax2.set_ylabel(&#39;Matrix Profile&#39;, size=22)
+    ax2.set_xlabel(&quot;Sequence window={}&quot;.format(m), size=22)
+
+mp=calc_mp_cac(df,11)
+</pre></div>
+
+
+<p><img alt="png" src="/images/download.png"></p>
+<h4>Summary:</h4>
+<p><strong>Interpretation of the matrix profile (mp) plot</strong>
+form the mp plot, there are many items of note:</p>
+<ul>
+<li>The choice of the subsequence lengh can be made visually, from the pattern examples, we are only interested in small local subsequences, of length ~ 11 min</li>
+<li>The relatively low values implies that the subsequence in the original time series must have (at least one) relatively similar subsequence elsewhere in the time series data (such regions are “motifs” or reoccurring patterns)</li>
+<li>Repeated patterns in the data (or "motifs") lead to low Matrix Profile values: From the data it looks that we dont have reapeted motifts throughout the time
+Where we see relatively high values , we know that the subsequence in the original time series must be unique in its shape (such areas are “discords” )</li>
+<li>The Matrix Profile value jumps at each phase change. High Matrix Profile values are associated with "discords": time series behavior that hasn't been observed before: From the mp it looks we have many jumps because the time series data keeps fluctuating but there is no standalone top or local tops which means there it is no Discord or Anomay</li>
+<li>The conclusion is that the data is noisy and domain knowledge informtion is missing</li>
+</ul>
+<h3>Matrix Profile Segmentation</h3>
+<p>The Matrix Profile allows a simple algorithm, FLUSS/FLOSS, for time series segmentation.The ideas of segmentation comes form the Matrix Profile Index which has pointers ( arrows , arcs ) that point to the nearest neighbor of each subsequence. If we have a change of behavior, for exampe active to idle , we should expect very few arrows to span that change of behavior (See the arrows in the bellow picture). In the matrixprofile-ts python library, the fluss function is implemented in the fluss sub-module, and it outputs the corrected arc curve</p>
+<p><img alt="png" src="/images/cac.png"></p>
+<p>Notes:</p>
+<ul>
+<li>Most active subsequences will point to another active subsequence</li>
+<li>Most "idle" subsequences will point to another "idle" subsequence</li>
+<li>Rarely, if ever, will an "idle" point to an "active"</li>
+</ul>
+<p>So, if we slide across the Matrix Profile Index , and count how many arrows cross each particular point, we expect to find few that span the change of behavior. As we can see in the example used in the corrected arc curve (CAC) bellow, The CAC minimizes in the right place. The CAC has a single parameter, the subsequence length m .Lets change it by an order of magnitude, and see how the results will change.</p>
+<div class="highlight"><pre><span></span>for m in [11,14,17]:
+    calc_mp_cac(df,m)
+</pre></div>
+
+
+<p><img alt="png" src="/images/download121.png">
+<img alt="png" src="/images/download222.png">
+<img alt="png" src="/images/download211.png"></p>
+<h4>Summury</h4>
+<ul>
+<li>The segmentation result sounds mathematically correct, but not what we expect for the active power domain.</li>
+<li>The true motifs are still “swamped” by more frequent, but meaningless patterns, like idle patterns.</li>
+<li>The solutions is to correctly incorporates the contextual weights of noise and active consumption in our use case.</li>
+<li>By correcting the MP to bias away from idle motifs, we can discover meaningful power active usage motifs.</li>
+<li>In the next step we will supress the 'motifs' that we know are representing idle or noise.</li>
+</ul>
+<h3>Domain specific annotation vector : Corrected Matrix Profile</h3>
+<p>The annotation vector( AV ) is a time series consisting of real valued numbers between [0 1]. A lower value indicates the subsequence starting at that index is less desirable, and therefore should be biased against . Conversely, higher values mean the corresponding subsequences should be favored for the potential motif pool.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matrixprofile.utils</span> <span class="kn">import</span> <span class="n">apply_av</span>
+<span class="k">def</span> <span class="nf">av_power_consumption</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">disp</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">mp</span> <span class="o">=</span> <span class="n">matrixProfile</span><span class="o">.</span><span class="n">stomp</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">av</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">mp</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">ind</span><span class="o">=</span><span class="mi">0</span>
+    <span class="nb">max</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">feature</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s2">&quot;power&quot;</span><span class="p">]</span><span class="o">&gt;</span><span class="nb">max</span><span class="o">-</span><span class="n">height</span><span class="p">):</span>
+            <span class="n">av</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+        <span class="n">ind</span><span class="o">=</span><span class="n">ind</span><span class="o">+</span><span class="mi">1</span>
+    <span class="n">mp_corrected</span><span class="o">=</span><span class="n">apply_av</span><span class="p">(</span><span class="n">mp</span><span class="p">,</span><span class="n">av</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">disp</span><span class="o">==</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">plot_signal_mp</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">m</span><span class="p">,</span> <span class="s2">&quot;power&quot;</span><span class="p">,</span><span class="n">mp_corrected</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mp_corrected</span>
+<span class="n">mp_corrected</span><span class="o">=</span><span class="n">av_power_consumption</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="s2">&quot;power&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/download322.png"></p>
+<h4>Summury</h4>
+<p>After adding the domain knowledge information( represented by the AV), the Corrected matrix profile is capable of detecting the consumption motifs by showing them as the low values</p>
+<h3>Motif Search</h3>
+<p>After finding some relatively low values (almost 0) in the mp, lets find out the different motifs existing in our data</p>
+<div class="highlight"><pre><span></span>def plot_motifs(mtfs, labels, ax):
+    colori = 0
+    colors = &#39;rgbcm&#39;
+    for ms,l in zip(mtfs,labels):
+        c =colors[colori % len(colors)]
+        starts = list(ms)
+        ends = [min(s + m,len(pattern)-1) for s in starts]
+        ax.plot(starts, pattern[starts],  c +&#39;o&#39;,  label=l)
+        ax.plot(ends, pattern[ends],  c +&#39;o&#39;, markerfacecolor=&#39;none&#39;)
+        for nn in ms:
+            ax.plot(range(nn,nn+m),pattern[nn:nn+m], c , linewidth=2)
+        colori += 1
+    ax.plot(pattern, &#39;k&#39;, linewidth=1, label=&quot;data&quot;)
+    ax.legend()
+mp_corrected=av_power_consumption(df, 12, &quot;power&quot;, 5, disp=&quot;False&quot;)
+mtfs ,motif_d  = motifs.motifs(pattern, mp_corrected, max_motifs=3)
+
+def plot_signal_cmp_motifs(df, feature,m,mp_corrected ):
+    warnings.filterwarnings(&#39;ignore&#39;)
+    pattern = df[feature].values
+    #Append np.nan to Matrix profile to enable plotting against raw data
+    mp_adj = np.append(mp_corrected[0],np.zeros(m-1)+np.nan)
+
+    #Plot the signal data
+    fig, (ax1, ax2, ax3) = plt.subplots(3,1,sharex=True,figsize=(20,10))
+    ax1.plot(np.arange(len(pattern)),pattern, label=&quot;power Data&quot;)
+    ax1.set_ylabel(&#39;Signal&#39;, size=22)
+
+    #Plot the corrected Matrix Profile
+    ax2.plot(np.arange(len(mp_adj)),mp_adj, label=&quot;Corrected Matrix Profile&quot;, color=&#39;red&#39;)
+    ax2.set_ylabel(&#39;Corrected Matrix Profile&#39;, size=22)
+
+    #Plot the Motifs
+    plot_motifs(mtfs, [f&quot;{md:.3f}&quot; for md in motif_d], ax3)
+    ax3.set_ylabel(&#39;Motifs&#39;, size=22)
+    #plt.xlim((0,100))
+    plt.show()
+plot_signal_cmp_motifs(df, &quot;power&quot;,11,mp_corrected )
+</pre></div>
+
+
+<p><img alt="png" src="/images/download3133.png"></p>
+<h4>Summury</h4>
+<p>The motifs.motifs function founds some consumption patterns in the data as well as some noise motifs, we will try to tune the motif search in order to discover consumption motifs only</p>
+<h3>Motifs Discovery</h3>
+<p>The motifs.motifs function admits the following parametres and return</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>max_motifs: stop finding new motifs once we have max_motifs</li>
+<li>radius: For each motif found, find neighbors that are within radius*motif_mp of the first.</li>
+<li>n_neighbors: number of neighbors from the first to find. If it is None, find all.</li>
+<li>ex_zone: minimum distance between indices for after each subsequence is identified. Defaults to m/2 where m is the subsequence length. If ex_zone = 0, only the found index is exclude, if ex_zone = 1 then if idx is found as a motif idx-1, idx, idx+1 are excluded.</li>
+</ul>
+<p><strong>Returns</strong>
+The function returns a tuple (top_motifs, distances) which are lists of the same length.</p>
+<ul>
+<li>top_motifs: This is a list of the indices found for each motif. The first index is the nth motif followed by all nearest neighbors found sorted by distances.</li>
+<li>distances: Minimum Matrix profile value for each motif set.
+More detail about the algortihm implemented by this function can be found here: https://www.cs.ucr.edu/~eamonn/guided-motif-KDD17-new-format-10-pages-v005.pdf</li>
+</ul>
+<h2>Experimenetation</h2>
+<p>In this step we experimente different values of max_motifs, radius, n_neighbors, and ex_zone, and use motifs plots visualization to find the best parametres set that distiguish the consumption motifs</p>
+<div class="highlight"><pre><span></span>fig, (ax1, ax2, ax3) = plt.subplots(3,1,sharex=True,figsize=(20,10))
+
+
+mtfs ,motif_d  = motifs.motifs(pattern, mp_corrected, max_motifs=5, n_neighbors=None, radius=0)
+plot_motifs(mtfs, [f&quot;{md:.3f}&quot; for md in motif_d], ax1)
+ax1.set_ylabel(&#39;4 Neigbhors&#39;, size=22)
+print(mtfs)
+
+#mtfs ,motif_d  = motifs.motifs(pattern, mp, max_motifs=5, radius=10)
+mtfs ,motif_d  = motifs.motifs(pattern, mp_corrected, max_motifs=5, n_neighbors=0, radius=0)
+plot_motifs(mtfs, [f&quot;{md:.3f}&quot; for md in motif_d], ax2)
+ax2.set_ylabel(&#39;Radius = 10&#39;, size=22)
+print(mtfs)
+
+#mtfs ,motif_d  = motifs.motifs(pattern, mp, max_motifs=3, ex_zone=2)
+mtfs ,motif_d  = motifs.motifs(pattern, mp_corrected, max_motifs=5, n_neighbors=None, radius=0,  ex_zone=5)
+plot_motifs(mtfs, [f&quot;{md:.3f}&quot; for md in motif_d], ax3)
+ax3.set_ylabel(&#39;Exclude 2*m&#39;, size=22)
+plt.show()
+print(mtfs)
+#### Results:
+[[839, 1186], [612, 989], [577, 898], [825, 1394]]
+[[839, 1186], [612, 989], [577, 898], [825, 1394]]
+</pre></div>
+
+
+<p><img alt="png" src="/images/download223.png"></p>
+<h3>Periods of active power consumptions</h3>
+<div class="highlight"><pre><span></span>df.loc[(df.index&gt;=839) &amp; (df.index&lt;=839+11)]
+df.loc[(df.index&gt;=1186) &amp; (df.index&lt;=1186+11)]
+df.loc[(df.index&gt;=612) &amp; (df.index&lt;=612+11)]
+df.loc[(df.index&gt;=989) &amp; (df.index&lt;=989+11)]
+df.loc[(df.index&gt;=577) &amp; (df.index&lt;=577+11)]    
+df.loc[(df.index&gt;=898) &amp; (df.index&lt;=898+11)]
+df.loc[(df.index&gt;=583) &amp; (df.index&lt;=583+11)]
+df.loc[(df.index&gt;=827) &amp; (df.index&lt;=827+11)]
+</pre></div>
+
+
+<h2>General Conclusion</h2>
+<ul>
+<li>By correcting the matrix profile with an AV based on the active power consumptions peaks measure, we were able to discover the true motifs</li>
+<li>After fine tuning the parametres of motifs.motifs, we were able to differtiate different motifs existing in the data.</li>
+<li>Visually we have one false positive : the red motif in the right, which we refere to noise. We can improve the result by adding a noise fiter on the found motifs.</li>
+</ul>
+            <div class="hr"></div>
+            <a href="#" class="go-top">Go Top</a>
+<div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div><footer class="footer">
+    <p>&copy; Mohcine Madkour &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+</div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>

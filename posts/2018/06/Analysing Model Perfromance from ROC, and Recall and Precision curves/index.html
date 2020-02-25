@@ -117,108 +117,108 @@ return(val)
 <p>The chart bellow illustrates the relationship between the different performance metrics ( prevalence is exluded) in an example of 4 estimators apllied on 4 -classes data<img alt=" PPV and NPV  relationship" src="/images/NPV-PPV-Accracy-Youden.png"></p>
 <h1>Calculation of performance metrics</h1>
 <p>Here is the python code for the calculation of  performance metrics </p>
-<div class="highlight"><pre><span></span><span class="n">def</span> <span class="nf">calculate_metric</span><span class="p">(</span><span class="n">outcome</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span><span class="o">:</span>
-    <span class="n">obser</span> <span class="o">=</span> <span class="nf">np.zeros</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">outcome</span><span class="p">))</span>
-    <span class="n">obser[[i</span> <span class="n">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="n">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">outcome</span><span class="p">)</span> <span class="n">if</span> <span class="n">x</span> <span class="o">==</span> <span class="m">1</span> <span class="n">]]</span> <span class="o">=</span> <span class="m">1</span> <span class="p">;</span>
-    <span class="n">obser</span> <span class="o">=</span> <span class="nf">[float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="n">for</span> <span class="n">i</span> <span class="n">in</span> <span class="n">obser]</span>
-    <span class="n">score</span> <span class="o">=</span> <span class="nf">[float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="n">for</span> <span class="n">i</span> <span class="n">in</span> <span class="n">score]</span>
-    <span class="n">prev</span> <span class="o">=</span> <span class="nf">round</span><span class="p">(</span><span class="nf">sum</span><span class="p">(</span><span class="n">obser</span><span class="p">)</span><span class="o">/</span><span class="nf">len</span><span class="p">(</span><span class="n">obser</span><span class="p">),</span><span class="m">2</span><span class="p">)</span>
-    <span class="n">thres</span> <span class="o">=</span> <span class="nf">np.arange</span><span class="p">(</span><span class="m">0.01</span><span class="p">,</span><span class="m">1.01</span><span class="p">,</span><span class="m">0.01</span><span class="p">)</span><span class="c1">#(0.01,0.98,0.01)</span>
-    <span class="n">xval</span> <span class="o">=</span> <span class="n">thres</span>
-    <span class="n">acc</span> <span class="o">=</span> <span class="nf">np.zeros</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">thres</span><span class="p">))</span>
-    <span class="n">ppv</span> <span class="o">=</span> <span class="nf">np.zeros</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">thres</span><span class="p">))</span>
-    <span class="n">npv</span> <span class="o">=</span> <span class="nf">np.zeros</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">thres</span><span class="p">))</span>
-    <span class="n">sen</span> <span class="o">=</span> <span class="nf">np.zeros</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">thres</span><span class="p">))</span>
-    <span class="n">spe</span> <span class="o">=</span> <span class="nf">np.zeros</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">thres</span><span class="p">))</span>
-    <span class="n">yod</span> <span class="o">=</span> <span class="nf">np.zeros</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">thres</span><span class="p">))</span>
-    <span class="n">auc</span> <span class="o">=</span> <span class="nf">np.zeros</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">thres</span><span class="p">))</span>
-    <span class="n">recall</span> <span class="o">=</span> <span class="nf">np.zeros</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">thres</span><span class="p">))</span>
-    <span class="n">precision</span> <span class="o">=</span> <span class="nf">np.zeros</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">thres</span><span class="p">))</span>
-    <span class="n">F1</span> <span class="o">=</span> <span class="nf">np.zeros</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">thres</span><span class="p">))</span> 
-    <span class="n">for</span> <span class="n">l</span> <span class="n">in</span> <span class="nf">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">thres</span><span class="p">))</span><span class="o">:</span>
-        <span class="n">plotdata</span> <span class="o">=</span> <span class="nf">ROC_parameters</span><span class="p">(</span><span class="n">obser</span><span class="p">,</span><span class="n">score</span><span class="p">,</span><span class="n">thres[l]</span><span class="p">)</span>
-        <span class="n">acc[l]</span> <span class="o">=</span> <span class="nf">round</span><span class="p">(</span><span class="n">plotdata[0]</span><span class="p">,</span><span class="m">3</span><span class="p">)</span>
-        <span class="n">ppv[l]</span> <span class="o">=</span> <span class="nf">round</span><span class="p">(</span><span class="n">plotdata[1]</span><span class="p">,</span><span class="m">3</span><span class="p">)</span>
-        <span class="n">npv[l]</span> <span class="o">=</span> <span class="nf">round</span><span class="p">(</span><span class="n">plotdata[2]</span><span class="p">,</span><span class="m">3</span><span class="p">)</span>
-        <span class="n">sen[l]</span> <span class="o">=</span> <span class="nf">round</span><span class="p">(</span><span class="n">plotdata[3]</span><span class="p">,</span><span class="m">3</span><span class="p">)</span>
-        <span class="n">spe[l]</span> <span class="o">=</span> <span class="nf">round</span><span class="p">(</span><span class="n">plotdata[4]</span><span class="p">,</span><span class="m">3</span><span class="p">)</span>
-        <span class="n">yod[l]</span> <span class="o">=</span> <span class="nf">round</span><span class="p">(</span><span class="n">plotdata[5]</span><span class="p">,</span><span class="m">3</span><span class="p">)</span>
-        <span class="n">recall[l]</span> <span class="o">=</span> <span class="nf">round</span><span class="p">(</span><span class="n">plotdata[6]</span><span class="p">,</span><span class="m">3</span><span class="p">)</span>
-        <span class="n">precision[l]</span> <span class="o">=</span> <span class="nf">round</span><span class="p">(</span><span class="n">plotdata[7]</span><span class="p">,</span><span class="m">3</span><span class="p">)</span>
-        <span class="n">F1[l]</span> <span class="o">=</span> <span class="nf">round</span><span class="p">(</span><span class="n">plotdata[8]</span><span class="p">,</span><span class="m">3</span><span class="p">)</span>
-        <span class="n">auc[l]</span> <span class="o">=</span> <span class="nf">roc_auc_score</span><span class="p">(</span><span class="n">obser</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
-    <span class="n">prev</span> <span class="o">=</span> <span class="nf">round</span><span class="p">(</span><span class="nf">sum</span><span class="p">(</span><span class="n">obser</span><span class="p">)</span><span class="o">/</span><span class="nf">len</span><span class="p">(</span><span class="n">obser</span><span class="p">),</span><span class="m">2</span><span class="p">)</span>
+<div class="highlight"><pre><span></span>def calculate_metric<span class="p">(</span>outcome<span class="p">,</span> score<span class="p">)</span><span class="o">:</span>
+    obser <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>outcome<span class="p">))</span>
+    obser<span class="p">[[</span>i <span class="kr">for</span> i<span class="p">,</span> x <span class="kr">in</span> enumerate<span class="p">(</span>outcome<span class="p">)</span> <span class="kr">if</span> x <span class="o">==</span> <span class="m">1</span> <span class="p">]]</span> <span class="o">=</span> <span class="m">1</span> <span class="p">;</span>
+    obser <span class="o">=</span> <span class="p">[</span>float<span class="p">(</span>i<span class="p">)</span> <span class="kr">for</span> i <span class="kr">in</span> obser<span class="p">]</span>
+    score <span class="o">=</span> <span class="p">[</span>float<span class="p">(</span>i<span class="p">)</span> <span class="kr">for</span> i <span class="kr">in</span> score<span class="p">]</span>
+    prev <span class="o">=</span> <span class="kp">round</span><span class="p">(</span><span class="kp">sum</span><span class="p">(</span>obser<span class="p">)</span><span class="o">/</span>len<span class="p">(</span>obser<span class="p">),</span><span class="m">2</span><span class="p">)</span>
+    thres <span class="o">=</span> np.arange<span class="p">(</span><span class="m">0.01</span><span class="p">,</span><span class="m">1.01</span><span class="p">,</span><span class="m">0.01</span><span class="p">)</span><span class="c1">#(0.01,0.98,0.01)</span>
+    xval <span class="o">=</span> thres
+    acc <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    ppv <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    npv <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    sen <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    spe <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    yod <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    auc <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    recall <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    precision <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
+    F1 <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span> 
+    <span class="kr">for</span> l <span class="kr">in</span> <span class="kp">range</span><span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span><span class="o">:</span>
+        plotdata <span class="o">=</span> ROC_parameters<span class="p">(</span>obser<span class="p">,</span>score<span class="p">,</span>thres<span class="p">[</span>l<span class="p">])</span>
+        acc<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">0</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
+        ppv<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">1</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
+        npv<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">2</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
+        sen<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">3</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
+        spe<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">4</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
+        yod<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">5</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
+        recall<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">6</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
+        precision<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">7</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
+        F1<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">8</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
+        auc<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> roc_auc_score<span class="p">(</span>obser<span class="p">,</span> score<span class="p">)</span>
+    prev <span class="o">=</span> <span class="kp">round</span><span class="p">(</span><span class="kp">sum</span><span class="p">(</span>obser<span class="p">)</span><span class="o">/</span>len<span class="p">(</span>obser<span class="p">),</span><span class="m">2</span><span class="p">)</span>
     <span class="c1">#roc_vals=np.zeros((length(spe),8))</span>
-    <span class="n">roc_vals</span><span class="o">=</span><span class="nf">pd.DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nf">range</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">101</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="n">[[</span><span class="s">&quot;thres&quot;</span><span class="p">,</span><span class="s">&quot;acc&quot;</span><span class="p">,</span><span class="s">&quot;ppv&quot;</span><span class="p">,</span><span class="s">&quot;npv&quot;</span><span class="p">,</span><span class="s">&quot;specificity&quot;</span><span class="p">,</span><span class="s">&quot;sensitivity&quot;</span><span class="p">,</span><span class="s">&quot;yod_index&quot;</span><span class="p">,</span><span class="s">&quot;recall&quot;</span><span class="p">,</span><span class="s">&quot;precision&quot;</span><span class="p">,</span><span class="s">&quot;F1&quot;</span><span class="p">,</span><span class="s">&quot;auc&quot;</span><span class="n">]]</span><span class="p">)</span>
+    roc_vals<span class="o">=</span>pd.DataFrame<span class="p">(</span>index<span class="o">=</span><span class="kp">range</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">101</span><span class="p">),</span> columns<span class="o">=</span><span class="p">[[</span><span class="s">&quot;thres&quot;</span><span class="p">,</span><span class="s">&quot;acc&quot;</span><span class="p">,</span><span class="s">&quot;ppv&quot;</span><span class="p">,</span><span class="s">&quot;npv&quot;</span><span class="p">,</span><span class="s">&quot;specificity&quot;</span><span class="p">,</span><span class="s">&quot;sensitivity&quot;</span><span class="p">,</span><span class="s">&quot;yod_index&quot;</span><span class="p">,</span><span class="s">&quot;recall&quot;</span><span class="p">,</span><span class="s">&quot;precision&quot;</span><span class="p">,</span><span class="s">&quot;F1&quot;</span><span class="p">,</span><span class="s">&quot;auc&quot;</span><span class="p">]])</span>
     <span class="c1">#roc_vals &lt;- dacolnames(roc_vals) &lt;- c(&quot;thres&quot;,&quot;acc&quot;,&quot;ppv&quot;,&quot;npv&quot;,&quot;specificity&quot;,&quot;sensitivity&quot;,&quot;yod_index&quot;,&quot;auc&quot;)</span>
-    <span class="n">roc_vals[</span><span class="s">&#39;thres&#39;</span><span class="n">]</span><span class="o">=</span><span class="n">thres</span>
-    <span class="n">roc_vals[</span><span class="s">&#39;acc&#39;</span><span class="n">]</span><span class="o">=</span> <span class="n">acc</span>
-    <span class="n">roc_vals[</span><span class="s">&#39;ppv&#39;</span><span class="n">]</span> <span class="o">=</span> <span class="n">ppv</span>
-    <span class="n">roc_vals[</span><span class="s">&#39;npv&#39;</span><span class="n">]</span> <span class="o">=</span> <span class="n">npv</span>
-    <span class="n">roc_vals[</span><span class="s">&#39;specificity&#39;</span><span class="n">]</span> <span class="o">=</span><span class="n">spe</span>
-    <span class="n">roc_vals[</span><span class="s">&#39;sensitivity&#39;</span><span class="n">]</span> <span class="o">=</span> <span class="n">sen</span>
-    <span class="n">roc_vals[</span><span class="s">&#39;yod_index&#39;</span><span class="n">]</span> <span class="o">=</span> <span class="n">yod</span><span class="p">;</span>
-    <span class="n">roc_vals[</span><span class="s">&#39;recall&#39;</span><span class="n">]</span> <span class="o">=</span> <span class="n">recall</span><span class="p">;</span>
-    <span class="n">roc_vals[</span><span class="s">&#39;precision&#39;</span><span class="n">]</span> <span class="o">=</span> <span class="n">precision</span>
-    <span class="n">roc_vals[</span><span class="s">&#39;F1&#39;</span><span class="n">]</span> <span class="o">=</span> <span class="n">F1</span><span class="p">;</span>
-    <span class="n">roc_vals[</span><span class="s">&#39;auc&#39;</span><span class="n">]</span> <span class="o">=</span> <span class="n">auc</span><span class="p">;</span>
-    <span class="n">return</span> <span class="n">roc_vals</span>
+    roc_vals<span class="p">[</span><span class="s">&#39;thres&#39;</span><span class="p">]</span><span class="o">=</span>thres
+    roc_vals<span class="p">[</span><span class="s">&#39;acc&#39;</span><span class="p">]</span><span class="o">=</span> acc
+    roc_vals<span class="p">[</span><span class="s">&#39;ppv&#39;</span><span class="p">]</span> <span class="o">=</span> ppv
+    roc_vals<span class="p">[</span><span class="s">&#39;npv&#39;</span><span class="p">]</span> <span class="o">=</span> npv
+    roc_vals<span class="p">[</span><span class="s">&#39;specificity&#39;</span><span class="p">]</span> <span class="o">=</span>spe
+    roc_vals<span class="p">[</span><span class="s">&#39;sensitivity&#39;</span><span class="p">]</span> <span class="o">=</span> sen
+    roc_vals<span class="p">[</span><span class="s">&#39;yod_index&#39;</span><span class="p">]</span> <span class="o">=</span> yod<span class="p">;</span>
+    roc_vals<span class="p">[</span><span class="s">&#39;recall&#39;</span><span class="p">]</span> <span class="o">=</span> recall<span class="p">;</span>
+    roc_vals<span class="p">[</span><span class="s">&#39;precision&#39;</span><span class="p">]</span> <span class="o">=</span> precision
+    roc_vals<span class="p">[</span><span class="s">&#39;F1&#39;</span><span class="p">]</span> <span class="o">=</span> F1<span class="p">;</span>
+    roc_vals<span class="p">[</span><span class="s">&#39;auc&#39;</span><span class="p">]</span> <span class="o">=</span> auc<span class="p">;</span>
+    <span class="kr">return</span> roc_vals
 
-<span class="n">def</span> <span class="nf">ROC_parameters</span><span class="p">(</span><span class="n">obser</span><span class="p">,</span><span class="n">score</span><span class="p">,</span><span class="n">thr</span><span class="p">)</span><span class="o">:</span>
+def ROC_parameters<span class="p">(</span>obser<span class="p">,</span>score<span class="p">,</span>thr<span class="p">)</span><span class="o">:</span>
     <span class="c1">#print obser,score,thr</span>
-    <span class="n">temp</span><span class="o">=</span><span class="nf">np.zeros</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">score</span><span class="p">))</span>
+    temp<span class="o">=</span>np.zeros<span class="p">(</span>len<span class="p">(</span>score<span class="p">))</span>
     <span class="c1">#print thr;</span>
-    <span class="n">temp[[</span> <span class="n">i</span> <span class="n">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="n">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="n">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="n">thr</span> <span class="n">]]</span><span class="o">=</span> <span class="m">1</span>
-    <span class="n">p_ind</span><span class="o">=</span><span class="n">[</span> <span class="n">i</span> <span class="n">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="n">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">obser</span><span class="p">)</span> <span class="n">if</span> <span class="n">x</span> <span class="o">==</span> <span class="m">1</span> <span class="n">]</span>
-    <span class="n">n_ind</span> <span class="o">=</span> <span class="n">[</span> <span class="n">i</span> <span class="n">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="n">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">obser</span><span class="p">)</span> <span class="n">if</span> <span class="n">x</span> <span class="o">==</span> <span class="m">0</span> <span class="n">]</span>
-    <span class="n">TP</span> <span class="o">=</span> <span class="nf">sum</span><span class="p">(</span><span class="n">temp[p_ind]</span><span class="o">==</span><span class="m">1</span><span class="p">)</span>
-    <span class="n">FP</span> <span class="o">=</span> <span class="nf">sum</span><span class="p">(</span><span class="n">temp[n_ind]</span><span class="o">==</span><span class="m">1</span><span class="p">)</span>
-    <span class="n">TN</span> <span class="o">=</span><span class="nf">sum</span><span class="p">(</span><span class="n">temp[n_ind]</span><span class="o">==</span><span class="m">0</span><span class="p">)</span>
-    <span class="n">FN</span> <span class="o">=</span> <span class="nf">sum</span><span class="p">(</span><span class="n">temp[p_ind]</span><span class="o">==</span><span class="m">0</span><span class="p">)</span>
-    <span class="n">acc</span> <span class="o">=</span> <span class="p">(</span><span class="n">float</span><span class="p">)(</span><span class="n">TP</span><span class="o">+</span><span class="n">TN</span><span class="p">)</span><span class="o">/</span><span class="nf">len</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
-    <span class="n">recall</span><span class="o">=</span><span class="m">0</span>
-    <span class="n">precision</span><span class="o">=</span><span class="m">0</span>
+    temp<span class="p">[[</span> i <span class="kr">for</span> i<span class="p">,</span> x <span class="kr">in</span> enumerate<span class="p">(</span>score<span class="p">)</span> <span class="kr">if</span> x <span class="o">&gt;=</span> thr <span class="p">]]</span><span class="o">=</span> <span class="m">1</span>
+    p_ind<span class="o">=</span><span class="p">[</span> i <span class="kr">for</span> i<span class="p">,</span> x <span class="kr">in</span> enumerate<span class="p">(</span>obser<span class="p">)</span> <span class="kr">if</span> x <span class="o">==</span> <span class="m">1</span> <span class="p">]</span>
+    n_ind <span class="o">=</span> <span class="p">[</span> i <span class="kr">for</span> i<span class="p">,</span> x <span class="kr">in</span> enumerate<span class="p">(</span>obser<span class="p">)</span> <span class="kr">if</span> x <span class="o">==</span> <span class="m">0</span> <span class="p">]</span>
+    TP <span class="o">=</span> <span class="kp">sum</span><span class="p">(</span>temp<span class="p">[</span>p_ind<span class="p">]</span><span class="o">==</span><span class="m">1</span><span class="p">)</span>
+    FP <span class="o">=</span> <span class="kp">sum</span><span class="p">(</span>temp<span class="p">[</span>n_ind<span class="p">]</span><span class="o">==</span><span class="m">1</span><span class="p">)</span>
+    TN <span class="o">=</span><span class="kp">sum</span><span class="p">(</span>temp<span class="p">[</span>n_ind<span class="p">]</span><span class="o">==</span><span class="m">0</span><span class="p">)</span>
+    FN <span class="o">=</span> <span class="kp">sum</span><span class="p">(</span>temp<span class="p">[</span>p_ind<span class="p">]</span><span class="o">==</span><span class="m">0</span><span class="p">)</span>
+    acc <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>TP<span class="o">+</span>TN<span class="p">)</span><span class="o">/</span>len<span class="p">(</span>temp<span class="p">)</span>
+    recall<span class="o">=</span><span class="m">0</span>
+    precision<span class="o">=</span><span class="m">0</span>
     <span class="c1">#print TP,FP,TN,FN;</span>
-    <span class="n">if</span> <span class="n">TP</span><span class="o">+</span><span class="n">FP</span><span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
-        <span class="n">ppv</span> <span class="o">=</span> <span class="p">(</span><span class="n">float</span><span class="p">)(</span><span class="n">TP</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">TP</span><span class="o">+</span><span class="n">FP</span><span class="p">)</span>
-    <span class="n">else</span><span class="o">:</span>
-        <span class="n">ppv</span><span class="o">=</span><span class="n">np.NaN</span>
-    <span class="n">if</span> <span class="n">TN</span><span class="o">+</span><span class="n">FN</span><span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
-        <span class="n">npv</span> <span class="o">=</span> <span class="p">(</span><span class="n">float</span><span class="p">)(</span><span class="n">TN</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">TN</span><span class="o">+</span><span class="n">FN</span><span class="p">)</span>
-    <span class="n">else</span><span class="o">:</span>
-        <span class="n">npv</span><span class="o">=</span><span class="n">np.NaN</span>
-    <span class="n">if</span> <span class="n">TP</span><span class="o">+</span><span class="n">FN</span><span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
-        <span class="n">sen</span> <span class="o">=</span> <span class="p">(</span><span class="n">float</span><span class="p">)(</span><span class="n">TP</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">TP</span><span class="o">+</span><span class="n">FN</span><span class="p">)</span>
-    <span class="n">else</span><span class="o">:</span>
-        <span class="n">sen</span><span class="o">=</span><span class="n">np.NaN</span>
-    <span class="n">if</span> <span class="n">TN</span><span class="o">+</span><span class="n">FP</span><span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
-        <span class="n">spe</span> <span class="o">=</span> <span class="p">(</span><span class="n">float</span><span class="p">)(</span><span class="n">TN</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">TN</span><span class="o">+</span><span class="n">FP</span><span class="p">)</span>
-    <span class="n">else</span><span class="o">:</span>
-        <span class="n">spe</span><span class="o">=</span><span class="n">np.NaN</span>
-    <span class="n">if</span> <span class="n">TP</span><span class="o">+</span><span class="n">FN</span><span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
-        <span class="n">recall</span> <span class="o">=</span> <span class="p">(</span><span class="n">float</span><span class="p">)(</span><span class="n">TP</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">TP</span><span class="o">+</span><span class="n">FN</span><span class="p">)</span>
-    <span class="n">else</span><span class="o">:</span>
-        <span class="n">recall</span><span class="o">=</span><span class="n">np.NaN</span>    
-    <span class="n">if</span> <span class="n">TP</span><span class="o">+</span><span class="n">FP</span><span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
-        <span class="n">precision</span> <span class="o">=</span> <span class="p">(</span><span class="n">float</span><span class="p">)(</span><span class="n">TP</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">TP</span><span class="o">+</span><span class="n">FP</span><span class="p">)</span>
-    <span class="n">else</span><span class="o">:</span>
-        <span class="n">precision</span><span class="o">=</span><span class="n">np.NaN</span>
-    <span class="n">if</span> <span class="n">recall</span><span class="o">+</span><span class="n">precision</span><span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>         
-        <span class="n">F1</span> <span class="o">=</span> <span class="p">(</span><span class="n">float</span><span class="p">)((</span><span class="m">2</span><span class="o">*</span><span class="n">recall</span><span class="o">*</span><span class="n">precision</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">recall</span><span class="o">+</span><span class="n">precision</span><span class="p">))</span>
-    <span class="n">else</span><span class="o">:</span>
-        <span class="n">F1</span><span class="o">=</span><span class="n">np.NaN</span>
-    <span class="n">yod</span> <span class="o">=</span> <span class="p">(</span><span class="n">float</span><span class="p">)(</span><span class="n">sen</span><span class="o">+</span><span class="n">spe</span><span class="m">-1</span><span class="p">)</span>
-    <span class="n">ls</span><span class="o">=</span><span class="nf">list</span><span class="p">();</span>
-    <span class="nf">ls.append</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
-    <span class="nf">ls.append</span><span class="p">(</span><span class="n">ppv</span><span class="p">)</span>
-    <span class="nf">ls.append</span><span class="p">(</span><span class="n">npv</span><span class="p">)</span>
-    <span class="nf">ls.append</span><span class="p">(</span><span class="n">sen</span><span class="p">)</span>
-    <span class="nf">ls.append</span><span class="p">(</span><span class="n">spe</span><span class="p">)</span>
-    <span class="nf">ls.append</span><span class="p">(</span><span class="n">yod</span><span class="p">)</span>
-    <span class="nf">ls.append</span><span class="p">(</span><span class="n">recall</span><span class="p">)</span>
-    <span class="nf">ls.append</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span>
-    <span class="nf">ls.append</span><span class="p">(</span><span class="n">F1</span><span class="p">)</span>
-    <span class="n">return</span> <span class="n">ls</span>
+    <span class="kr">if</span> TP<span class="o">+</span>FP<span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
+        ppv <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FP<span class="p">)</span>
+    <span class="kp">else</span><span class="o">:</span>
+        ppv<span class="o">=</span>np.NaN
+    <span class="kr">if</span> TN<span class="o">+</span>FN<span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
+        npv <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>TN<span class="p">)</span><span class="o">/</span><span class="p">(</span>TN<span class="o">+</span>FN<span class="p">)</span>
+    <span class="kp">else</span><span class="o">:</span>
+        npv<span class="o">=</span>np.NaN
+    <span class="kr">if</span> TP<span class="o">+</span>FN<span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
+        sen <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FN<span class="p">)</span>
+    <span class="kp">else</span><span class="o">:</span>
+        sen<span class="o">=</span>np.NaN
+    <span class="kr">if</span> TN<span class="o">+</span>FP<span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
+        spe <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>TN<span class="p">)</span><span class="o">/</span><span class="p">(</span>TN<span class="o">+</span>FP<span class="p">)</span>
+    <span class="kp">else</span><span class="o">:</span>
+        spe<span class="o">=</span>np.NaN
+    <span class="kr">if</span> TP<span class="o">+</span>FN<span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
+        recall <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FN<span class="p">)</span>
+    <span class="kp">else</span><span class="o">:</span>
+        recall<span class="o">=</span>np.NaN    
+    <span class="kr">if</span> TP<span class="o">+</span>FP<span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
+        precision <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FP<span class="p">)</span>
+    <span class="kp">else</span><span class="o">:</span>
+        precision<span class="o">=</span>np.NaN
+    <span class="kr">if</span> recall<span class="o">+</span>precision<span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>         
+        F1 <span class="o">=</span> <span class="p">(</span>float<span class="p">)((</span><span class="m">2</span><span class="o">*</span>recall<span class="o">*</span>precision<span class="p">)</span><span class="o">/</span><span class="p">(</span>recall<span class="o">+</span>precision<span class="p">))</span>
+    <span class="kp">else</span><span class="o">:</span>
+        F1<span class="o">=</span>np.NaN
+    yod <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>sen<span class="o">+</span>spe<span class="m">-1</span><span class="p">)</span>
+    ls<span class="o">=</span><span class="kt">list</span><span class="p">();</span>
+    ls.append<span class="p">(</span>acc<span class="p">)</span>
+    ls.append<span class="p">(</span>ppv<span class="p">)</span>
+    ls.append<span class="p">(</span>npv<span class="p">)</span>
+    ls.append<span class="p">(</span>sen<span class="p">)</span>
+    ls.append<span class="p">(</span>spe<span class="p">)</span>
+    ls.append<span class="p">(</span>yod<span class="p">)</span>
+    ls.append<span class="p">(</span>recall<span class="p">)</span>
+    ls.append<span class="p">(</span>precision<span class="p">)</span>
+    ls.append<span class="p">(</span>F1<span class="p">)</span>
+    <span class="kr">return</span> <span class="kp">ls</span>
 </pre></div>
 
 
