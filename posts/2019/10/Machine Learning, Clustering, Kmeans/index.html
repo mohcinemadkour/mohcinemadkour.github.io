@@ -282,7 +282,7 @@ Production per year - Amount of food item produced in 1000 tonnes</p>
 </pre></div>
 
 
-<div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.FacetGrid at 0x7fe39e56a5f8&gt;
+<div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">seaborn</span><span class="p">.</span><span class="n">axisgrid</span><span class="p">.</span><span class="n">FacetGrid</span> <span class="k">at</span> <span class="mi">0</span><span class="n">x7fe39e56a5f8</span><span class="o">&gt;</span>
 </pre></div>
 
 
@@ -1194,17 +1194,17 @@ Production per year - Amount of food item produced in 1000 tonnes</p>
 </pre></div>
 
 
-<div class="highlight"><pre><span></span>56    Cereals - Excluding Beer
-65     Fruits - Excluding Wine
-3           Maize and products
-53     Milk - Excluding Butter
-6        Potatoes and products
-1     Rice (Milled Equivalent)
-57               Starchy Roots
-64                  Vegetables
-27           Vegetables, Other
-0           Wheat and products
-Name: Item_Name, dtype: object
+<div class="highlight"><pre><span></span><span class="mi">56</span>    <span class="n">Cereals</span> <span class="o">-</span> <span class="k">Excluding</span> <span class="n">Beer</span>
+<span class="mi">65</span>     <span class="n">Fruits</span> <span class="o">-</span> <span class="k">Excluding</span> <span class="n">Wine</span>
+<span class="mi">3</span>           <span class="n">Maize</span> <span class="k">and</span> <span class="n">products</span>
+<span class="mi">53</span>     <span class="n">Milk</span> <span class="o">-</span> <span class="k">Excluding</span> <span class="n">Butter</span>
+<span class="mi">6</span>        <span class="n">Potatoes</span> <span class="k">and</span> <span class="n">products</span>
+<span class="mi">1</span>     <span class="n">Rice</span> <span class="p">(</span><span class="n">Milled</span> <span class="n">Equivalent</span><span class="p">)</span>
+<span class="mi">57</span>               <span class="n">Starchy</span> <span class="n">Roots</span>
+<span class="mi">64</span>                  <span class="n">Vegetables</span>
+<span class="mi">27</span>           <span class="n">Vegetables</span><span class="p">,</span> <span class="n">Other</span>
+<span class="mi">0</span>           <span class="n">Wheat</span> <span class="k">and</span> <span class="n">products</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">Item_Name</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="k">object</span>
 </pre></div>
 
 
@@ -1223,7 +1223,7 @@ Name: Item_Name, dtype: object
 </pre></div>
 
 
-<div class="highlight"><pre><span></span>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7fe3a58530b8&gt;
+<div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">matplotlib</span><span class="p">.</span><span class="n">axes</span><span class="p">.</span><span class="n">_subplots</span><span class="p">.</span><span class="n">AxesSubplot</span> <span class="k">at</span> <span class="mi">0</span><span class="n">x7fe3a58530b8</span><span class="o">&gt;</span>
 </pre></div>
 
 
@@ -1447,26 +1447,26 @@ There has been exceptional growth in production of onions, cream, sugar crops, t
 </pre></div>
 
 
-<div class="highlight"><pre><span></span>---------------------------------------------------------------------------
+<div class="highlight"><pre><span></span><span class="o">---------------------------------------------------------------------------</span>
 
-AttributeError                            Traceback (most recent call last)
+<span class="nv">AttributeError</span>                            <span class="nv">Traceback</span> <span class="ss">(</span><span class="nv">most</span> <span class="nv">recent</span> <span class="k">call</span> <span class="nl">last</span><span class="ss">)</span>
 
-&lt;ipython-input-23-ebc6771564a7&gt; in &lt;module&gt;
-      2 
-      3 X = pd.DataFrame(X)
-----&gt; 4 X = X.convert_objects(convert_numeric=True)
-      5 X.columns = year_list
-
-
-/opt/conda/lib/python3.6/site-packages/pandas/core/generic.py in __getattr__(self, name)
-   5177             if self._info_axis._can_hold_identifiers_and_holds_name(name):
-   5178                 return self[name]
--&gt; 5179             return object.__getattribute__(self, name)
-   5180 
-   5181     def __setattr__(self, name, value):
+<span class="o">&lt;</span><span class="nv">ipython</span><span class="o">-</span><span class="nv">input</span><span class="o">-</span><span class="mi">23</span><span class="o">-</span><span class="nv">ebc6771564a7</span><span class="o">&gt;</span> <span class="nv">in</span> <span class="o">&lt;</span><span class="nv">module</span><span class="o">&gt;</span>
+      <span class="mi">2</span> 
+      <span class="mi">3</span> <span class="nv">X</span> <span class="o">=</span> <span class="nv">pd</span>.<span class="nv">DataFrame</span><span class="ss">(</span><span class="nv">X</span><span class="ss">)</span>
+<span class="o">----&gt;</span> <span class="mi">4</span> <span class="nv">X</span> <span class="o">=</span> <span class="nv">X</span>.<span class="nv">convert_objects</span><span class="ss">(</span><span class="nv">convert_numeric</span><span class="o">=</span><span class="nv">True</span><span class="ss">)</span>
+      <span class="mi">5</span> <span class="nv">X</span>.<span class="nv">columns</span> <span class="o">=</span> <span class="nv">year_list</span>
 
 
-AttributeError: &#39;DataFrame&#39; object has no attribute &#39;convert_objects&#39;
+<span class="o">/</span><span class="nv">opt</span><span class="o">/</span><span class="nv">conda</span><span class="o">/</span><span class="nv">lib</span><span class="o">/</span><span class="nv">python3</span>.<span class="mi">6</span><span class="o">/</span><span class="nv">site</span><span class="o">-</span><span class="nv">packages</span><span class="o">/</span><span class="nv">pandas</span><span class="o">/</span><span class="nv">core</span><span class="o">/</span><span class="nv">generic</span>.<span class="nv">py</span> <span class="nv">in</span> <span class="nv">__getattr__</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">name</span><span class="ss">)</span>
+   <span class="mi">5177</span>             <span class="k">if</span> <span class="nv">self</span>.<span class="nv">_info_axis</span>.<span class="nv">_can_hold_identifiers_and_holds_name</span><span class="ss">(</span><span class="nv">name</span><span class="ss">)</span>:
+   <span class="mi">5178</span>                 <span class="k">return</span> <span class="nv">self</span>[<span class="nv">name</span>]
+<span class="o">-&gt;</span> <span class="mi">5179</span>             <span class="k">return</span> <span class="nv">object</span>.<span class="nv">__getattribute__</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">name</span><span class="ss">)</span>
+   <span class="mi">5180</span> 
+   <span class="mi">5181</span>     <span class="nv">def</span> <span class="nv">__setattr__</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">name</span>, <span class="nv">value</span><span class="ss">)</span>:
+
+
+<span class="nv">AttributeError</span>: <span class="s1">&#39;</span><span class="s">DataFrame</span><span class="s1">&#39;</span> <span class="nv">object</span> <span class="nv">has</span> <span class="nv">no</span> <span class="nv">attribute</span> <span class="s1">&#39;</span><span class="s">convert_objects</span><span class="s1">&#39;</span>
 </pre></div>
 
 

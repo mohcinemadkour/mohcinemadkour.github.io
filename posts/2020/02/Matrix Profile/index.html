@@ -49,8 +49,9 @@
                         </p>
                 </header>
             </section>
-            <p>Today's companies hold enormous value in the form of equipment and plants. Research suggests that on average, 5 to 15 % of a manufacturing company's global asset base is idle [], with most not having good visibility of these underutilized assets. In pharmaceutical industry for example, finding and repurposing under-utilized assets is seen to deliver the highest value and proven to avoid $ Millions of capital expenditures.</p>
-<p>Recent advances in time series classification and forecasting such as Prophet, Matrix Profile, RNN brought sophisticated tools to the support of the visibility and control of energy consumption at the device level. For example, identifying pattern of usage episodes overlaid on asset energy consumption can help to compare usage periods by location, type of equipment, and even individual device. However in real-life problem domain every situation is different and therefore using frequency domain or statistically modeling techniques, for example, to find  patterns of energy consumption will require domain specific knowledge and to have labels on data which sometimes can bottleneck the motif search process. In this paper we show a new technique that’s based on matrix profile </p>
+            <p>The code of this article is available at: https://github.com/mohcinemadkour/Matrix-Profile-for-Regime-Detection-in-Time-Series-Data/tree/master</p>
+<p>Today’s companies hold enormous value in the form of equipment and plants. Research suggests that on average, 5 to 15 % of a manufacturing company’s global asset base is idle, with most not having good visibility of these underutilized assets. In pharmaceutical industry for example, finding and repurposing under-utilized assets is seen to deliver the highest value and proven to avoid $ Millions of capital expenditures.</p>
+<p>Recent advances in time series classification and forecasting such as Prophet, Matrix Profile, RNN brought sophisticated tools to the support of the visibility and control of energy consumption at the device level. For example, identifying pattern of usage episodes overlaid on asset energy consumption can help to compare usage periods by location, type of equipment, and even individual device. However in real-life problem domain every situation is different and therefore using frequency domain or statistically modeling techniques, for example, to find patterns of energy consumption will require domain specific knowledge and to have labels on data which sometimes can bottleneck the motif search process. In this article I show a new technique that’s based on matrix profile to detect episodes of electricity usage and return the timestamps at which each episode stars and stops.</p>
 <h2>Data set and problem description</h2>
 <p>In this example we show energy consumption data from a pharmaceutical equipment over the course of a typical 24-hour day. Power consumption is measured in watts. The behavior of the device being measured is fairly typical: during episodes of active usage, power consumption quickly increases from an “idle” or background level of consumption, and then returns to idle power draw after usage ceases. Power consumption is noisy and variable in general. It is also fairly common for the “background” consumption of equipment to be variable over time, noisy, and to change such that you cannot rely on a single measurement or value. </p>
 <p><img alt="png" src="/images/plot_image.svg"></p>
@@ -66,71 +67,71 @@ The distance calculations outlined above occur n-m + 1 times; where n is the len
 <p>The second window of values, X2 through X5, slides across the time series computing the dot product for each sub-sequence. Once all of the dot products are computed, the exclusion zone is applied to the distances and the minimum distance is stored in the Matrix Profile. Throwing away the extra distances and only keeping the minimum distance reduces the space complexity to 0(n).</p>
 <h3>Motif (and Anomaly) Definitions</h3>
 <p>A motif is a repeated pattern in a time series and a discord is an anomaly. With the Matrix Profile computed, it is simple to find the top-K number of motifs or discords. The Matrix Profile stores the distances in Euclidean space meaning that a distance close to 0 is most similar to another sub-sequence in the time series and a distance far away from 0, say 100, is unlike any other sub-sequence. Extracting the lowest distances gives the motifs and the largest distances gives the discords.</p>
-<div class="highlight"><pre><span></span>def calc_mp_cac(df,m):
-    warnings.filterwarnings(&#39;ignore&#39;)
-    pattern = df.power.values
-    mp = matrixProfile.stomp(pattern,m)
-    # Bonus: calculate the corrected arc curve (CAC) to do semantic segmantation.
-    cac = fluss.fluss(mp[1], m)
-    #Append np.nan to Matrix profile to enable plotting against raw data
-    mp_adj = np.append(mp[0],np.zeros(m-1)+np.nan)
-    #Plot the signal data
-    fig, (ax1, ax2, ax3) = plt.subplots(3,1,sharex=True,figsize=(20,10))
-    ax1.plot(np.arange(len(pattern)),pattern, label=&quot;Power Consumption Data&quot;)
-    ax1.set_ylabel(&#39;Signal&#39;, size=22)
-    #Plot the Matrix Profile
-    ax2.plot(np.arange(len(mp_adj)),mp_adj, label=&quot;Matrix Profile&quot;, color=&#39;red&#39;)
-    ax2.set_ylabel(&#39;Matrix Profile&#39;, size=22)
-    ax2.set_xlabel(&quot;Sequence window={}&quot;.format(m), size=22)
-    #Plot the CAC
-    ax3.plot(np.arange(len(cac)),cac, label=&quot;CAC&quot;, color=&#39;green&#39;)
-    ax3.set_ylabel(&#39;CAC&#39;, size=22)
-    ax3.set_xlabel(&quot;Sequence window={}&quot;.format(m), size=22)
-    return mp
+<div class="highlight"><pre><span></span><span class="nv">def</span> <span class="nv">calc_mp_cac</span><span class="ss">(</span><span class="nv">df</span>,<span class="nv">m</span><span class="ss">)</span>:
+    <span class="nv">warnings</span>.<span class="nv">filterwarnings</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">ignore</span><span class="s1">&#39;</span><span class="ss">)</span>
+    <span class="nv">pattern</span> <span class="o">=</span> <span class="nv">df</span>.<span class="nv">power</span>.<span class="nv">values</span>
+    <span class="nv">mp</span> <span class="o">=</span> <span class="nv">matrixProfile</span>.<span class="nv">stomp</span><span class="ss">(</span><span class="nv">pattern</span>,<span class="nv">m</span><span class="ss">)</span>
+    # <span class="nv">Bonus</span>: <span class="nv">calculate</span> <span class="nv">the</span> <span class="nv">corrected</span> <span class="nv">arc</span> <span class="nv">curve</span> <span class="ss">(</span><span class="nv">CAC</span><span class="ss">)</span> <span class="nv">to</span> <span class="k">do</span> <span class="nv">semantic</span> <span class="nv">segmantation</span>.
+    <span class="nv">cac</span> <span class="o">=</span> <span class="nv">fluss</span>.<span class="nv">fluss</span><span class="ss">(</span><span class="nv">mp</span>[<span class="mi">1</span>], <span class="nv">m</span><span class="ss">)</span>
+    #<span class="nv">Append</span> <span class="nv">np</span>.<span class="nv">nan</span> <span class="nv">to</span> <span class="nv">Matrix</span> <span class="nv">profile</span> <span class="nv">to</span> <span class="nv">enable</span> <span class="nv">plotting</span> <span class="nv">against</span> <span class="nv">raw</span> <span class="nv">data</span>
+    <span class="nv">mp_adj</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">mp</span>[<span class="mi">0</span>],<span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">m</span><span class="o">-</span><span class="mi">1</span><span class="ss">)</span><span class="o">+</span><span class="nv">np</span>.<span class="nv">nan</span><span class="ss">)</span>
+    #<span class="nv">Plot</span> <span class="nv">the</span> <span class="nv">signal</span> <span class="nv">data</span>
+    <span class="nv">fig</span>, <span class="ss">(</span><span class="nv">ax1</span>, <span class="nv">ax2</span>, <span class="nv">ax3</span><span class="ss">)</span> <span class="o">=</span> <span class="nv">plt</span>.<span class="nv">subplots</span><span class="ss">(</span><span class="mi">3</span>,<span class="mi">1</span>,<span class="nv">sharex</span><span class="o">=</span><span class="nv">True</span>,<span class="nv">figsize</span><span class="o">=</span><span class="ss">(</span><span class="mi">20</span>,<span class="mi">10</span><span class="ss">))</span>
+    <span class="nv">ax1</span>.<span class="nv">plot</span><span class="ss">(</span><span class="nv">np</span>.<span class="nv">arange</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">pattern</span><span class="ss">))</span>,<span class="nv">pattern</span>, <span class="nv">label</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Power Consumption Data</span><span class="s2">&quot;</span><span class="ss">)</span>
+    <span class="nv">ax1</span>.<span class="nv">set_ylabel</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">Signal</span><span class="s1">&#39;</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
+    #<span class="nv">Plot</span> <span class="nv">the</span> <span class="nv">Matrix</span> <span class="nv">Profile</span>
+    <span class="nv">ax2</span>.<span class="nv">plot</span><span class="ss">(</span><span class="nv">np</span>.<span class="nv">arange</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">mp_adj</span><span class="ss">))</span>,<span class="nv">mp_adj</span>, <span class="nv">label</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Matrix Profile</span><span class="s2">&quot;</span>, <span class="nv">color</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">red</span><span class="s1">&#39;</span><span class="ss">)</span>
+    <span class="nv">ax2</span>.<span class="nv">set_ylabel</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">Matrix Profile</span><span class="s1">&#39;</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
+    <span class="nv">ax2</span>.<span class="nv">set_xlabel</span><span class="ss">(</span><span class="s2">&quot;</span><span class="s">Sequence window={}</span><span class="s2">&quot;</span>.<span class="nv">format</span><span class="ss">(</span><span class="nv">m</span><span class="ss">)</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
+    #<span class="nv">Plot</span> <span class="nv">the</span> <span class="nv">CAC</span>
+    <span class="nv">ax3</span>.<span class="nv">plot</span><span class="ss">(</span><span class="nv">np</span>.<span class="nv">arange</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">cac</span><span class="ss">))</span>,<span class="nv">cac</span>, <span class="nv">label</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">CAC</span><span class="s2">&quot;</span>, <span class="nv">color</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">green</span><span class="s1">&#39;</span><span class="ss">)</span>
+    <span class="nv">ax3</span>.<span class="nv">set_ylabel</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">CAC</span><span class="s1">&#39;</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
+    <span class="nv">ax3</span>.<span class="nv">set_xlabel</span><span class="ss">(</span><span class="s2">&quot;</span><span class="s">Sequence window={}</span><span class="s2">&quot;</span>.<span class="nv">format</span><span class="ss">(</span><span class="nv">m</span><span class="ss">)</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
+    <span class="k">return</span> <span class="nv">mp</span>
 
-def plot_mp_cac(df,m, feature,mp):
-    warnings.filterwarnings(&#39;ignore&#39;)
-    pattern = df[feature].values
-    # Bonus: calculate the corrected arc curve (CAC) to do semantic segmantation.
-    cac = fluss.fluss(mp[1], m)
+<span class="nv">def</span> <span class="nv">plot_mp_cac</span><span class="ss">(</span><span class="nv">df</span>,<span class="nv">m</span>, <span class="nv">feature</span>,<span class="nv">mp</span><span class="ss">)</span>:
+    <span class="nv">warnings</span>.<span class="nv">filterwarnings</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">ignore</span><span class="s1">&#39;</span><span class="ss">)</span>
+    <span class="nv">pattern</span> <span class="o">=</span> <span class="nv">df</span>[<span class="nv">feature</span>].<span class="nv">values</span>
+    # <span class="nv">Bonus</span>: <span class="nv">calculate</span> <span class="nv">the</span> <span class="nv">corrected</span> <span class="nv">arc</span> <span class="nv">curve</span> <span class="ss">(</span><span class="nv">CAC</span><span class="ss">)</span> <span class="nv">to</span> <span class="k">do</span> <span class="nv">semantic</span> <span class="nv">segmantation</span>.
+    <span class="nv">cac</span> <span class="o">=</span> <span class="nv">fluss</span>.<span class="nv">fluss</span><span class="ss">(</span><span class="nv">mp</span>[<span class="mi">1</span>], <span class="nv">m</span><span class="ss">)</span>
 
-    #Append np.nan to Matrix profile to enable plotting against raw data
-    mp_adj = np.append(mp[0],np.zeros(m-1)+np.nan)
+    #<span class="nv">Append</span> <span class="nv">np</span>.<span class="nv">nan</span> <span class="nv">to</span> <span class="nv">Matrix</span> <span class="nv">profile</span> <span class="nv">to</span> <span class="nv">enable</span> <span class="nv">plotting</span> <span class="nv">against</span> <span class="nv">raw</span> <span class="nv">data</span>
+    <span class="nv">mp_adj</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">mp</span>[<span class="mi">0</span>],<span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">m</span><span class="o">-</span><span class="mi">1</span><span class="ss">)</span><span class="o">+</span><span class="nv">np</span>.<span class="nv">nan</span><span class="ss">)</span>
 
-    #Plot the signal data
-    fig, (ax1, ax2, ax3) = plt.subplots(3,1,sharex=True,figsize=(20,10))
-    ax1.plot(np.arange(len(pattern)),pattern, label=&quot;Power Consumption Data&quot;)
-    ax1.set_ylabel(&#39;Signal&#39;, size=22)
+    #<span class="nv">Plot</span> <span class="nv">the</span> <span class="nv">signal</span> <span class="nv">data</span>
+    <span class="nv">fig</span>, <span class="ss">(</span><span class="nv">ax1</span>, <span class="nv">ax2</span>, <span class="nv">ax3</span><span class="ss">)</span> <span class="o">=</span> <span class="nv">plt</span>.<span class="nv">subplots</span><span class="ss">(</span><span class="mi">3</span>,<span class="mi">1</span>,<span class="nv">sharex</span><span class="o">=</span><span class="nv">True</span>,<span class="nv">figsize</span><span class="o">=</span><span class="ss">(</span><span class="mi">20</span>,<span class="mi">10</span><span class="ss">))</span>
+    <span class="nv">ax1</span>.<span class="nv">plot</span><span class="ss">(</span><span class="nv">np</span>.<span class="nv">arange</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">pattern</span><span class="ss">))</span>,<span class="nv">pattern</span>, <span class="nv">label</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Power Consumption Data</span><span class="s2">&quot;</span><span class="ss">)</span>
+    <span class="nv">ax1</span>.<span class="nv">set_ylabel</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">Signal</span><span class="s1">&#39;</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
 
-    #Plot the Matrix Profile
-    ax2.plot(np.arange(len(mp_adj)),mp_adj, label=&quot;Matrix Profile&quot;, color=&#39;red&#39;)
-    ax2.set_ylabel(&#39;Matrix Profile&#39;, size=22)
-    ax2.set_xlabel(&quot;Sequence window={}&quot;.format(m), size=22)
+    #<span class="nv">Plot</span> <span class="nv">the</span> <span class="nv">Matrix</span> <span class="nv">Profile</span>
+    <span class="nv">ax2</span>.<span class="nv">plot</span><span class="ss">(</span><span class="nv">np</span>.<span class="nv">arange</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">mp_adj</span><span class="ss">))</span>,<span class="nv">mp_adj</span>, <span class="nv">label</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Matrix Profile</span><span class="s2">&quot;</span>, <span class="nv">color</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">red</span><span class="s1">&#39;</span><span class="ss">)</span>
+    <span class="nv">ax2</span>.<span class="nv">set_ylabel</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">Matrix Profile</span><span class="s1">&#39;</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
+    <span class="nv">ax2</span>.<span class="nv">set_xlabel</span><span class="ss">(</span><span class="s2">&quot;</span><span class="s">Sequence window={}</span><span class="s2">&quot;</span>.<span class="nv">format</span><span class="ss">(</span><span class="nv">m</span><span class="ss">)</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
 
-    #Plot the CAC
-    ax3.plot(np.arange(len(cac)),cac, label=&quot;CAC&quot;, color=&#39;green&#39;)
-    ax3.set_ylabel(&#39;CAC&#39;, size=22)
-    ax3.set_xlabel(&quot;Sequence window={}&quot;.format(m), size=22)
-    return mp
+    #<span class="nv">Plot</span> <span class="nv">the</span> <span class="nv">CAC</span>
+    <span class="nv">ax3</span>.<span class="nv">plot</span><span class="ss">(</span><span class="nv">np</span>.<span class="nv">arange</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">cac</span><span class="ss">))</span>,<span class="nv">cac</span>, <span class="nv">label</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">CAC</span><span class="s2">&quot;</span>, <span class="nv">color</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">green</span><span class="s1">&#39;</span><span class="ss">)</span>
+    <span class="nv">ax3</span>.<span class="nv">set_ylabel</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">CAC</span><span class="s1">&#39;</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
+    <span class="nv">ax3</span>.<span class="nv">set_xlabel</span><span class="ss">(</span><span class="s2">&quot;</span><span class="s">Sequence window={}</span><span class="s2">&quot;</span>.<span class="nv">format</span><span class="ss">(</span><span class="nv">m</span><span class="ss">)</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
+    <span class="k">return</span> <span class="nv">mp</span>
 
-def plot_signal_mp(df,m, feature,mp):
-    warnings.filterwarnings(&#39;ignore&#39;)
-    pattern = df[feature].values
+<span class="nv">def</span> <span class="nv">plot_signal_mp</span><span class="ss">(</span><span class="nv">df</span>,<span class="nv">m</span>, <span class="nv">feature</span>,<span class="nv">mp</span><span class="ss">)</span>:
+    <span class="nv">warnings</span>.<span class="nv">filterwarnings</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">ignore</span><span class="s1">&#39;</span><span class="ss">)</span>
+    <span class="nv">pattern</span> <span class="o">=</span> <span class="nv">df</span>[<span class="nv">feature</span>].<span class="nv">values</span>
 
-    #Append np.nan to Matrix profile to enable plotting against raw data
-    mp_adj = np.append(mp[0],np.zeros(m-1)+np.nan)
+    #<span class="nv">Append</span> <span class="nv">np</span>.<span class="nv">nan</span> <span class="nv">to</span> <span class="nv">Matrix</span> <span class="nv">profile</span> <span class="nv">to</span> <span class="nv">enable</span> <span class="nv">plotting</span> <span class="nv">against</span> <span class="nv">raw</span> <span class="nv">data</span>
+    <span class="nv">mp_adj</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">mp</span>[<span class="mi">0</span>],<span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">m</span><span class="o">-</span><span class="mi">1</span><span class="ss">)</span><span class="o">+</span><span class="nv">np</span>.<span class="nv">nan</span><span class="ss">)</span>
 
-    #Plot the signal data
-    fig, (ax1, ax2) = plt.subplots(2,1,sharex=True,figsize=(20,10))
-    ax1.plot(np.arange(len(pattern)),pattern, label=&quot;Power Consumption Data&quot;)
-    ax1.set_ylabel(&#39;Signal&#39;, size=22)
+    #<span class="nv">Plot</span> <span class="nv">the</span> <span class="nv">signal</span> <span class="nv">data</span>
+    <span class="nv">fig</span>, <span class="ss">(</span><span class="nv">ax1</span>, <span class="nv">ax2</span><span class="ss">)</span> <span class="o">=</span> <span class="nv">plt</span>.<span class="nv">subplots</span><span class="ss">(</span><span class="mi">2</span>,<span class="mi">1</span>,<span class="nv">sharex</span><span class="o">=</span><span class="nv">True</span>,<span class="nv">figsize</span><span class="o">=</span><span class="ss">(</span><span class="mi">20</span>,<span class="mi">10</span><span class="ss">))</span>
+    <span class="nv">ax1</span>.<span class="nv">plot</span><span class="ss">(</span><span class="nv">np</span>.<span class="nv">arange</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">pattern</span><span class="ss">))</span>,<span class="nv">pattern</span>, <span class="nv">label</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Power Consumption Data</span><span class="s2">&quot;</span><span class="ss">)</span>
+    <span class="nv">ax1</span>.<span class="nv">set_ylabel</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">Signal</span><span class="s1">&#39;</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
 
-    #Plot the Matrix Profile
-    ax2.plot(np.arange(len(mp_adj)),mp_adj, label=&quot;Matrix Profile&quot;, color=&#39;red&#39;)
-    ax2.set_ylabel(&#39;Matrix Profile&#39;, size=22)
-    ax2.set_xlabel(&quot;Sequence window={}&quot;.format(m), size=22)
+    #<span class="nv">Plot</span> <span class="nv">the</span> <span class="nv">Matrix</span> <span class="nv">Profile</span>
+    <span class="nv">ax2</span>.<span class="nv">plot</span><span class="ss">(</span><span class="nv">np</span>.<span class="nv">arange</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">mp_adj</span><span class="ss">))</span>,<span class="nv">mp_adj</span>, <span class="nv">label</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Matrix Profile</span><span class="s2">&quot;</span>, <span class="nv">color</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">red</span><span class="s1">&#39;</span><span class="ss">)</span>
+    <span class="nv">ax2</span>.<span class="nv">set_ylabel</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">Matrix Profile</span><span class="s1">&#39;</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
+    <span class="nv">ax2</span>.<span class="nv">set_xlabel</span><span class="ss">(</span><span class="s2">&quot;</span><span class="s">Sequence window={}</span><span class="s2">&quot;</span>.<span class="nv">format</span><span class="ss">(</span><span class="nv">m</span><span class="ss">)</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
 
-mp=calc_mp_cac(df,11)
+<span class="nv">mp</span><span class="o">=</span><span class="nv">calc_mp_cac</span><span class="ss">(</span><span class="nv">df</span>,<span class="mi">11</span><span class="ss">)</span>
 </pre></div>
 
 
@@ -156,8 +157,8 @@ Where we see relatively high values , we know that the subsequence in the origin
 <li>Rarely, if ever, will an "idle" point to an "active"</li>
 </ul>
 <p>So, if we slide across the Matrix Profile Index , and count how many arrows cross each particular point, we expect to find few that span the change of behavior. As we can see in the example used in the corrected arc curve (CAC) bellow, The CAC minimizes in the right place. The CAC has a single parameter, the subsequence length m .Lets change it by an order of magnitude, and see how the results will change.</p>
-<div class="highlight"><pre><span></span>for m in [11,14,17]:
-    calc_mp_cac(df,m)
+<div class="highlight"><pre><span></span><span class="k">for</span> <span class="nv">m</span> <span class="nv">in</span> [<span class="mi">11</span>,<span class="mi">14</span>,<span class="mi">17</span>]:
+    <span class="nv">calc_mp_cac</span><span class="ss">(</span><span class="nv">df</span>,<span class="nv">m</span><span class="ss">)</span>
 </pre></div>
 
 
@@ -198,44 +199,44 @@ Where we see relatively high values , we know that the subsequence in the origin
 <p>After adding the domain knowledge information( represented by the AV), the Corrected matrix profile is capable of detecting the consumption motifs by showing them as the low values</p>
 <h3>Motif Search</h3>
 <p>After finding some relatively low values (almost 0) in the mp, lets find out the different motifs existing in our data</p>
-<div class="highlight"><pre><span></span>def plot_motifs(mtfs, labels, ax):
-    colori = 0
-    colors = &#39;rgbcm&#39;
-    for ms,l in zip(mtfs,labels):
-        c =colors[colori % len(colors)]
-        starts = list(ms)
-        ends = [min(s + m,len(pattern)-1) for s in starts]
-        ax.plot(starts, pattern[starts],  c +&#39;o&#39;,  label=l)
-        ax.plot(ends, pattern[ends],  c +&#39;o&#39;, markerfacecolor=&#39;none&#39;)
-        for nn in ms:
-            ax.plot(range(nn,nn+m),pattern[nn:nn+m], c , linewidth=2)
-        colori += 1
-    ax.plot(pattern, &#39;k&#39;, linewidth=1, label=&quot;data&quot;)
-    ax.legend()
-mp_corrected=av_power_consumption(df, 12, &quot;power&quot;, 5, disp=&quot;False&quot;)
-mtfs ,motif_d  = motifs.motifs(pattern, mp_corrected, max_motifs=3)
+<div class="highlight"><pre><span></span><span class="nv">def</span> <span class="nv">plot_motifs</span><span class="ss">(</span><span class="nv">mtfs</span>, <span class="nv">labels</span>, <span class="nv">ax</span><span class="ss">)</span>:
+    <span class="nv">colori</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="nv">colors</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="s">rgbcm</span><span class="s1">&#39;</span>
+    <span class="k">for</span> <span class="nv">ms</span>,<span class="nv">l</span> <span class="nv">in</span> <span class="nv">zip</span><span class="ss">(</span><span class="nv">mtfs</span>,<span class="nv">labels</span><span class="ss">)</span>:
+        <span class="nv">c</span> <span class="o">=</span><span class="nv">colors</span>[<span class="nv">colori</span> <span class="o">%</span> <span class="nv">len</span><span class="ss">(</span><span class="nv">colors</span><span class="ss">)</span>]
+        <span class="nv">starts</span> <span class="o">=</span> <span class="nv">list</span><span class="ss">(</span><span class="nv">ms</span><span class="ss">)</span>
+        <span class="nv">ends</span> <span class="o">=</span> [<span class="nv">min</span><span class="ss">(</span><span class="nv">s</span> <span class="o">+</span> <span class="nv">m</span>,<span class="nv">len</span><span class="ss">(</span><span class="nv">pattern</span><span class="ss">)</span><span class="o">-</span><span class="mi">1</span><span class="ss">)</span> <span class="k">for</span> <span class="nv">s</span> <span class="nv">in</span> <span class="nv">starts</span>]
+        <span class="nv">ax</span>.<span class="nv">plot</span><span class="ss">(</span><span class="nv">starts</span>, <span class="nv">pattern</span>[<span class="nv">starts</span>],  <span class="nv">c</span> <span class="o">+</span><span class="s1">&#39;</span><span class="s">o</span><span class="s1">&#39;</span>,  <span class="nv">label</span><span class="o">=</span><span class="nv">l</span><span class="ss">)</span>
+        <span class="nv">ax</span>.<span class="nv">plot</span><span class="ss">(</span><span class="nv">ends</span>, <span class="nv">pattern</span>[<span class="nv">ends</span>],  <span class="nv">c</span> <span class="o">+</span><span class="s1">&#39;</span><span class="s">o</span><span class="s1">&#39;</span>, <span class="nv">markerfacecolor</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">none</span><span class="s1">&#39;</span><span class="ss">)</span>
+        <span class="k">for</span> <span class="nv">nn</span> <span class="nv">in</span> <span class="nv">ms</span>:
+            <span class="nv">ax</span>.<span class="nv">plot</span><span class="ss">(</span><span class="nv">range</span><span class="ss">(</span><span class="nv">nn</span>,<span class="nv">nn</span><span class="o">+</span><span class="nv">m</span><span class="ss">)</span>,<span class="nv">pattern</span>[<span class="nv">nn</span>:<span class="nv">nn</span><span class="o">+</span><span class="nv">m</span>], <span class="nv">c</span> , <span class="nv">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="ss">)</span>
+        <span class="nv">colori</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="nv">ax</span>.<span class="nv">plot</span><span class="ss">(</span><span class="nv">pattern</span>, <span class="s1">&#39;</span><span class="s">k</span><span class="s1">&#39;</span>, <span class="nv">linewidth</span><span class="o">=</span><span class="mi">1</span>, <span class="nv">label</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">data</span><span class="s2">&quot;</span><span class="ss">)</span>
+    <span class="nv">ax</span>.<span class="nv">legend</span><span class="ss">()</span>
+<span class="nv">mp_corrected</span><span class="o">=</span><span class="nv">av_power_consumption</span><span class="ss">(</span><span class="nv">df</span>, <span class="mi">12</span>, <span class="s2">&quot;</span><span class="s">power</span><span class="s2">&quot;</span>, <span class="mi">5</span>, <span class="nv">disp</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">False</span><span class="s2">&quot;</span><span class="ss">)</span>
+<span class="nv">mtfs</span> ,<span class="nv">motif_d</span>  <span class="o">=</span> <span class="nv">motifs</span>.<span class="nv">motifs</span><span class="ss">(</span><span class="nv">pattern</span>, <span class="nv">mp_corrected</span>, <span class="nv">max_motifs</span><span class="o">=</span><span class="mi">3</span><span class="ss">)</span>
 
-def plot_signal_cmp_motifs(df, feature,m,mp_corrected ):
-    warnings.filterwarnings(&#39;ignore&#39;)
-    pattern = df[feature].values
-    #Append np.nan to Matrix profile to enable plotting against raw data
-    mp_adj = np.append(mp_corrected[0],np.zeros(m-1)+np.nan)
+<span class="nv">def</span> <span class="nv">plot_signal_cmp_motifs</span><span class="ss">(</span><span class="nv">df</span>, <span class="nv">feature</span>,<span class="nv">m</span>,<span class="nv">mp_corrected</span> <span class="ss">)</span>:
+    <span class="nv">warnings</span>.<span class="nv">filterwarnings</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">ignore</span><span class="s1">&#39;</span><span class="ss">)</span>
+    <span class="nv">pattern</span> <span class="o">=</span> <span class="nv">df</span>[<span class="nv">feature</span>].<span class="nv">values</span>
+    #<span class="nv">Append</span> <span class="nv">np</span>.<span class="nv">nan</span> <span class="nv">to</span> <span class="nv">Matrix</span> <span class="nv">profile</span> <span class="nv">to</span> <span class="nv">enable</span> <span class="nv">plotting</span> <span class="nv">against</span> <span class="nv">raw</span> <span class="nv">data</span>
+    <span class="nv">mp_adj</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">mp_corrected</span>[<span class="mi">0</span>],<span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">m</span><span class="o">-</span><span class="mi">1</span><span class="ss">)</span><span class="o">+</span><span class="nv">np</span>.<span class="nv">nan</span><span class="ss">)</span>
 
-    #Plot the signal data
-    fig, (ax1, ax2, ax3) = plt.subplots(3,1,sharex=True,figsize=(20,10))
-    ax1.plot(np.arange(len(pattern)),pattern, label=&quot;power Data&quot;)
-    ax1.set_ylabel(&#39;Signal&#39;, size=22)
+    #<span class="nv">Plot</span> <span class="nv">the</span> <span class="nv">signal</span> <span class="nv">data</span>
+    <span class="nv">fig</span>, <span class="ss">(</span><span class="nv">ax1</span>, <span class="nv">ax2</span>, <span class="nv">ax3</span><span class="ss">)</span> <span class="o">=</span> <span class="nv">plt</span>.<span class="nv">subplots</span><span class="ss">(</span><span class="mi">3</span>,<span class="mi">1</span>,<span class="nv">sharex</span><span class="o">=</span><span class="nv">True</span>,<span class="nv">figsize</span><span class="o">=</span><span class="ss">(</span><span class="mi">20</span>,<span class="mi">10</span><span class="ss">))</span>
+    <span class="nv">ax1</span>.<span class="nv">plot</span><span class="ss">(</span><span class="nv">np</span>.<span class="nv">arange</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">pattern</span><span class="ss">))</span>,<span class="nv">pattern</span>, <span class="nv">label</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">power Data</span><span class="s2">&quot;</span><span class="ss">)</span>
+    <span class="nv">ax1</span>.<span class="nv">set_ylabel</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">Signal</span><span class="s1">&#39;</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
 
-    #Plot the corrected Matrix Profile
-    ax2.plot(np.arange(len(mp_adj)),mp_adj, label=&quot;Corrected Matrix Profile&quot;, color=&#39;red&#39;)
-    ax2.set_ylabel(&#39;Corrected Matrix Profile&#39;, size=22)
+    #<span class="nv">Plot</span> <span class="nv">the</span> <span class="nv">corrected</span> <span class="nv">Matrix</span> <span class="nv">Profile</span>
+    <span class="nv">ax2</span>.<span class="nv">plot</span><span class="ss">(</span><span class="nv">np</span>.<span class="nv">arange</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">mp_adj</span><span class="ss">))</span>,<span class="nv">mp_adj</span>, <span class="nv">label</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Corrected Matrix Profile</span><span class="s2">&quot;</span>, <span class="nv">color</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">red</span><span class="s1">&#39;</span><span class="ss">)</span>
+    <span class="nv">ax2</span>.<span class="nv">set_ylabel</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">Corrected Matrix Profile</span><span class="s1">&#39;</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
 
-    #Plot the Motifs
-    plot_motifs(mtfs, [f&quot;{md:.3f}&quot; for md in motif_d], ax3)
-    ax3.set_ylabel(&#39;Motifs&#39;, size=22)
-    #plt.xlim((0,100))
-    plt.show()
-plot_signal_cmp_motifs(df, &quot;power&quot;,11,mp_corrected )
+    #<span class="nv">Plot</span> <span class="nv">the</span> <span class="nv">Motifs</span>
+    <span class="nv">plot_motifs</span><span class="ss">(</span><span class="nv">mtfs</span>, [<span class="nv">f</span><span class="s2">&quot;</span><span class="s">{md:.3f}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="nv">md</span> <span class="nv">in</span> <span class="nv">motif_d</span>], <span class="nv">ax3</span><span class="ss">)</span>
+    <span class="nv">ax3</span>.<span class="nv">set_ylabel</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">Motifs</span><span class="s1">&#39;</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
+    #<span class="nv">plt</span>.<span class="nv">xlim</span><span class="ss">((</span><span class="mi">0</span>,<span class="mi">100</span><span class="ss">))</span>
+    <span class="nv">plt</span>.<span class="k">show</span><span class="ss">()</span>
+<span class="nv">plot_signal_cmp_motifs</span><span class="ss">(</span><span class="nv">df</span>, <span class="s2">&quot;</span><span class="s">power</span><span class="s2">&quot;</span>,<span class="mi">11</span>,<span class="nv">mp_corrected</span> <span class="ss">)</span>
 </pre></div>
 
 
@@ -260,42 +261,42 @@ More detail about the algortihm implemented by this function can be found here: 
 </ul>
 <h2>Experimenetation</h2>
 <p>In this step we experimente different values of max_motifs, radius, n_neighbors, and ex_zone, and use motifs plots visualization to find the best parametres set that distiguish the consumption motifs</p>
-<div class="highlight"><pre><span></span>fig, (ax1, ax2, ax3) = plt.subplots(3,1,sharex=True,figsize=(20,10))
+<div class="highlight"><pre><span></span><span class="nv">fig</span>, <span class="ss">(</span><span class="nv">ax1</span>, <span class="nv">ax2</span>, <span class="nv">ax3</span><span class="ss">)</span> <span class="o">=</span> <span class="nv">plt</span>.<span class="nv">subplots</span><span class="ss">(</span><span class="mi">3</span>,<span class="mi">1</span>,<span class="nv">sharex</span><span class="o">=</span><span class="nv">True</span>,<span class="nv">figsize</span><span class="o">=</span><span class="ss">(</span><span class="mi">20</span>,<span class="mi">10</span><span class="ss">))</span>
 
 
-mtfs ,motif_d  = motifs.motifs(pattern, mp_corrected, max_motifs=5, n_neighbors=None, radius=0)
-plot_motifs(mtfs, [f&quot;{md:.3f}&quot; for md in motif_d], ax1)
-ax1.set_ylabel(&#39;4 Neigbhors&#39;, size=22)
-print(mtfs)
+<span class="nv">mtfs</span> ,<span class="nv">motif_d</span>  <span class="o">=</span> <span class="nv">motifs</span>.<span class="nv">motifs</span><span class="ss">(</span><span class="nv">pattern</span>, <span class="nv">mp_corrected</span>, <span class="nv">max_motifs</span><span class="o">=</span><span class="mi">5</span>, <span class="nv">n_neighbors</span><span class="o">=</span><span class="nv">None</span>, <span class="nv">radius</span><span class="o">=</span><span class="mi">0</span><span class="ss">)</span>
+<span class="nv">plot_motifs</span><span class="ss">(</span><span class="nv">mtfs</span>, [<span class="nv">f</span><span class="s2">&quot;</span><span class="s">{md:.3f}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="nv">md</span> <span class="nv">in</span> <span class="nv">motif_d</span>], <span class="nv">ax1</span><span class="ss">)</span>
+<span class="nv">ax1</span>.<span class="nv">set_ylabel</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">4 Neigbhors</span><span class="s1">&#39;</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
+<span class="nv">print</span><span class="ss">(</span><span class="nv">mtfs</span><span class="ss">)</span>
 
-#mtfs ,motif_d  = motifs.motifs(pattern, mp, max_motifs=5, radius=10)
-mtfs ,motif_d  = motifs.motifs(pattern, mp_corrected, max_motifs=5, n_neighbors=0, radius=0)
-plot_motifs(mtfs, [f&quot;{md:.3f}&quot; for md in motif_d], ax2)
-ax2.set_ylabel(&#39;Radius = 10&#39;, size=22)
-print(mtfs)
+#<span class="nv">mtfs</span> ,<span class="nv">motif_d</span>  <span class="o">=</span> <span class="nv">motifs</span>.<span class="nv">motifs</span><span class="ss">(</span><span class="nv">pattern</span>, <span class="nv">mp</span>, <span class="nv">max_motifs</span><span class="o">=</span><span class="mi">5</span>, <span class="nv">radius</span><span class="o">=</span><span class="mi">10</span><span class="ss">)</span>
+<span class="nv">mtfs</span> ,<span class="nv">motif_d</span>  <span class="o">=</span> <span class="nv">motifs</span>.<span class="nv">motifs</span><span class="ss">(</span><span class="nv">pattern</span>, <span class="nv">mp_corrected</span>, <span class="nv">max_motifs</span><span class="o">=</span><span class="mi">5</span>, <span class="nv">n_neighbors</span><span class="o">=</span><span class="mi">0</span>, <span class="nv">radius</span><span class="o">=</span><span class="mi">0</span><span class="ss">)</span>
+<span class="nv">plot_motifs</span><span class="ss">(</span><span class="nv">mtfs</span>, [<span class="nv">f</span><span class="s2">&quot;</span><span class="s">{md:.3f}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="nv">md</span> <span class="nv">in</span> <span class="nv">motif_d</span>], <span class="nv">ax2</span><span class="ss">)</span>
+<span class="nv">ax2</span>.<span class="nv">set_ylabel</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">Radius = 10</span><span class="s1">&#39;</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
+<span class="nv">print</span><span class="ss">(</span><span class="nv">mtfs</span><span class="ss">)</span>
 
-#mtfs ,motif_d  = motifs.motifs(pattern, mp, max_motifs=3, ex_zone=2)
-mtfs ,motif_d  = motifs.motifs(pattern, mp_corrected, max_motifs=5, n_neighbors=None, radius=0,  ex_zone=5)
-plot_motifs(mtfs, [f&quot;{md:.3f}&quot; for md in motif_d], ax3)
-ax3.set_ylabel(&#39;Exclude 2*m&#39;, size=22)
-plt.show()
-print(mtfs)
-#### Results:
-[[839, 1186], [612, 989], [577, 898], [825, 1394]]
-[[839, 1186], [612, 989], [577, 898], [825, 1394]]
+#<span class="nv">mtfs</span> ,<span class="nv">motif_d</span>  <span class="o">=</span> <span class="nv">motifs</span>.<span class="nv">motifs</span><span class="ss">(</span><span class="nv">pattern</span>, <span class="nv">mp</span>, <span class="nv">max_motifs</span><span class="o">=</span><span class="mi">3</span>, <span class="nv">ex_zone</span><span class="o">=</span><span class="mi">2</span><span class="ss">)</span>
+<span class="nv">mtfs</span> ,<span class="nv">motif_d</span>  <span class="o">=</span> <span class="nv">motifs</span>.<span class="nv">motifs</span><span class="ss">(</span><span class="nv">pattern</span>, <span class="nv">mp_corrected</span>, <span class="nv">max_motifs</span><span class="o">=</span><span class="mi">5</span>, <span class="nv">n_neighbors</span><span class="o">=</span><span class="nv">None</span>, <span class="nv">radius</span><span class="o">=</span><span class="mi">0</span>,  <span class="nv">ex_zone</span><span class="o">=</span><span class="mi">5</span><span class="ss">)</span>
+<span class="nv">plot_motifs</span><span class="ss">(</span><span class="nv">mtfs</span>, [<span class="nv">f</span><span class="s2">&quot;</span><span class="s">{md:.3f}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="nv">md</span> <span class="nv">in</span> <span class="nv">motif_d</span>], <span class="nv">ax3</span><span class="ss">)</span>
+<span class="nv">ax3</span>.<span class="nv">set_ylabel</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">Exclude 2*m</span><span class="s1">&#39;</span>, <span class="nv">size</span><span class="o">=</span><span class="mi">22</span><span class="ss">)</span>
+<span class="nv">plt</span>.<span class="k">show</span><span class="ss">()</span>
+<span class="nv">print</span><span class="ss">(</span><span class="nv">mtfs</span><span class="ss">)</span>
+#### <span class="nv">Results</span>:
+[[<span class="mi">839</span>, <span class="mi">1186</span>], [<span class="mi">612</span>, <span class="mi">989</span>], [<span class="mi">577</span>, <span class="mi">898</span>], [<span class="mi">825</span>, <span class="mi">1394</span>]]
+[[<span class="mi">839</span>, <span class="mi">1186</span>], [<span class="mi">612</span>, <span class="mi">989</span>], [<span class="mi">577</span>, <span class="mi">898</span>], [<span class="mi">825</span>, <span class="mi">1394</span>]]
 </pre></div>
 
 
 <p><img alt="png" src="/images/download223.png"></p>
 <h3>Periods of active power consumptions</h3>
-<div class="highlight"><pre><span></span>df.loc[(df.index&gt;=839) &amp; (df.index&lt;=839+11)]
-df.loc[(df.index&gt;=1186) &amp; (df.index&lt;=1186+11)]
-df.loc[(df.index&gt;=612) &amp; (df.index&lt;=612+11)]
-df.loc[(df.index&gt;=989) &amp; (df.index&lt;=989+11)]
-df.loc[(df.index&gt;=577) &amp; (df.index&lt;=577+11)]    
-df.loc[(df.index&gt;=898) &amp; (df.index&lt;=898+11)]
-df.loc[(df.index&gt;=583) &amp; (df.index&lt;=583+11)]
-df.loc[(df.index&gt;=827) &amp; (df.index&lt;=827+11)]
+<div class="highlight"><pre><span></span><span class="n">df</span><span class="p">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&gt;=</span><span class="mi">839</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&lt;=</span><span class="mi">839</span><span class="o">+</span><span class="mi">11</span><span class="p">)]</span>
+<span class="n">df</span><span class="p">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&gt;=</span><span class="mi">1186</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&lt;=</span><span class="mi">1186</span><span class="o">+</span><span class="mi">11</span><span class="p">)]</span>
+<span class="n">df</span><span class="p">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&gt;=</span><span class="mi">612</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&lt;=</span><span class="mi">612</span><span class="o">+</span><span class="mi">11</span><span class="p">)]</span>
+<span class="n">df</span><span class="p">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&gt;=</span><span class="mi">989</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&lt;=</span><span class="mi">989</span><span class="o">+</span><span class="mi">11</span><span class="p">)]</span>
+<span class="n">df</span><span class="p">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&gt;=</span><span class="mi">577</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&lt;=</span><span class="mi">577</span><span class="o">+</span><span class="mi">11</span><span class="p">)]</span>    
+<span class="n">df</span><span class="p">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&gt;=</span><span class="mi">898</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&lt;=</span><span class="mi">898</span><span class="o">+</span><span class="mi">11</span><span class="p">)]</span>
+<span class="n">df</span><span class="p">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&gt;=</span><span class="mi">583</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&lt;=</span><span class="mi">583</span><span class="o">+</span><span class="mi">11</span><span class="p">)]</span>
+<span class="n">df</span><span class="p">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&gt;=</span><span class="mi">827</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="k">index</span><span class="o">&lt;=</span><span class="mi">827</span><span class="o">+</span><span class="mi">11</span><span class="p">)]</span>
 </pre></div>
 
 

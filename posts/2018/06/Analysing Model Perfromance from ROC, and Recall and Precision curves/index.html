@@ -57,34 +57,34 @@
             <p>ROC and PR curves are commonly used to present results for binary decision problems in machine learning. The ROC curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings. Each point of the ROC curve (i.e. threshold) corresponds to specific values of sensitivity and specificity. The area under the ROC curve (AUC) is a summary measure of performance that indicates whether on average a true positive is ranked higher than a false positives. If model A has higher AUC than model B, model A is performing better on average, but there still could be specific areas of the ROC space where model B is better (i.e. thresholds for which sensitivity and specificity are higher for model B than A. However, when dealing with highly skewed datasets, Precision-Recall (PR) curves give a more informative picture of an algorithm's performance. There is deep connection between ROC space and PR space, such that a curve dominates in ROC space if  and only if it dominates in PR space. The precision-recall curve shows the tradeoff between precision and recall for different threshold. A high area under the curve represents both high recall and high precision, where high precision, x-axis, relates to a low false positive rate, and high recall, y-axis, relates to a low false negative rate. High scores for both show that the classifier is returning accurate results (high precision), as well as returning a majority of all positive results (high recall).</p>
 <h2>Sensitivity (positive in disease)</h2>
 <p>Sensitivity is the ability of a test to correctly classify an individual as ′diseased′</p>
-<div class="highlight"><pre><span></span>Sensitivity = a / a+c
-= a (true positive) / a+c (true positive + false negative)
-= Probability of being test positive when disease present.
+<div class="highlight"><pre><span></span><span class="n">Sensitivity</span> <span class="o">=</span> <span class="n">a</span> <span class="o">/</span> <span class="n">a</span><span class="o">+</span><span class="k">c</span>
+<span class="o">=</span> <span class="n">a</span> <span class="p">(</span><span class="k">true</span> <span class="n">positive</span><span class="p">)</span> <span class="o">/</span> <span class="n">a</span><span class="o">+</span><span class="k">c</span> <span class="p">(</span><span class="k">true</span> <span class="n">positive</span> <span class="o">+</span> <span class="k">false</span> <span class="n">negative</span><span class="p">)</span>
+<span class="o">=</span> <span class="n">Probability</span> <span class="k">of</span> <span class="n">being</span> <span class="n">test</span> <span class="n">positive</span> <span class="k">when</span> <span class="n">disease</span> <span class="n">present</span><span class="p">.</span>
 </pre></div>
 
 
 <h2>Specificity (negative in health)</h2>
 <p>The ability of a test to correctly classify an individual as disease- free is called the test′s specificity</p>
-<div class="highlight"><pre><span></span>Specificity = d / b+d
-= d (true negative) / b+d (true negative + false positive)
-= Probability of being test negative when disease absent.
+<div class="highlight"><pre><span></span><span class="n">Specificity</span> <span class="o">=</span> <span class="n">d</span> <span class="o">/</span> <span class="n">b</span><span class="o">+</span><span class="n">d</span>
+<span class="o">=</span> <span class="n">d</span> <span class="p">(</span><span class="k">true</span> <span class="n">negative</span><span class="p">)</span> <span class="o">/</span> <span class="n">b</span><span class="o">+</span><span class="n">d</span> <span class="p">(</span><span class="k">true</span> <span class="n">negative</span> <span class="o">+</span> <span class="k">false</span> <span class="n">positive</span><span class="p">)</span>
+<span class="o">=</span> <span class="n">Probability</span> <span class="k">of</span> <span class="n">being</span> <span class="n">test</span> <span class="n">negative</span> <span class="k">when</span> <span class="n">disease</span> <span class="n">absent</span><span class="p">.</span>
 </pre></div>
 
 
 <p>Sensitivity and specificity are inversely proportional, meaning that as the sensitivity increases, the specificity decreases and vice versa.</p>
 <h2>Positive Predictive Value (PPV)</h2>
 <p>It is the percentage of patients with a positive test who actually have the disease. </p>
-<div class="highlight"><pre><span></span>PPV: = a / a+b
-= a (true positive) / a+b (true positive + false positive)
-= Probability (patient having disease when test is positive)
+<div class="highlight"><pre><span></span><span class="n">PPV</span><span class="p">:</span> <span class="o">=</span> <span class="n">a</span> <span class="o">/</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span>
+<span class="o">=</span> <span class="n">a</span> <span class="p">(</span><span class="k">true</span> <span class="n">positive</span><span class="p">)</span> <span class="o">/</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span> <span class="p">(</span><span class="k">true</span> <span class="n">positive</span> <span class="o">+</span> <span class="k">false</span> <span class="n">positive</span><span class="p">)</span>
+<span class="o">=</span> <span class="n">Probability</span> <span class="p">(</span><span class="n">patient</span> <span class="k">having</span> <span class="n">disease</span> <span class="k">when</span> <span class="n">test</span> <span class="k">is</span> <span class="n">positive</span><span class="p">)</span>
 </pre></div>
 
 
 <h2>Negative Predictive Value (NPV)</h2>
 <p>It is the percentage of patients with a negative test who do not have the disease.</p>
-<div class="highlight"><pre><span></span>NPV:    =   d / c+d
-=   d (true negative) / c+d (false negative + true negative)
-=   Probability (patient not having disease when test is negative)
+<div class="highlight"><pre><span></span><span class="n">NPV</span><span class="p">:</span>    <span class="o">=</span>   <span class="n">d</span> <span class="o">/</span> <span class="k">c</span><span class="o">+</span><span class="n">d</span>
+<span class="o">=</span>   <span class="n">d</span> <span class="p">(</span><span class="k">true</span> <span class="n">negative</span><span class="p">)</span> <span class="o">/</span> <span class="k">c</span><span class="o">+</span><span class="n">d</span> <span class="p">(</span><span class="k">false</span> <span class="n">negative</span> <span class="o">+</span> <span class="k">true</span> <span class="n">negative</span><span class="p">)</span>
+<span class="o">=</span>   <span class="n">Probability</span> <span class="p">(</span><span class="n">patient</span> <span class="k">not</span> <span class="k">having</span> <span class="n">disease</span> <span class="k">when</span> <span class="n">test</span> <span class="k">is</span> <span class="n">negative</span><span class="p">)</span>
 </pre></div>
 
 
@@ -94,173 +94,173 @@
 <p>Youden index  is  more  commonly  used  criterion  because  this  index  reflects  the  intension  to maximize the correct classification 
 rate and is easy to calculate. It maximizes the vertical distance from line of equality to the point [x, y] as shown in Figure. The x represents (1-specificity) and y represents sensitivity.  In  other  words,  the  Youden  index  J  is  the  point on the ROC  curve  which  is farthest  from  line  of  equality  (diagonal  line).  The  main  aim of  Youden  index  is  to 
 maximize the difference between TPR (sensitivity) and FPR (1 –specificty) and little algebra yields J = max[sensitivity+specificty].  The  value  of  J  for  continuous  test  can  be  located  by  doing  a  search  of plausible  values  where  sum  of  sensitivity  and  specificity  can be  maximum:</p>
-<div class="highlight"><pre><span></span>j= model_metric[&#39;thres&#39;].iloc[model_metric[&#39;yod_index&#39;].idxmax()-1]
+<div class="highlight"><pre><span></span><span class="n">j</span><span class="o">=</span> <span class="n">model_metric</span><span class="p">[</span><span class="s1">&#39;thres&#39;</span><span class="p">].</span><span class="n">iloc</span><span class="p">[</span><span class="n">model_metric</span><span class="p">[</span><span class="s1">&#39;yod_index&#39;</span><span class="p">].</span><span class="n">idxmax</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 </pre></div>
 
 
 <p>Sometimes a second cutoff that is bigger than j but less than 1 is needed. This cutoff can be used to stratify the positively predicted values to moderate and high prediction for example(needed for risk prediction stratification). This cutoff can be calculated using the accuracy measurement using the following method:</p>
-<div class="highlight"><pre><span></span>cutoff2=cu.cal_cutoff2(model_metric)
+<div class="highlight"><pre><span></span><span class="n">cutoff2</span><span class="o">=</span><span class="n">cu</span><span class="p">.</span><span class="n">cal_cutoff2</span><span class="p">(</span><span class="n">model_metric</span><span class="p">)</span>
 </pre></div>
 
 
 <p>with</p>
-<div class="highlight"><pre><span></span>    def cal_cutoff2(data):
-    val=0
-    for i in range(len(data)-10):
-    if((abs(data[&#39;acc&#39;].iloc[i]-data[&#39;acc&#39;].iloc[i+10]))&lt;0.002):
-        val=data[&#39;thres&#39;].iloc[i]
-        break
-return(val)
+<div class="highlight"><pre><span></span>    <span class="nv">def</span> <span class="nv">cal_cutoff2</span><span class="ss">(</span><span class="nv">data</span><span class="ss">)</span>:
+    <span class="nv">val</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">for</span> <span class="nv">i</span> <span class="nv">in</span> <span class="nv">range</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">data</span><span class="ss">)</span><span class="o">-</span><span class="mi">10</span><span class="ss">)</span>:
+    <span class="k">if</span><span class="ss">((</span><span class="nv">abs</span><span class="ss">(</span><span class="nv">data</span>[<span class="s1">&#39;</span><span class="s">acc</span><span class="s1">&#39;</span>].<span class="nv">iloc</span>[<span class="nv">i</span>]<span class="o">-</span><span class="nv">data</span>[<span class="s1">&#39;</span><span class="s">acc</span><span class="s1">&#39;</span>].<span class="nv">iloc</span>[<span class="nv">i</span><span class="o">+</span><span class="mi">10</span>]<span class="ss">))</span><span class="o">&lt;</span><span class="mi">0</span>.<span class="mi">002</span><span class="ss">)</span>:
+        <span class="nv">val</span><span class="o">=</span><span class="nv">data</span>[<span class="s1">&#39;</span><span class="s">thres</span><span class="s1">&#39;</span>].<span class="nv">iloc</span>[<span class="nv">i</span>]
+        <span class="k">break</span>
+<span class="k">return</span><span class="ss">(</span><span class="nv">val</span><span class="ss">)</span>
 </pre></div>
 
 
 <p>The chart bellow illustrates the relationship between the different performance metrics ( prevalence is exluded) in an example of 4 estimators apllied on 4 -classes data<img alt=" PPV and NPV  relationship" src="/images/NPV-PPV-Accracy-Youden.png"></p>
 <h1>Calculation of performance metrics</h1>
 <p>Here is the python code for the calculation of  performance metrics </p>
-<div class="highlight"><pre><span></span>def calculate_metric<span class="p">(</span>outcome<span class="p">,</span> score<span class="p">)</span><span class="o">:</span>
-    obser <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>outcome<span class="p">))</span>
-    obser<span class="p">[[</span>i <span class="kr">for</span> i<span class="p">,</span> x <span class="kr">in</span> enumerate<span class="p">(</span>outcome<span class="p">)</span> <span class="kr">if</span> x <span class="o">==</span> <span class="m">1</span> <span class="p">]]</span> <span class="o">=</span> <span class="m">1</span> <span class="p">;</span>
-    obser <span class="o">=</span> <span class="p">[</span>float<span class="p">(</span>i<span class="p">)</span> <span class="kr">for</span> i <span class="kr">in</span> obser<span class="p">]</span>
-    score <span class="o">=</span> <span class="p">[</span>float<span class="p">(</span>i<span class="p">)</span> <span class="kr">for</span> i <span class="kr">in</span> score<span class="p">]</span>
-    prev <span class="o">=</span> <span class="kp">round</span><span class="p">(</span><span class="kp">sum</span><span class="p">(</span>obser<span class="p">)</span><span class="o">/</span>len<span class="p">(</span>obser<span class="p">),</span><span class="m">2</span><span class="p">)</span>
-    thres <span class="o">=</span> np.arange<span class="p">(</span><span class="m">0.01</span><span class="p">,</span><span class="m">1.01</span><span class="p">,</span><span class="m">0.01</span><span class="p">)</span><span class="c1">#(0.01,0.98,0.01)</span>
-    xval <span class="o">=</span> thres
-    acc <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
-    ppv <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
-    npv <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
-    sen <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
-    spe <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
-    yod <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
-    auc <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
-    recall <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
-    precision <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span>
-    F1 <span class="o">=</span> np.zeros<span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span> 
-    <span class="kr">for</span> l <span class="kr">in</span> <span class="kp">range</span><span class="p">(</span>len<span class="p">(</span>thres<span class="p">))</span><span class="o">:</span>
-        plotdata <span class="o">=</span> ROC_parameters<span class="p">(</span>obser<span class="p">,</span>score<span class="p">,</span>thres<span class="p">[</span>l<span class="p">])</span>
-        acc<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">0</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
-        ppv<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">1</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
-        npv<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">2</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
-        sen<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">3</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
-        spe<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">4</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
-        yod<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">5</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
-        recall<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">6</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
-        precision<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">7</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
-        F1<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> <span class="kp">round</span><span class="p">(</span>plotdata<span class="p">[</span><span class="m">8</span><span class="p">],</span><span class="m">3</span><span class="p">)</span>
-        auc<span class="p">[</span>l<span class="p">]</span> <span class="o">=</span> roc_auc_score<span class="p">(</span>obser<span class="p">,</span> score<span class="p">)</span>
-    prev <span class="o">=</span> <span class="kp">round</span><span class="p">(</span><span class="kp">sum</span><span class="p">(</span>obser<span class="p">)</span><span class="o">/</span>len<span class="p">(</span>obser<span class="p">),</span><span class="m">2</span><span class="p">)</span>
-    <span class="c1">#roc_vals=np.zeros((length(spe),8))</span>
-    roc_vals<span class="o">=</span>pd.DataFrame<span class="p">(</span>index<span class="o">=</span><span class="kp">range</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">101</span><span class="p">),</span> columns<span class="o">=</span><span class="p">[[</span><span class="s">&quot;thres&quot;</span><span class="p">,</span><span class="s">&quot;acc&quot;</span><span class="p">,</span><span class="s">&quot;ppv&quot;</span><span class="p">,</span><span class="s">&quot;npv&quot;</span><span class="p">,</span><span class="s">&quot;specificity&quot;</span><span class="p">,</span><span class="s">&quot;sensitivity&quot;</span><span class="p">,</span><span class="s">&quot;yod_index&quot;</span><span class="p">,</span><span class="s">&quot;recall&quot;</span><span class="p">,</span><span class="s">&quot;precision&quot;</span><span class="p">,</span><span class="s">&quot;F1&quot;</span><span class="p">,</span><span class="s">&quot;auc&quot;</span><span class="p">]])</span>
-    <span class="c1">#roc_vals &lt;- dacolnames(roc_vals) &lt;- c(&quot;thres&quot;,&quot;acc&quot;,&quot;ppv&quot;,&quot;npv&quot;,&quot;specificity&quot;,&quot;sensitivity&quot;,&quot;yod_index&quot;,&quot;auc&quot;)</span>
-    roc_vals<span class="p">[</span><span class="s">&#39;thres&#39;</span><span class="p">]</span><span class="o">=</span>thres
-    roc_vals<span class="p">[</span><span class="s">&#39;acc&#39;</span><span class="p">]</span><span class="o">=</span> acc
-    roc_vals<span class="p">[</span><span class="s">&#39;ppv&#39;</span><span class="p">]</span> <span class="o">=</span> ppv
-    roc_vals<span class="p">[</span><span class="s">&#39;npv&#39;</span><span class="p">]</span> <span class="o">=</span> npv
-    roc_vals<span class="p">[</span><span class="s">&#39;specificity&#39;</span><span class="p">]</span> <span class="o">=</span>spe
-    roc_vals<span class="p">[</span><span class="s">&#39;sensitivity&#39;</span><span class="p">]</span> <span class="o">=</span> sen
-    roc_vals<span class="p">[</span><span class="s">&#39;yod_index&#39;</span><span class="p">]</span> <span class="o">=</span> yod<span class="p">;</span>
-    roc_vals<span class="p">[</span><span class="s">&#39;recall&#39;</span><span class="p">]</span> <span class="o">=</span> recall<span class="p">;</span>
-    roc_vals<span class="p">[</span><span class="s">&#39;precision&#39;</span><span class="p">]</span> <span class="o">=</span> precision
-    roc_vals<span class="p">[</span><span class="s">&#39;F1&#39;</span><span class="p">]</span> <span class="o">=</span> F1<span class="p">;</span>
-    roc_vals<span class="p">[</span><span class="s">&#39;auc&#39;</span><span class="p">]</span> <span class="o">=</span> auc<span class="p">;</span>
-    <span class="kr">return</span> roc_vals
+<div class="highlight"><pre><span></span><span class="nv">def</span> <span class="nv">calculate_metric</span><span class="ss">(</span><span class="nv">outcome</span>, <span class="nv">score</span><span class="ss">)</span>:
+    <span class="nv">obser</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">outcome</span><span class="ss">))</span>
+    <span class="nv">obser</span>[[<span class="nv">i</span> <span class="k">for</span> <span class="nv">i</span>, <span class="nv">x</span> <span class="nv">in</span> <span class="nv">enumerate</span><span class="ss">(</span><span class="nv">outcome</span><span class="ss">)</span> <span class="k">if</span> <span class="nv">x</span> <span class="o">==</span> <span class="mi">1</span> ]] <span class="o">=</span> <span class="mi">1</span> <span class="c1">;</span>
+    <span class="nv">obser</span> <span class="o">=</span> [<span class="nv">float</span><span class="ss">(</span><span class="nv">i</span><span class="ss">)</span> <span class="k">for</span> <span class="nv">i</span> <span class="nv">in</span> <span class="nv">obser</span>]
+    <span class="nv">score</span> <span class="o">=</span> [<span class="nv">float</span><span class="ss">(</span><span class="nv">i</span><span class="ss">)</span> <span class="k">for</span> <span class="nv">i</span> <span class="nv">in</span> <span class="nv">score</span>]
+    <span class="nv">prev</span> <span class="o">=</span> <span class="nv">round</span><span class="ss">(</span><span class="nv">sum</span><span class="ss">(</span><span class="nv">obser</span><span class="ss">)</span><span class="o">/</span><span class="nv">len</span><span class="ss">(</span><span class="nv">obser</span><span class="ss">)</span>,<span class="mi">2</span><span class="ss">)</span>
+    <span class="nv">thres</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">arange</span><span class="ss">(</span><span class="mi">0</span>.<span class="mi">01</span>,<span class="mi">1</span>.<span class="mi">01</span>,<span class="mi">0</span>.<span class="mi">01</span><span class="ss">)</span>#<span class="ss">(</span><span class="mi">0</span>.<span class="mi">01</span>,<span class="mi">0</span>.<span class="mi">98</span>,<span class="mi">0</span>.<span class="mi">01</span><span class="ss">)</span>
+    <span class="nv">xval</span> <span class="o">=</span> <span class="nv">thres</span>
+    <span class="nv">acc</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">thres</span><span class="ss">))</span>
+    <span class="nv">ppv</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">thres</span><span class="ss">))</span>
+    <span class="nv">npv</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">thres</span><span class="ss">))</span>
+    <span class="nv">sen</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">thres</span><span class="ss">))</span>
+    <span class="nv">spe</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">thres</span><span class="ss">))</span>
+    <span class="nv">yod</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">thres</span><span class="ss">))</span>
+    <span class="nv">auc</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">thres</span><span class="ss">))</span>
+    <span class="nv">recall</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">thres</span><span class="ss">))</span>
+    <span class="nv">precision</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">thres</span><span class="ss">))</span>
+    <span class="nv">F1</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">thres</span><span class="ss">))</span> 
+    <span class="k">for</span> <span class="nv">l</span> <span class="nv">in</span> <span class="nv">range</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">thres</span><span class="ss">))</span>:
+        <span class="nv">plotdata</span> <span class="o">=</span> <span class="nv">ROC_parameters</span><span class="ss">(</span><span class="nv">obser</span>,<span class="nv">score</span>,<span class="nv">thres</span>[<span class="nv">l</span>]<span class="ss">)</span>
+        <span class="nv">acc</span>[<span class="nv">l</span>] <span class="o">=</span> <span class="nv">round</span><span class="ss">(</span><span class="nv">plotdata</span>[<span class="mi">0</span>],<span class="mi">3</span><span class="ss">)</span>
+        <span class="nv">ppv</span>[<span class="nv">l</span>] <span class="o">=</span> <span class="nv">round</span><span class="ss">(</span><span class="nv">plotdata</span>[<span class="mi">1</span>],<span class="mi">3</span><span class="ss">)</span>
+        <span class="nv">npv</span>[<span class="nv">l</span>] <span class="o">=</span> <span class="nv">round</span><span class="ss">(</span><span class="nv">plotdata</span>[<span class="mi">2</span>],<span class="mi">3</span><span class="ss">)</span>
+        <span class="nv">sen</span>[<span class="nv">l</span>] <span class="o">=</span> <span class="nv">round</span><span class="ss">(</span><span class="nv">plotdata</span>[<span class="mi">3</span>],<span class="mi">3</span><span class="ss">)</span>
+        <span class="nv">spe</span>[<span class="nv">l</span>] <span class="o">=</span> <span class="nv">round</span><span class="ss">(</span><span class="nv">plotdata</span>[<span class="mi">4</span>],<span class="mi">3</span><span class="ss">)</span>
+        <span class="nv">yod</span>[<span class="nv">l</span>] <span class="o">=</span> <span class="nv">round</span><span class="ss">(</span><span class="nv">plotdata</span>[<span class="mi">5</span>],<span class="mi">3</span><span class="ss">)</span>
+        <span class="nv">recall</span>[<span class="nv">l</span>] <span class="o">=</span> <span class="nv">round</span><span class="ss">(</span><span class="nv">plotdata</span>[<span class="mi">6</span>],<span class="mi">3</span><span class="ss">)</span>
+        <span class="nv">precision</span>[<span class="nv">l</span>] <span class="o">=</span> <span class="nv">round</span><span class="ss">(</span><span class="nv">plotdata</span>[<span class="mi">7</span>],<span class="mi">3</span><span class="ss">)</span>
+        <span class="nv">F1</span>[<span class="nv">l</span>] <span class="o">=</span> <span class="nv">round</span><span class="ss">(</span><span class="nv">plotdata</span>[<span class="mi">8</span>],<span class="mi">3</span><span class="ss">)</span>
+        <span class="nv">auc</span>[<span class="nv">l</span>] <span class="o">=</span> <span class="nv">roc_auc_score</span><span class="ss">(</span><span class="nv">obser</span>, <span class="nv">score</span><span class="ss">)</span>
+    <span class="nv">prev</span> <span class="o">=</span> <span class="nv">round</span><span class="ss">(</span><span class="nv">sum</span><span class="ss">(</span><span class="nv">obser</span><span class="ss">)</span><span class="o">/</span><span class="nv">len</span><span class="ss">(</span><span class="nv">obser</span><span class="ss">)</span>,<span class="mi">2</span><span class="ss">)</span>
+    #<span class="nv">roc_vals</span><span class="o">=</span><span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">((</span><span class="nv">length</span><span class="ss">(</span><span class="nv">spe</span><span class="ss">)</span>,<span class="mi">8</span><span class="ss">))</span>
+    <span class="nv">roc_vals</span><span class="o">=</span><span class="nv">pd</span>.<span class="nv">DataFrame</span><span class="ss">(</span><span class="nv">index</span><span class="o">=</span><span class="nv">range</span><span class="ss">(</span><span class="mi">1</span>,<span class="mi">101</span><span class="ss">)</span>, <span class="nv">columns</span><span class="o">=</span>[[<span class="s2">&quot;</span><span class="s">thres</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">acc</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">ppv</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">npv</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">specificity</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">sensitivity</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">yod_index</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">recall</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">precision</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">F1</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">auc</span><span class="s2">&quot;</span>]]<span class="ss">)</span>
+    #<span class="nv">roc_vals</span> <span class="o">&lt;-</span> <span class="nv">dacolnames</span><span class="ss">(</span><span class="nv">roc_vals</span><span class="ss">)</span> <span class="o">&lt;-</span> <span class="nv">c</span><span class="ss">(</span><span class="s2">&quot;</span><span class="s">thres</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">acc</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">ppv</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">npv</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">specificity</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">sensitivity</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">yod_index</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">auc</span><span class="s2">&quot;</span><span class="ss">)</span>
+    <span class="nv">roc_vals</span>[<span class="s1">&#39;</span><span class="s">thres</span><span class="s1">&#39;</span>]<span class="o">=</span><span class="nv">thres</span>
+    <span class="nv">roc_vals</span>[<span class="s1">&#39;</span><span class="s">acc</span><span class="s1">&#39;</span>]<span class="o">=</span> <span class="nv">acc</span>
+    <span class="nv">roc_vals</span>[<span class="s1">&#39;</span><span class="s">ppv</span><span class="s1">&#39;</span>] <span class="o">=</span> <span class="nv">ppv</span>
+    <span class="nv">roc_vals</span>[<span class="s1">&#39;</span><span class="s">npv</span><span class="s1">&#39;</span>] <span class="o">=</span> <span class="nv">npv</span>
+    <span class="nv">roc_vals</span>[<span class="s1">&#39;</span><span class="s">specificity</span><span class="s1">&#39;</span>] <span class="o">=</span><span class="nv">spe</span>
+    <span class="nv">roc_vals</span>[<span class="s1">&#39;</span><span class="s">sensitivity</span><span class="s1">&#39;</span>] <span class="o">=</span> <span class="nv">sen</span>
+    <span class="nv">roc_vals</span>[<span class="s1">&#39;</span><span class="s">yod_index</span><span class="s1">&#39;</span>] <span class="o">=</span> <span class="nv">yod</span><span class="c1">;</span>
+    <span class="nv">roc_vals</span>[<span class="s1">&#39;</span><span class="s">recall</span><span class="s1">&#39;</span>] <span class="o">=</span> <span class="nv">recall</span><span class="c1">;</span>
+    <span class="nv">roc_vals</span>[<span class="s1">&#39;</span><span class="s">precision</span><span class="s1">&#39;</span>] <span class="o">=</span> <span class="nv">precision</span>
+    <span class="nv">roc_vals</span>[<span class="s1">&#39;</span><span class="s">F1</span><span class="s1">&#39;</span>] <span class="o">=</span> <span class="nv">F1</span><span class="c1">;</span>
+    <span class="nv">roc_vals</span>[<span class="s1">&#39;</span><span class="s">auc</span><span class="s1">&#39;</span>] <span class="o">=</span> <span class="nv">auc</span><span class="c1">;</span>
+    <span class="k">return</span> <span class="nv">roc_vals</span>
 
-def ROC_parameters<span class="p">(</span>obser<span class="p">,</span>score<span class="p">,</span>thr<span class="p">)</span><span class="o">:</span>
-    <span class="c1">#print obser,score,thr</span>
-    temp<span class="o">=</span>np.zeros<span class="p">(</span>len<span class="p">(</span>score<span class="p">))</span>
-    <span class="c1">#print thr;</span>
-    temp<span class="p">[[</span> i <span class="kr">for</span> i<span class="p">,</span> x <span class="kr">in</span> enumerate<span class="p">(</span>score<span class="p">)</span> <span class="kr">if</span> x <span class="o">&gt;=</span> thr <span class="p">]]</span><span class="o">=</span> <span class="m">1</span>
-    p_ind<span class="o">=</span><span class="p">[</span> i <span class="kr">for</span> i<span class="p">,</span> x <span class="kr">in</span> enumerate<span class="p">(</span>obser<span class="p">)</span> <span class="kr">if</span> x <span class="o">==</span> <span class="m">1</span> <span class="p">]</span>
-    n_ind <span class="o">=</span> <span class="p">[</span> i <span class="kr">for</span> i<span class="p">,</span> x <span class="kr">in</span> enumerate<span class="p">(</span>obser<span class="p">)</span> <span class="kr">if</span> x <span class="o">==</span> <span class="m">0</span> <span class="p">]</span>
-    TP <span class="o">=</span> <span class="kp">sum</span><span class="p">(</span>temp<span class="p">[</span>p_ind<span class="p">]</span><span class="o">==</span><span class="m">1</span><span class="p">)</span>
-    FP <span class="o">=</span> <span class="kp">sum</span><span class="p">(</span>temp<span class="p">[</span>n_ind<span class="p">]</span><span class="o">==</span><span class="m">1</span><span class="p">)</span>
-    TN <span class="o">=</span><span class="kp">sum</span><span class="p">(</span>temp<span class="p">[</span>n_ind<span class="p">]</span><span class="o">==</span><span class="m">0</span><span class="p">)</span>
-    FN <span class="o">=</span> <span class="kp">sum</span><span class="p">(</span>temp<span class="p">[</span>p_ind<span class="p">]</span><span class="o">==</span><span class="m">0</span><span class="p">)</span>
-    acc <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>TP<span class="o">+</span>TN<span class="p">)</span><span class="o">/</span>len<span class="p">(</span>temp<span class="p">)</span>
-    recall<span class="o">=</span><span class="m">0</span>
-    precision<span class="o">=</span><span class="m">0</span>
-    <span class="c1">#print TP,FP,TN,FN;</span>
-    <span class="kr">if</span> TP<span class="o">+</span>FP<span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
-        ppv <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FP<span class="p">)</span>
-    <span class="kp">else</span><span class="o">:</span>
-        ppv<span class="o">=</span>np.NaN
-    <span class="kr">if</span> TN<span class="o">+</span>FN<span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
-        npv <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>TN<span class="p">)</span><span class="o">/</span><span class="p">(</span>TN<span class="o">+</span>FN<span class="p">)</span>
-    <span class="kp">else</span><span class="o">:</span>
-        npv<span class="o">=</span>np.NaN
-    <span class="kr">if</span> TP<span class="o">+</span>FN<span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
-        sen <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FN<span class="p">)</span>
-    <span class="kp">else</span><span class="o">:</span>
-        sen<span class="o">=</span>np.NaN
-    <span class="kr">if</span> TN<span class="o">+</span>FP<span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
-        spe <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>TN<span class="p">)</span><span class="o">/</span><span class="p">(</span>TN<span class="o">+</span>FP<span class="p">)</span>
-    <span class="kp">else</span><span class="o">:</span>
-        spe<span class="o">=</span>np.NaN
-    <span class="kr">if</span> TP<span class="o">+</span>FN<span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
-        recall <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FN<span class="p">)</span>
-    <span class="kp">else</span><span class="o">:</span>
-        recall<span class="o">=</span>np.NaN    
-    <span class="kr">if</span> TP<span class="o">+</span>FP<span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>
-        precision <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FP<span class="p">)</span>
-    <span class="kp">else</span><span class="o">:</span>
-        precision<span class="o">=</span>np.NaN
-    <span class="kr">if</span> recall<span class="o">+</span>precision<span class="o">&gt;</span><span class="m">0</span><span class="o">:</span>         
-        F1 <span class="o">=</span> <span class="p">(</span>float<span class="p">)((</span><span class="m">2</span><span class="o">*</span>recall<span class="o">*</span>precision<span class="p">)</span><span class="o">/</span><span class="p">(</span>recall<span class="o">+</span>precision<span class="p">))</span>
-    <span class="kp">else</span><span class="o">:</span>
-        F1<span class="o">=</span>np.NaN
-    yod <span class="o">=</span> <span class="p">(</span>float<span class="p">)(</span>sen<span class="o">+</span>spe<span class="m">-1</span><span class="p">)</span>
-    ls<span class="o">=</span><span class="kt">list</span><span class="p">();</span>
-    ls.append<span class="p">(</span>acc<span class="p">)</span>
-    ls.append<span class="p">(</span>ppv<span class="p">)</span>
-    ls.append<span class="p">(</span>npv<span class="p">)</span>
-    ls.append<span class="p">(</span>sen<span class="p">)</span>
-    ls.append<span class="p">(</span>spe<span class="p">)</span>
-    ls.append<span class="p">(</span>yod<span class="p">)</span>
-    ls.append<span class="p">(</span>recall<span class="p">)</span>
-    ls.append<span class="p">(</span>precision<span class="p">)</span>
-    ls.append<span class="p">(</span>F1<span class="p">)</span>
-    <span class="kr">return</span> <span class="kp">ls</span>
+<span class="nv">def</span> <span class="nv">ROC_parameters</span><span class="ss">(</span><span class="nv">obser</span>,<span class="nv">score</span>,<span class="nv">thr</span><span class="ss">)</span>:
+    #<span class="nv">print</span> <span class="nv">obser</span>,<span class="nv">score</span>,<span class="nv">thr</span>
+    <span class="nv">temp</span><span class="o">=</span><span class="nv">np</span>.<span class="nv">zeros</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">score</span><span class="ss">))</span>
+    #<span class="nv">print</span> <span class="nv">thr</span><span class="c1">;</span>
+    <span class="nv">temp</span>[[ <span class="nv">i</span> <span class="k">for</span> <span class="nv">i</span>, <span class="nv">x</span> <span class="nv">in</span> <span class="nv">enumerate</span><span class="ss">(</span><span class="nv">score</span><span class="ss">)</span> <span class="k">if</span> <span class="nv">x</span> <span class="o">&gt;=</span> <span class="nv">thr</span> ]]<span class="o">=</span> <span class="mi">1</span>
+    <span class="nv">p_ind</span><span class="o">=</span>[ <span class="nv">i</span> <span class="k">for</span> <span class="nv">i</span>, <span class="nv">x</span> <span class="nv">in</span> <span class="nv">enumerate</span><span class="ss">(</span><span class="nv">obser</span><span class="ss">)</span> <span class="k">if</span> <span class="nv">x</span> <span class="o">==</span> <span class="mi">1</span> ]
+    <span class="nv">n_ind</span> <span class="o">=</span> [ <span class="nv">i</span> <span class="k">for</span> <span class="nv">i</span>, <span class="nv">x</span> <span class="nv">in</span> <span class="nv">enumerate</span><span class="ss">(</span><span class="nv">obser</span><span class="ss">)</span> <span class="k">if</span> <span class="nv">x</span> <span class="o">==</span> <span class="mi">0</span> ]
+    <span class="nv">TP</span> <span class="o">=</span> <span class="nv">sum</span><span class="ss">(</span><span class="nv">temp</span>[<span class="nv">p_ind</span>]<span class="o">==</span><span class="mi">1</span><span class="ss">)</span>
+    <span class="nv">FP</span> <span class="o">=</span> <span class="nv">sum</span><span class="ss">(</span><span class="nv">temp</span>[<span class="nv">n_ind</span>]<span class="o">==</span><span class="mi">1</span><span class="ss">)</span>
+    <span class="nv">TN</span> <span class="o">=</span><span class="nv">sum</span><span class="ss">(</span><span class="nv">temp</span>[<span class="nv">n_ind</span>]<span class="o">==</span><span class="mi">0</span><span class="ss">)</span>
+    <span class="nv">FN</span> <span class="o">=</span> <span class="nv">sum</span><span class="ss">(</span><span class="nv">temp</span>[<span class="nv">p_ind</span>]<span class="o">==</span><span class="mi">0</span><span class="ss">)</span>
+    <span class="nv">acc</span> <span class="o">=</span> <span class="ss">(</span><span class="nv">float</span><span class="ss">)(</span><span class="nv">TP</span><span class="o">+</span><span class="nv">TN</span><span class="ss">)</span><span class="o">/</span><span class="nv">len</span><span class="ss">(</span><span class="nv">temp</span><span class="ss">)</span>
+    <span class="nv">recall</span><span class="o">=</span><span class="mi">0</span>
+    <span class="nv">precision</span><span class="o">=</span><span class="mi">0</span>
+    #<span class="nv">print</span> <span class="nv">TP</span>,<span class="nv">FP</span>,<span class="nv">TN</span>,<span class="nv">FN</span><span class="c1">;</span>
+    <span class="k">if</span> <span class="nv">TP</span><span class="o">+</span><span class="nv">FP</span><span class="o">&gt;</span><span class="mi">0</span>:
+        <span class="nv">ppv</span> <span class="o">=</span> <span class="ss">(</span><span class="nv">float</span><span class="ss">)(</span><span class="nv">TP</span><span class="ss">)</span><span class="o">/</span><span class="ss">(</span><span class="nv">TP</span><span class="o">+</span><span class="nv">FP</span><span class="ss">)</span>
+    <span class="k">else</span>:
+        <span class="nv">ppv</span><span class="o">=</span><span class="nv">np</span>.<span class="nv">NaN</span>
+    <span class="k">if</span> <span class="nv">TN</span><span class="o">+</span><span class="nv">FN</span><span class="o">&gt;</span><span class="mi">0</span>:
+        <span class="nv">npv</span> <span class="o">=</span> <span class="ss">(</span><span class="nv">float</span><span class="ss">)(</span><span class="nv">TN</span><span class="ss">)</span><span class="o">/</span><span class="ss">(</span><span class="nv">TN</span><span class="o">+</span><span class="nv">FN</span><span class="ss">)</span>
+    <span class="k">else</span>:
+        <span class="nv">npv</span><span class="o">=</span><span class="nv">np</span>.<span class="nv">NaN</span>
+    <span class="k">if</span> <span class="nv">TP</span><span class="o">+</span><span class="nv">FN</span><span class="o">&gt;</span><span class="mi">0</span>:
+        <span class="nv">sen</span> <span class="o">=</span> <span class="ss">(</span><span class="nv">float</span><span class="ss">)(</span><span class="nv">TP</span><span class="ss">)</span><span class="o">/</span><span class="ss">(</span><span class="nv">TP</span><span class="o">+</span><span class="nv">FN</span><span class="ss">)</span>
+    <span class="k">else</span>:
+        <span class="nv">sen</span><span class="o">=</span><span class="nv">np</span>.<span class="nv">NaN</span>
+    <span class="k">if</span> <span class="nv">TN</span><span class="o">+</span><span class="nv">FP</span><span class="o">&gt;</span><span class="mi">0</span>:
+        <span class="nv">spe</span> <span class="o">=</span> <span class="ss">(</span><span class="nv">float</span><span class="ss">)(</span><span class="nv">TN</span><span class="ss">)</span><span class="o">/</span><span class="ss">(</span><span class="nv">TN</span><span class="o">+</span><span class="nv">FP</span><span class="ss">)</span>
+    <span class="k">else</span>:
+        <span class="nv">spe</span><span class="o">=</span><span class="nv">np</span>.<span class="nv">NaN</span>
+    <span class="k">if</span> <span class="nv">TP</span><span class="o">+</span><span class="nv">FN</span><span class="o">&gt;</span><span class="mi">0</span>:
+        <span class="nv">recall</span> <span class="o">=</span> <span class="ss">(</span><span class="nv">float</span><span class="ss">)(</span><span class="nv">TP</span><span class="ss">)</span><span class="o">/</span><span class="ss">(</span><span class="nv">TP</span><span class="o">+</span><span class="nv">FN</span><span class="ss">)</span>
+    <span class="k">else</span>:
+        <span class="nv">recall</span><span class="o">=</span><span class="nv">np</span>.<span class="nv">NaN</span>    
+    <span class="k">if</span> <span class="nv">TP</span><span class="o">+</span><span class="nv">FP</span><span class="o">&gt;</span><span class="mi">0</span>:
+        <span class="nv">precision</span> <span class="o">=</span> <span class="ss">(</span><span class="nv">float</span><span class="ss">)(</span><span class="nv">TP</span><span class="ss">)</span><span class="o">/</span><span class="ss">(</span><span class="nv">TP</span><span class="o">+</span><span class="nv">FP</span><span class="ss">)</span>
+    <span class="k">else</span>:
+        <span class="nv">precision</span><span class="o">=</span><span class="nv">np</span>.<span class="nv">NaN</span>
+    <span class="k">if</span> <span class="nv">recall</span><span class="o">+</span><span class="nv">precision</span><span class="o">&gt;</span><span class="mi">0</span>:         
+        <span class="nv">F1</span> <span class="o">=</span> <span class="ss">(</span><span class="nv">float</span><span class="ss">)((</span><span class="mi">2</span><span class="o">*</span><span class="nv">recall</span><span class="o">*</span><span class="nv">precision</span><span class="ss">)</span><span class="o">/</span><span class="ss">(</span><span class="nv">recall</span><span class="o">+</span><span class="nv">precision</span><span class="ss">))</span>
+    <span class="k">else</span>:
+        <span class="nv">F1</span><span class="o">=</span><span class="nv">np</span>.<span class="nv">NaN</span>
+    <span class="nv">yod</span> <span class="o">=</span> <span class="ss">(</span><span class="nv">float</span><span class="ss">)(</span><span class="nv">sen</span><span class="o">+</span><span class="nv">spe</span><span class="o">-</span><span class="mi">1</span><span class="ss">)</span>
+    <span class="nv">ls</span><span class="o">=</span><span class="nv">list</span><span class="ss">()</span><span class="c1">;</span>
+    <span class="nv">ls</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">acc</span><span class="ss">)</span>
+    <span class="nv">ls</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">ppv</span><span class="ss">)</span>
+    <span class="nv">ls</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">npv</span><span class="ss">)</span>
+    <span class="nv">ls</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">sen</span><span class="ss">)</span>
+    <span class="nv">ls</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">spe</span><span class="ss">)</span>
+    <span class="nv">ls</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">yod</span><span class="ss">)</span>
+    <span class="nv">ls</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">recall</span><span class="ss">)</span>
+    <span class="nv">ls</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">precision</span><span class="ss">)</span>
+    <span class="nv">ls</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">F1</span><span class="ss">)</span>
+    <span class="k">return</span> <span class="nv">ls</span>
 </pre></div>
 
 
 <h1>calculating performance measurements and confidence intervals using Boostraping</h1>
-<div class="highlight"><pre><span></span>def calculate_metric_boostrap(outcome, score):
-    d = []
-    for p in range(0,len(score)):
-        d.append((score[p]))
-    score=pd.Series(d)
-    n_bootstraps = 0
-    rng_seed = 42  # control reproducibility
-    scores_table = {} 
-    rng = np.random.RandomState(rng_seed)
-    for i in range(n_bootstraps):
-    # bootstrap by sampling with replacement on the prediction indices
-        indices = rng.random_integers(0, len(outcome) - 1, len(outcome))
-        if len(np.unique(outcome[indices])) &lt; 2:
-        # We need at least one positive and one negative sample for ROC AUC
-        # to be defined: reject the sample
-            continue
-        scores_table[i]= calculate_metric(outcome[indices], score[indices])
+<div class="highlight"><pre><span></span><span class="nv">def</span> <span class="nv">calculate_metric_boostrap</span><span class="ss">(</span><span class="nv">outcome</span>, <span class="nv">score</span><span class="ss">)</span>:
+    <span class="nv">d</span> <span class="o">=</span> []
+    <span class="k">for</span> <span class="nv">p</span> <span class="nv">in</span> <span class="nv">range</span><span class="ss">(</span><span class="mi">0</span>,<span class="nv">len</span><span class="ss">(</span><span class="nv">score</span><span class="ss">))</span>:
+        <span class="nv">d</span>.<span class="nv">append</span><span class="ss">((</span><span class="nv">score</span>[<span class="nv">p</span>]<span class="ss">))</span>
+    <span class="nv">score</span><span class="o">=</span><span class="nv">pd</span>.<span class="nv">Series</span><span class="ss">(</span><span class="nv">d</span><span class="ss">)</span>
+    <span class="nv">n_bootstraps</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="nv">rng_seed</span> <span class="o">=</span> <span class="mi">42</span>  # <span class="nv">control</span> <span class="nv">reproducibility</span>
+    <span class="nv">scores_table</span> <span class="o">=</span> {} 
+    <span class="nv">rng</span> <span class="o">=</span> <span class="nv">np</span>.<span class="k">random</span>.<span class="nv">RandomState</span><span class="ss">(</span><span class="nv">rng_seed</span><span class="ss">)</span>
+    <span class="k">for</span> <span class="nv">i</span> <span class="nv">in</span> <span class="nv">range</span><span class="ss">(</span><span class="nv">n_bootstraps</span><span class="ss">)</span>:
+    # <span class="nv">bootstrap</span> <span class="nv">by</span> <span class="nv">sampling</span> <span class="nv">with</span> <span class="nv">replacement</span> <span class="nv">on</span> <span class="nv">the</span> <span class="nv">prediction</span> <span class="nv">indices</span>
+        <span class="nv">indices</span> <span class="o">=</span> <span class="nv">rng</span>.<span class="nv">random_integers</span><span class="ss">(</span><span class="mi">0</span>, <span class="nv">len</span><span class="ss">(</span><span class="nv">outcome</span><span class="ss">)</span> <span class="o">-</span> <span class="mi">1</span>, <span class="nv">len</span><span class="ss">(</span><span class="nv">outcome</span><span class="ss">))</span>
+        <span class="k">if</span> <span class="nv">len</span><span class="ss">(</span><span class="nv">np</span>.<span class="nv">unique</span><span class="ss">(</span><span class="nv">outcome</span>[<span class="nv">indices</span>]<span class="ss">))</span> <span class="o">&lt;</span> <span class="mi">2</span>:
+        # <span class="nv">We</span> <span class="nv">need</span> <span class="nv">at</span> <span class="nv">least</span> <span class="nv">one</span> <span class="nv">positive</span> <span class="nv">and</span> <span class="nv">one</span> <span class="nv">negative</span> <span class="nv">sample</span> <span class="k">for</span> <span class="nv">ROC</span> <span class="nv">AUC</span>
+        # <span class="nv">to</span> <span class="nv">be</span> <span class="nv">defined</span>: <span class="nv">reject</span> <span class="nv">the</span> <span class="nv">sample</span>
+            <span class="k">continue</span>
+        <span class="nv">scores_table</span>[<span class="nv">i</span>]<span class="o">=</span> <span class="nv">calculate_metric</span><span class="ss">(</span><span class="nv">outcome</span>[<span class="nv">indices</span>], <span class="nv">score</span>[<span class="nv">indices</span>]<span class="ss">)</span>
 
-    panel = pd.Panel(scores_table)
-    df=panel.mean(axis=0)
-    return df,panel
+    <span class="nv">panel</span> <span class="o">=</span> <span class="nv">pd</span>.<span class="nv">Panel</span><span class="ss">(</span><span class="nv">scores_table</span><span class="ss">)</span>
+    <span class="nv">df</span><span class="o">=</span><span class="nv">panel</span>.<span class="nv">mean</span><span class="ss">(</span><span class="nv">axis</span><span class="o">=</span><span class="mi">0</span><span class="ss">)</span>
+    <span class="k">return</span> <span class="nv">df</span>,<span class="nv">panel</span>
 
-def confidence_interval(panel):
-    vector = []
-    confidence_lower=panel[1].copy()
-    confidence_upper=panel[1].copy()
-    nr=len(panel[1].axes[0])
-    nc=len(panel[1].axes[1])
-    for ix in  range(0,nr):
-        for iy in range(0,nc):
-            vector = []
-            for k, df in panel.iteritems():
-                vector.append(df.iloc[ix,iy])
-            sorted_vector = np.array(vector)
-            sorted_vector.sort()
-            confidence_lower.iloc[ix,iy] = sorted_vector[int(0.05 * len(sorted_vector))]
-            confidence_upper.iloc[ix,iy] = sorted_vector[int(0.95 * len(sorted_vector))]
-    return confidence_lower, confidence_upper
+<span class="nv">def</span> <span class="nv">confidence_interval</span><span class="ss">(</span><span class="nv">panel</span><span class="ss">)</span>:
+    <span class="nv">vector</span> <span class="o">=</span> []
+    <span class="nv">confidence_lower</span><span class="o">=</span><span class="nv">panel</span>[<span class="mi">1</span>].<span class="nv">copy</span><span class="ss">()</span>
+    <span class="nv">confidence_upper</span><span class="o">=</span><span class="nv">panel</span>[<span class="mi">1</span>].<span class="nv">copy</span><span class="ss">()</span>
+    <span class="nv">nr</span><span class="o">=</span><span class="nv">len</span><span class="ss">(</span><span class="nv">panel</span>[<span class="mi">1</span>].<span class="nv">axes</span>[<span class="mi">0</span>]<span class="ss">)</span>
+    <span class="nv">nc</span><span class="o">=</span><span class="nv">len</span><span class="ss">(</span><span class="nv">panel</span>[<span class="mi">1</span>].<span class="nv">axes</span>[<span class="mi">1</span>]<span class="ss">)</span>
+    <span class="k">for</span> <span class="nv">ix</span> <span class="nv">in</span>  <span class="nv">range</span><span class="ss">(</span><span class="mi">0</span>,<span class="nv">nr</span><span class="ss">)</span>:
+        <span class="k">for</span> <span class="nv">iy</span> <span class="nv">in</span> <span class="nv">range</span><span class="ss">(</span><span class="mi">0</span>,<span class="nv">nc</span><span class="ss">)</span>:
+            <span class="nv">vector</span> <span class="o">=</span> []
+            <span class="k">for</span> <span class="nv">k</span>, <span class="nv">df</span> <span class="nv">in</span> <span class="nv">panel</span>.<span class="nv">iteritems</span><span class="ss">()</span>:
+                <span class="nv">vector</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">df</span>.<span class="nv">iloc</span>[<span class="nv">ix</span>,<span class="nv">iy</span>]<span class="ss">)</span>
+            <span class="nv">sorted_vector</span> <span class="o">=</span> <span class="nv">np</span>.<span class="nv">array</span><span class="ss">(</span><span class="nv">vector</span><span class="ss">)</span>
+            <span class="nv">sorted_vector</span>.<span class="nv">sort</span><span class="ss">()</span>
+            <span class="nv">confidence_lower</span>.<span class="nv">iloc</span>[<span class="nv">ix</span>,<span class="nv">iy</span>] <span class="o">=</span> <span class="nv">sorted_vector</span>[<span class="nv">int</span><span class="ss">(</span><span class="mi">0</span>.<span class="mi">05</span> <span class="o">*</span> <span class="nv">len</span><span class="ss">(</span><span class="nv">sorted_vector</span><span class="ss">))</span>]
+            <span class="nv">confidence_upper</span>.<span class="nv">iloc</span>[<span class="nv">ix</span>,<span class="nv">iy</span>] <span class="o">=</span> <span class="nv">sorted_vector</span>[<span class="nv">int</span><span class="ss">(</span><span class="mi">0</span>.<span class="mi">95</span> <span class="o">*</span> <span class="nv">len</span><span class="ss">(</span><span class="nv">sorted_vector</span><span class="ss">))</span>]
+    <span class="k">return</span> <span class="nv">confidence_lower</span>, <span class="nv">confidence_upper</span>
 </pre></div>
 
 

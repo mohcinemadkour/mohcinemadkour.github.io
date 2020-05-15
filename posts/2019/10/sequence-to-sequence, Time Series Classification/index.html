@@ -71,20 +71,20 @@
 
 <p><a href="https://jmotif.github.io/sax-vsm_site/morea/algorithm/SAX.html">Symbolic Aggregate Approximation (SAX)</a> is a way of discretizing a time series so that it can be represented with a sequence of alphabetical letters, forming a “word”. <a href="https://jmotif.github.io/sax-vsm_site/morea/algorithm/PAA.html">Piecewise Aggregate Approximation (PAA)</a> shortens the time series.</p>
 <p>I used a standard Bidirectional LSTM with one layer and then a Dense/Softmax layer and a sequence of anything from 3–10 timesteps to make the prediction of the next step.</p>
-<div class="highlight"><pre><span></span>model = Sequential()
-model.add(Bidirectional(LSTM(32, kernel_initializer = &quot;he_normal&quot;,return_sequences=False),
-                           input_shape=(n_timesteps, output)))
-#model.add(Bidirectional(LSTM(32, return_sequences = False)))                     
-model.add(Dense(output, activation=&#39;softmax&#39;))
-model.summary()
-model.compile(loss=&#39;categorical_crossentropy&#39;, optimizer=Adam(lr=.001), metrics=[&#39;acc&#39;])
+<div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+<span class="n">model</span><span class="p">.</span><span class="k">add</span><span class="p">(</span><span class="n">Bidirectional</span><span class="p">(</span><span class="n">LSTM</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">kernel_initializer</span> <span class="o">=</span> <span class="ss">&quot;he_normal&quot;</span><span class="p">,</span><span class="n">return_sequences</span><span class="o">=</span><span class="k">False</span><span class="p">),</span>
+                           <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_timesteps</span><span class="p">,</span> <span class="k">output</span><span class="p">)))</span>
+<span class="o">#</span><span class="n">model</span><span class="p">.</span><span class="k">add</span><span class="p">(</span><span class="n">Bidirectional</span><span class="p">(</span><span class="n">LSTM</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">return_sequences</span> <span class="o">=</span> <span class="k">False</span><span class="p">)))</span>                     
+<span class="n">model</span><span class="p">.</span><span class="k">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="k">output</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="p">.</span><span class="n">summary</span><span class="p">()</span>
+<span class="n">model</span><span class="p">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;categorical_crossentropy&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="p">.</span><span class="mi">001</span><span class="p">),</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;acc&#39;</span><span class="p">])</span>
 </pre></div>
 
 
 <p>With early stopping, you can get around 84% F1-score, so that’s not too bad, though the sequence itself is not that varied. Of the 6 “labels” you will find that it stays this way for quite a number of steps (at least more than 10) before changing into another label. When you look at the predictions and the ground-truth, you will find that the transitions are always off — that’s where the model makes a bunch of mistakes. It tends to “figure out” the change 1 or 2 steps after it happens in ground-truth.</p>
 <p>Next, I decided to use the tslearn package to cluster the 50 time step windows; using the Euclidean metric (the fastest one by a long shot). I wanted to see what I would get if I demanded 6 clusters.</p>
-<div class="highlight"><pre><span></span>km = TimeSeriesKMeans(n_clusters=6,verbose=True, random_state=seed)
-y_pred = km.fit_predict(df)
+<div class="highlight"><pre><span></span><span class="n">km</span> <span class="o">=</span> <span class="n">TimeSeriesKMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span><span class="k">verbose</span><span class="o">=</span><span class="k">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">km</span><span class="p">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 </pre></div>
 
 

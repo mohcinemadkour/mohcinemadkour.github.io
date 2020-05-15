@@ -59,26 +59,26 @@
 <p>Image Source: Code Project
 <img alt="Image Source: Code Project" src="images/AAA pattern."></p>
 <p>The AAA (Arrange, Act, Assert ) pattern helps organize and clarify test code by breaking down a test case into the following functional sections:</p>
-<div class="highlight"><pre><span></span>The Arrange section of a unit test initializes objects and sets the value of the data that is passed to the test case.
-The Act section invokes the test case with the arranged parameters.
-The Assert section verifies the test case behaves as expected.
+<div class="highlight"><pre><span></span><span class="n">The</span> <span class="n">Arrange</span> <span class="n">section</span> <span class="k">of</span> <span class="n">a</span> <span class="n">unit</span> <span class="n">test</span> <span class="n">initializes</span> <span class="n">objects</span> <span class="k">and</span> <span class="k">sets</span> <span class="n">the</span> <span class="n">value</span> <span class="k">of</span> <span class="n">the</span> <span class="k">data</span> <span class="n">that</span> <span class="k">is</span> <span class="n">passed</span> <span class="k">to</span> <span class="n">the</span> <span class="n">test</span> <span class="k">case</span><span class="p">.</span>
+<span class="n">The</span> <span class="n">Act</span> <span class="n">section</span> <span class="n">invokes</span> <span class="n">the</span> <span class="n">test</span> <span class="k">case</span> <span class="k">with</span> <span class="n">the</span> <span class="n">arranged</span> <span class="k">parameters</span><span class="p">.</span>
+<span class="n">The</span> <span class="n">Assert</span> <span class="n">section</span> <span class="n">verifies</span> <span class="n">the</span> <span class="n">test</span> <span class="k">case</span> <span class="n">behaves</span> <span class="k">as</span> <span class="n">expected</span><span class="p">.</span>
 </pre></div>
 
 
 <p>Consider the following example test scenario:</p>
 <p>A unit test in AAA format tests a software unit that increments the number of products in an e-commerce shopping cart:</p>
 <p>Arrange</p>
-<div class="highlight"><pre><span></span>Create a empty shopping cart
+<div class="highlight"><pre><span></span><span class="k">Create</span> <span class="n">a</span> <span class="n">empty</span> <span class="n">shopping</span> <span class="n">cart</span>
 </pre></div>
 
 
 <p>Act</p>
-<div class="highlight"><pre><span></span>Add a product to the cart
+<div class="highlight"><pre><span></span><span class="k">Add</span> <span class="n">a</span> <span class="n">product</span> <span class="k">to</span> <span class="n">the</span> <span class="n">cart</span>
 </pre></div>
 
 
 <p>Assert </p>
-<div class="highlight"><pre><span></span>Number of products in cart increased by one
+<div class="highlight"><pre><span></span><span class="nb">Number</span> <span class="k">of</span> <span class="n">products</span> <span class="k">in</span> <span class="n">cart</span> <span class="n">increased</span> <span class="k">by</span> <span class="n">one</span>
 </pre></div>
 
 
@@ -99,46 +99,46 @@ The Assert section verifies the test case behaves as expected.
 <p>In the shopping cart example, the Assert section occurs when the number property is checked against your expectation (i.e. the number of products in the cart is increased by one every time the Buy Item button is pushed.)</p>
 <p>Following the AAA pattern consistently makes test code easier to read by clearly separating what is being tested from the setup and verification steps.  This helps when you need to reexamine sections of test code to see if they're still doing what it should be doing, such as following a previous set of successful test steps.</p>
 <p>In the bottom-up testing style of test-driven development, unit tests written in the AAA syntax will help you know exactly where to search to find a bug when a unit test fails.  Kent Beck, who popularized the TDD concept in his book Test Driven Development: By Example, states that TDD has two basic rules:</p>
-<div class="highlight"><pre><span></span>Never write a single line of code unless you have a failing automated test.
-Eliminate duplication.  In software engineering, don&#39;t repeat yourself (DRY) is a principle of agile software development, aimed at reducing repetition of information of all kinds, which is especially useful in multi-tier architectures
+<div class="highlight"><pre><span></span><span class="n">Never</span> <span class="k">write</span> <span class="n">a</span> <span class="n">single</span> <span class="n">line</span> <span class="k">of</span> <span class="n">code</span> <span class="n">unless</span> <span class="n">you</span> <span class="n">have</span> <span class="n">a</span> <span class="n">failing</span> <span class="n">automated</span> <span class="n">test</span><span class="p">.</span>
+<span class="n">Eliminate</span> <span class="n">duplication</span><span class="p">.</span>  <span class="k">In</span> <span class="n">software</span> <span class="n">engineering</span><span class="p">,</span> <span class="n">don</span><span class="err">&#39;</span><span class="n">t</span> <span class="n">repeat</span> <span class="n">yourself</span> <span class="p">(</span><span class="n">DRY</span><span class="p">)</span> <span class="k">is</span> <span class="n">a</span> <span class="n">principle</span> <span class="k">of</span> <span class="n">agile</span> <span class="n">software</span> <span class="n">development</span><span class="p">,</span> <span class="n">aimed</span> <span class="k">at</span> <span class="n">reducing</span> <span class="n">repetition</span> <span class="k">of</span> <span class="n">information</span> <span class="k">of</span> <span class="k">all</span> <span class="n">kinds</span><span class="p">,</span> <span class="n">which</span> <span class="k">is</span> <span class="n">especially</span> <span class="n">useful</span> <span class="k">in</span> <span class="n">multi</span><span class="o">-</span><span class="n">tier</span> <span class="n">architectures</span>
 </pre></div>
 
 
 <p>According to Beck, a good unit test in TDD should be able to do all of the following:</p>
-<div class="highlight"><pre><span></span>Run fast (they have short setups, run times, and break downs).
-Run in isolation (you should be able to reorder them).
-Use data that makes them easy to read and to understand.
-Use real data (or copies of production data) when they need to.
-Represent one step towards your overall goal.
+<div class="highlight"><pre><span></span><span class="nv">Run</span> <span class="nv">fast</span> <span class="ss">(</span><span class="nv">they</span> <span class="nv">have</span> <span class="nv">short</span> <span class="nv">setups</span>, <span class="nv">run</span> <span class="nv">times</span>, <span class="nv">and</span> <span class="k">break</span> <span class="nv">downs</span><span class="ss">)</span>.
+<span class="nv">Run</span> <span class="nv">in</span> <span class="nv">isolation</span> <span class="ss">(</span><span class="nv">you</span> <span class="nv">should</span> <span class="nv">be</span> <span class="nv">able</span> <span class="nv">to</span> <span class="nv">reorder</span> <span class="nv">them</span><span class="ss">)</span>.
+<span class="nv">Use</span> <span class="nv">data</span> <span class="nv">that</span> <span class="nv">makes</span> <span class="nv">them</span> <span class="nv">easy</span> <span class="nv">to</span> <span class="nv">read</span> <span class="nv">and</span> <span class="nv">to</span> <span class="nv">understand</span>.
+<span class="nv">Use</span> <span class="nv">real</span> <span class="nv">data</span> <span class="ss">(</span><span class="nv">or</span> <span class="nv">copies</span> <span class="nv">of</span> <span class="nv">production</span> <span class="nv">data</span><span class="ss">)</span> <span class="nv">when</span> <span class="nv">they</span> <span class="nv">need</span> <span class="nv">to</span>.
+<span class="nv">Represent</span> <span class="nv">one</span> <span class="nv">step</span> <span class="nv">towards</span> <span class="nv">your</span> <span class="nv">overall</span> <span class="nv">goal</span>.
 </pre></div>
 
 
 <p>This means unit tests need to be narrowly focused and shouldn't try to test too many different things at once.  An example of a unit test that tries to do too many things is shown in a test scenario involving a sweater purchase in an e-commerce shopping cart application.  The Arrange section in this example assumes that the pipe has been primed and you have sweaters in your inventory database, that another unit is able to show the inventory to your customer and still other units are be able to process the customer payment and remove items from inventory.</p>
 <p>Here's some pseudo code for a unit test in the AAA format for this kind of functionality:</p>
 <p>Arrange</p>
-<div class="highlight"><pre><span></span>setup Sweater Inventory (mostly likely with mock database objects)
-set Sweater Inventory Count to 5      
-when Sweater Inventory is requested to remove N items, then count = count - N
+<div class="highlight"><pre><span></span><span class="nv">setup</span> <span class="nv">Sweater</span> <span class="nv">Inventory</span> <span class="ss">(</span><span class="nv">mostly</span> <span class="nv">likely</span> <span class="nv">with</span> <span class="nv">mock</span> <span class="nv">database</span> <span class="nv">objects</span><span class="ss">)</span>
+<span class="nv">set</span> <span class="nv">Sweater</span> <span class="nv">Inventory</span> <span class="nv">Count</span> <span class="nv">to</span> <span class="mi">5</span>      
+<span class="nv">when</span> <span class="nv">Sweater</span> <span class="nv">Inventory</span> <span class="nv">is</span> <span class="nv">requested</span> <span class="nv">to</span> <span class="nv">remove</span> <span class="nv">N</span> <span class="nv">items</span>, <span class="k">then</span> <span class="nv">count</span> <span class="o">=</span> <span class="nv">count</span> <span class="o">-</span> <span class="nv">N</span>
 </pre></div>
 
 
 <p>Act</p>
-<div class="highlight"><pre><span></span>call the Unit Under Test to remove 3 items from inventory
+<div class="highlight"><pre><span></span><span class="k">call</span> <span class="n">the</span> <span class="n">Unit</span> <span class="k">Under</span> <span class="n">Test</span> <span class="k">to</span> <span class="n">remove</span> <span class="mi">3</span> <span class="n">items</span> <span class="k">from</span> <span class="n">inventory</span>
 </pre></div>
 
 
 <p>Assert</p>
-<div class="highlight"><pre><span></span>the number of sweaters in the Sweater Inventory is 2
+<div class="highlight"><pre><span></span><span class="n">the</span> <span class="nb">number</span> <span class="k">of</span> <span class="n">sweaters</span> <span class="k">in</span> <span class="n">the</span> <span class="n">Sweater</span> <span class="n">Inventory</span> <span class="k">is</span> <span class="mi">2</span>
 </pre></div>
 
 
 <p>As you can see, writing large unit tests in this way can quickly become complex and convoluted,  especially when you need to test end-to-end functionality for a complete 6-step e-commerce shopping-cart application, i.e.</p>
-<div class="highlight"><pre><span></span>Access Homepage –&gt; 
-Customer Search results –&gt;
-Product details  –&gt;
-Customer login (or Register New customer) –&gt;
-Payment details –&gt;
-Order confirmation
+<div class="highlight"><pre><span></span><span class="k">Access</span> <span class="n">Homepage</span> <span class="err">–</span><span class="o">&gt;</span> 
+<span class="n">Customer</span> <span class="k">Search</span> <span class="n">results</span> <span class="err">–</span><span class="o">&gt;</span>
+<span class="n">Product</span> <span class="n">details</span>  <span class="err">–</span><span class="o">&gt;</span>
+<span class="n">Customer</span> <span class="n">login</span> <span class="p">(</span><span class="k">or</span> <span class="n">Register</span> <span class="k">New</span> <span class="n">customer</span><span class="p">)</span> <span class="err">–</span><span class="o">&gt;</span>
+<span class="n">Payment</span> <span class="n">details</span> <span class="err">–</span><span class="o">&gt;</span>
+<span class="k">Order</span> <span class="n">confirmation</span>
 </pre></div>
 
 
@@ -148,10 +148,10 @@ Order confirmation
 BDD is an enhancement of TDD</p>
 <p>Image Source:  andolasoft</p>
 <p>The main advantage of BDD is that it encourages collaboration between developers, QA and non-technical or business participants on a software project.  It extends TDD by writing test cases in a natural language that non-programmers and domain experts can read. BDD features are usually defined in a GIVEN WHEN and THEN (GWT) format, which is a semi-structured way of writing down test cases.  A BDD feature  or user story needs to follow the following structure:</p>
-<div class="highlight"><pre><span></span>Describe who is the primary stakeholder of the feature
-What effect the stakeholder wants the feature to have
-What business value the stakeholder will derive from this effect
-Acceptance criteria or scenarios
+<div class="highlight"><pre><span></span><span class="k">Describe</span> <span class="n">who</span> <span class="k">is</span> <span class="n">the</span> <span class="k">primary</span> <span class="n">stakeholder</span> <span class="k">of</span> <span class="n">the</span> <span class="n">feature</span>
+<span class="n">What</span> <span class="n">effect</span> <span class="n">the</span> <span class="n">stakeholder</span> <span class="n">wants</span> <span class="n">the</span> <span class="n">feature</span> <span class="k">to</span> <span class="n">have</span>
+<span class="n">What</span> <span class="n">business</span> <span class="n">value</span> <span class="n">the</span> <span class="n">stakeholder</span> <span class="n">will</span> <span class="n">derive</span> <span class="k">from</span> <span class="n">this</span> <span class="n">effect</span>
+<span class="n">Acceptance</span> <span class="n">criteria</span> <span class="k">or</span> <span class="n">scenarios</span>
 </pre></div>
 
 
@@ -164,10 +164,10 @@ Acceptance criteria or scenarios
 
 
 <p>Scenario 1: On-line shopping cart items not purchased within 30 minutes go back into inventory</p>
-<div class="highlight"><pre><span></span>Given that a customer puts a black sweater into his shopping cart
-And I have three black sweaters in inventory.
-When he does not complete the purchase with 30 minutes (i.e. abandons the shopping cart)
-Then I should have four black sweaters in inventory.
+<div class="highlight"><pre><span></span><span class="nv">Given</span> <span class="nv">that</span> <span class="nv">a</span> <span class="nv">customer</span> <span class="nv">puts</span> <span class="nv">a</span> <span class="nv">black</span> <span class="nv">sweater</span> <span class="nv">into</span> <span class="nv">his</span> <span class="nv">shopping</span> <span class="nv">cart</span>
+<span class="nv">And</span> <span class="nv">I</span> <span class="nv">have</span> <span class="nv">three</span> <span class="nv">black</span> <span class="nv">sweaters</span> <span class="nv">in</span> <span class="nv">inventory</span>.
+<span class="nv">When</span> <span class="nv">he</span> <span class="nv">does</span> <span class="nv">not</span> <span class="nv">complete</span> <span class="nv">the</span> <span class="nv">purchase</span> <span class="nv">with</span> <span class="mi">30</span> <span class="nv">minutes</span> <span class="ss">(</span><span class="nv">i</span>.<span class="nv">e</span>. <span class="nv">abandons</span> <span class="nv">the</span> <span class="nv">shopping</span> <span class="nv">cart</span><span class="ss">)</span>
+<span class="k">Then</span> <span class="nv">I</span> <span class="nv">should</span> <span class="nv">have</span> <span class="nv">four</span> <span class="nv">black</span> <span class="nv">sweaters</span> <span class="nv">in</span> <span class="nv">inventory</span>.
 </pre></div>
 
 

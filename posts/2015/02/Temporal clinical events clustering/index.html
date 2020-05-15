@@ -79,20 +79,20 @@ move any more.</p>
 <h2>Timeline View</h2>
 <p>For data that relates to temporal events, the Timeline Widget adds an interesting dimension to your exhibit.</p>
 <p>The nobelists.js data file lists the years when the Nobelists won their prizes, so I can plot each one on a time line. To display timelines in Exhibit you need to include a separate utility, the Timeline widget. The Timeline widget is a bit bulky, so Exhibit doesn't include it by default. You have to include the time extension to Exhibit. Open the file nobelists.html, find the reference to exhibit-api.js and add the following script element after it:</p>
-<div class="highlight"><pre><span></span><span class="nt">&lt;div</span> <span class="na">data-ex-role=</span><span class="s">&quot;view&quot;</span><span class="nt">&gt;</span>
-    data-ex-view-class=&quot;Timeline&quot;  
-    data-ex-start=&quot;.time&quot; 
-    data-ex-end=&quot;.time2&quot; 
-    data-ex-color-key=&quot;.cluster&quot; 
-    data-ex-top-band-unit=&quot;month&quot; 
-    data-ex-bottom-band-unit=&quot;year&quot; 
-    data-ex-top-band-pixels-per-unit=&quot;90&quot; 
-    data-ex-bottom-band-pixels-per-unit=&quot;400&quot;
-        <span class="nt">&lt;div</span> <span class="na">data-ex-role=</span><span class="s">&quot;lens&quot;</span><span class="nt">&gt;</span>
-                <span class="nt">&lt;span</span> <span class="na">data-ex-content=</span><span class="s">&quot;.hour&quot;</span><span class="nt">&gt;&lt;/span&gt;</span>: 
-                <span class="nt">&lt;span</span> <span class="na">data-ex-content=</span><span class="s">&quot;.label&quot;</span><span class="nt">&gt;&lt;/span&gt;</span>
-        <span class="nt">&lt;/div&gt;</span>
-<span class="nt">&lt;/div&gt;</span>
+<div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="nv">div</span> <span class="nv">data</span><span class="o">-</span><span class="nv">ex</span><span class="o">-</span><span class="nv">role</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">view</span><span class="s2">&quot;</span><span class="o">&gt;</span>
+    <span class="nv">data</span><span class="o">-</span><span class="nv">ex</span><span class="o">-</span><span class="nv">view</span><span class="o">-</span><span class="nv">class</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Timeline</span><span class="s2">&quot;</span>  
+    <span class="nv">data</span><span class="o">-</span><span class="nv">ex</span><span class="o">-</span><span class="nv">start</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">.time</span><span class="s2">&quot;</span> 
+    <span class="nv">data</span><span class="o">-</span><span class="nv">ex</span><span class="o">-</span><span class="k">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">.time2</span><span class="s2">&quot;</span> 
+    <span class="nv">data</span><span class="o">-</span><span class="nv">ex</span><span class="o">-</span><span class="nv">color</span><span class="o">-</span><span class="nv">key</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">.cluster</span><span class="s2">&quot;</span> 
+    <span class="nv">data</span><span class="o">-</span><span class="nv">ex</span><span class="o">-</span><span class="nv">top</span><span class="o">-</span><span class="nv">band</span><span class="o">-</span><span class="nv">unit</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">month</span><span class="s2">&quot;</span> 
+    <span class="nv">data</span><span class="o">-</span><span class="nv">ex</span><span class="o">-</span><span class="nv">bottom</span><span class="o">-</span><span class="nv">band</span><span class="o">-</span><span class="nv">unit</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">year</span><span class="s2">&quot;</span> 
+    <span class="nv">data</span><span class="o">-</span><span class="nv">ex</span><span class="o">-</span><span class="nv">top</span><span class="o">-</span><span class="nv">band</span><span class="o">-</span><span class="nv">pixels</span><span class="o">-</span><span class="nv">per</span><span class="o">-</span><span class="nv">unit</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">90</span><span class="s2">&quot;</span> 
+    <span class="nv">data</span><span class="o">-</span><span class="nv">ex</span><span class="o">-</span><span class="nv">bottom</span><span class="o">-</span><span class="nv">band</span><span class="o">-</span><span class="nv">pixels</span><span class="o">-</span><span class="nv">per</span><span class="o">-</span><span class="nv">unit</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">400</span><span class="s2">&quot;</span>
+        <span class="o">&lt;</span><span class="nv">div</span> <span class="nv">data</span><span class="o">-</span><span class="nv">ex</span><span class="o">-</span><span class="nv">role</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">lens</span><span class="s2">&quot;</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="nv">span</span> <span class="nv">data</span><span class="o">-</span><span class="nv">ex</span><span class="o">-</span><span class="nv">content</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">.hour</span><span class="s2">&quot;</span><span class="o">&gt;&lt;/</span><span class="nv">span</span><span class="o">&gt;</span>: 
+                <span class="o">&lt;</span><span class="nv">span</span> <span class="nv">data</span><span class="o">-</span><span class="nv">ex</span><span class="o">-</span><span class="nv">content</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">.label</span><span class="s2">&quot;</span><span class="o">&gt;&lt;/</span><span class="nv">span</span><span class="o">&gt;</span>
+        <span class="o">&lt;/</span><span class="nv">div</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="nv">div</span><span class="o">&gt;</span>
 </pre></div>
 
 
