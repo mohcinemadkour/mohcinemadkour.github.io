@@ -104,13 +104,13 @@ maximize the difference between TPR (sensitivity) and FPR (1 –specificty) and 
 
 
 <p>with</p>
-<div class="highlight"><pre><span></span>    <span class="nv">def</span> <span class="nv">cal_cutoff2</span><span class="ss">(</span><span class="nv">data</span><span class="ss">)</span>:
+<div class="highlight"><pre><span></span><span class="nv">def</span> <span class="nv">cal_cutoff2</span><span class="ss">(</span><span class="nv">data</span><span class="ss">)</span>:
     <span class="nv">val</span><span class="o">=</span><span class="mi">0</span>
     <span class="k">for</span> <span class="nv">i</span> <span class="nv">in</span> <span class="nv">range</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">data</span><span class="ss">)</span><span class="o">-</span><span class="mi">10</span><span class="ss">)</span>:
     <span class="k">if</span><span class="ss">((</span><span class="nv">abs</span><span class="ss">(</span><span class="nv">data</span>[<span class="s1">&#39;</span><span class="s">acc</span><span class="s1">&#39;</span>].<span class="nv">iloc</span>[<span class="nv">i</span>]<span class="o">-</span><span class="nv">data</span>[<span class="s1">&#39;</span><span class="s">acc</span><span class="s1">&#39;</span>].<span class="nv">iloc</span>[<span class="nv">i</span><span class="o">+</span><span class="mi">10</span>]<span class="ss">))</span><span class="o">&lt;</span><span class="mi">0</span>.<span class="mi">002</span><span class="ss">)</span>:
         <span class="nv">val</span><span class="o">=</span><span class="nv">data</span>[<span class="s1">&#39;</span><span class="s">thres</span><span class="s1">&#39;</span>].<span class="nv">iloc</span>[<span class="nv">i</span>]
         <span class="k">break</span>
-<span class="k">return</span><span class="ss">(</span><span class="nv">val</span><span class="ss">)</span>
+    <span class="k">return</span><span class="ss">(</span><span class="nv">val</span><span class="ss">)</span>
 </pre></div>
 
 
@@ -266,166 +266,6 @@ maximize the difference between TPR (sensitivity) and FPR (1 –specificty) and 
 
 <p>The chart bellow illustrates ROC and PR curves for 4 different estimators applied on the same data<img alt=" ROC" src="/images/ROC-PV1.png"><img alt=" PR" src="/images/ROC-PV2.png">
 The performances of the algorithms appear to be comparable in ROC space, however, in PR space we can see that Estimator 4 has a clear advantage over Estimator 3.</p>
-<h1>Assessing the Model</h1>
-<p>The chart bellow outlines the performance evaluation pipeline (except prevalence) in an example<img alt=" performance evaluation pipeline" src="/images/MLPipe.jpg"></p>
-<h1>The bias-variance trade-off (Bias-variance dilemma)</h1>
-<p>Bias and variance are inherent properties of estimators and we usually have to select learning algorithms and hyperparameters so that both bias and variance are as low as possible. Another way to reduce the variance of a model is to use more training data. However, you should only collect more training data if the true function is too complex to be approximated by an estimator with a lower variance.
-<img alt=" bias-variance trade-off" src="/images/biasvariance.png"></p>
-<h1>Analyzing Model Variance and Bias</h1>
-<p>The two methods used here for analyzing how the model is performing with the data are Learning Curves and a Model Complexity plot.Learning curves give us an opportunity to diagnose bias and variance in supervised learning models. </p>
-<h2>Learning Curves</h2>
-<p>A learning curve shows the validation and training score of an estimator for varying numbers of training samples. It is a tool to find out how much we benefit from adding more training data and whether the estimator suffers more from a <strong>variance error</strong> or a <strong>bias error</strong>. If both the validation score and the training score converge to a value that is <strong>too low</strong> with increasing size of the training set, we will not benefit much from more training data. In the following plot you can see an example: naive Bayes roughly converges to a low score.
-We will probably have to <strong>use an estimator</strong> or a <strong>parametrization of the current estimator</strong> that can learn more <strong>complex concepts</strong> (i.e. has a lower bias). If the training score is much greater than the validation score for the maximum number of training samples (<strong>i.e. has a high variance</strong>), adding more training samples will most likely increase generalization. In the following plot you can see that the SVM could benefit from more training examples.</p>
-<h1>Example of Scoring Learners and Cohort</h1>
-<table>
-<thead>
-<tr>
-<th>Cohort Definition</th>
-<th>Cohort Size</th>
-<th>CVD Percent in Cohort</th>
-<th>Covariates in Learner/Model</th>
-<th>Method Type</th>
-<th>Method Sensitivity</th>
-<th>Method PPV</th>
-<th>Balanced Accuracy</th>
-<th>Method Accuracy</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ALL OF THEM (don't emulate</td>
-<td>369000</td>
-<td>0.80%</td>
-<td>"bmi</td>
-<td>numAge</td>
-<td>tchol</td>
-<td>sbp</td>
-<td>htn</td>
-<td>t2d"</td>
-</tr>
-<tr>
-<td>Age &gt; 55</td>
-<td>122792</td>
-<td>22.60%</td>
-<td>"numAge</td>
-<td>tchol</td>
-<td>htn</td>
-<td>gender"</td>
-<td>Logit</td>
-<td>0.16</td>
-</tr>
-<tr>
-<td>Age 20-40</td>
-<td>121130</td>
-<td>0.02%</td>
-<td>"tchol</td>
-<td>t2d</td>
-<td>smoking</td>
-<td>race"</td>
-<td>LDA</td>
-<td>0</td>
-</tr>
-<tr>
-<td>"htn == ""Y"""</td>
-<td>108510</td>
-<td>18.85%</td>
-<td>smoking</td>
-<td>Logit</td>
-<td>"""NA"""</td>
-<td>"""NA"""</td>
-<td>"""NA"" (is this weird?)"</td>
-<td></td>
-</tr>
-<tr>
-<td>"gender == ""F"" &amp; numAge &gt; 60"</td>
-<td>53929</td>
-<td>14.30%</td>
-<td>"tchol</td>
-<td>htn"</td>
-<td>Logit</td>
-<td>0</td>
-<td>NaN</td>
-<td>0.5</td>
-</tr>
-<tr>
-<td>Age 30-45</td>
-<td>99930</td>
-<td>"numAge</td>
-<td>race</td>
-<td>htn</td>
-<td>gender</td>
-<td>smoking"</td>
-<td>Logit</td>
-<td>1</td>
-</tr>
-<tr>
-<td>Age &lt;= 40</td>
-<td>93980 train; 93981 test</td>
-<td>1.64%</td>
-<td>"numAge</td>
-<td>htn</td>
-<td>smoking</td>
-<td>treat</td>
-<td>t2d</td>
-<td>gender</td>
-</tr>
-<tr>
-<td>"gender == ""M"" &amp; numAge &gt; 60"</td>
-<td>36853</td>
-<td>30.75%</td>
-<td>"tchol</td>
-<td>htn"</td>
-<td>Logit</td>
-<td>0.28</td>
-<td>0.51</td>
-<td>0.58</td>
-</tr>
-<tr>
-<td>GENETICS</td>
-<td>66100</td>
-<td>2.40%</td>
-<td>"tchol</td>
-<td>rs8055236</td>
-<td>htn</td>
-<td>t2d</td>
-<td>smoking"</td>
-<td>lda</td>
-</tr>
-<tr>
-<td>age &lt; 55 &amp; age &gt; 35</td>
-<td>379272</td>
-<td>5.30%</td>
-<td>cvd ~ tchol + htn + t2d + bmi + rs8055236</td>
-<td>logit</td>
-<td>0</td>
-<td>nan</td>
-<td>0.5</td>
-<td></td>
-</tr>
-<tr>
-<td>age&gt;55</td>
-<td>logit</td>
-<td>0.22</td>
-<td>0.59</td>
-<td>0.6</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>GENETICS</td>
-<td>46217 train; 8157 test</td>
-<td>9.78%</td>
-<td>"cvd ~ numAge + htn + smoking</td>
-<td>+ treat + t2d + gender + bmi + tchol + sbp + rs10757278 + rs4665058 + rs8055236"</td>
-<td>SuperLearner</td>
-<td>0.9</td>
-<td>0.369</td>
-<td>0.8394</td>
-</tr>
-</tbody>
-</table>
             <div class="hr"></div>
             <a href="#" class="go-top">Go Top</a>
 <div class="comments">
