@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+
+
+        <title>Dropout for Deep Learning Regularization, explained with Examples // Mohcine Madkour // Big Data Architectures and more</title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../../../theme/css/pure.css">
+    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+<div class="pure-g-r" id="layout">
+    <div class="sidebar sidebar-article pure-u">
+        <header class="header-article">
+            <hgroup>
+                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine Madkour">
+                        <img class="avatar" alt="Mohcine Madkour" src="http://www.gravatar.com/avatar/ae08847efc1a85b710f326eb8ee2e907">
+                </a>
+                <h2 class="article-info">Mohcine Madkour</h2>
+                <small class="about-author"></small>
+                <h5>Published</h5>
+                <p>Wed 01 April 2020</p>
+                <a href="/">&larr;Home</a>
+            </hgroup>
+        </header>
+    </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>Dropout for Deep Learning Regularization, explained with Examples</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="../../../../tag/deep-learning-regularization/">Deep Learning Regularization</a>
+                        </p>
+                </header>
+            </section>
+            <p>This artcile’s dataset as well as our method’s source code that were used for validating our experiment are available to support the reproduction of our method and results, and can be obtained from my github <a href="https://github.com/mohcinemadkour/BloggedProjects/blob/main/How_does_adding_dropout_affect_model_performance.ipynb">repo</a></p>
+<p>Deep neural network is a very powerful tool in machine learning. Multiple non-linear hidden layers enable the model to learn complicated relationships between input and output. However, when the training set is small, there are different parameter settings that would fits training set perfectly, but the one complex parameter setting tends to perform poorly on the test dataset, <strong>i.e. We got the problem of overfitting</strong>. One way to solve this problem is by averaging predictions of different neural networks , but this becomes computationally expensive when applied to large datasets. The alternative that makes it possible to train a huge number of different networks in a reasonable time is <strong>dropout</strong>, which randomly <strong>omits some hidden units</strong> i.e. feature detectors to prevent co-adaption and samples from an exponential number of different “thinned” networks. </p>
+<p>The idea of dropout model can be shown in the 2012 <a href="https://arxiv.org/abs/1207.0580">paper</a> of Nitish Srivastavanitish and Geoffrey Hinton. Applying dropout to a neural network amounts to sampling a “thinned” network from it, where you cut all the input and output connections for the dropped units. Training process for that would be like training a number of thinned networks with extensive weight sharing. But when it comes to testing, averaging predictions over different networks seems to be unfeasible, so a single network with scaled weights for all the units was used.</p>
+<table>
+<thead>
+<tr>
+<th align="center"><img alt="dropout illustration" src="/images/dropout/1.gif"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><em>Example of dropout applied on a second hidden layer of a neuron network</em></td>
+</tr>
+</tbody>
+</table>
+<h1>Training with Drop Out Layers</h1>
+<p>Dropout is a regularization method that approximates training a large number of neural networks with different architectures in parallel. During training, some number of layer outputs are randomly ignored or <strong>dropped out.</strong> This has the effect of making the layer look-like and be treated-like a layer with a different number of nodes and connectivity to the prior layer. In effect, each update to a layer during training is performed with a different <strong>view</strong> of the configured layer. Dropout has the effect of making the training process noisy, forcing nodes within a layer to probabilistically take on more or less responsibility for the inputs. This conceptualization suggests that perhaps dropout breaks-up situations where network layers co-adapt to correct mistakes from prior layers, in turn making the model more robust.</p>
+<p>Dropout is implemented <strong>per-layer</strong> in a neural network. It can be used with most types of layers, such as dense fully connected layers, convolutional layers, and recurrent layers such as the long short-term memory network layer. Dropout may be implemented on any or all hidden layers in the network as well as the visible or input layer. It is not used on the output layer.</p>
+<h1>Dropout Implementation</h1>
+<p>Adding dropout to your PyTorch models is very straightforward with the torch.nn.Dropout class, which takes in the dropout rate – the probability a neuron being deactivated – as a parameter.</p>
+<div class="highlight"><pre><span></span><code><span class="err">self.dropout = nn.Dropout(0.25)</span>
+</code></pre></div>
+
+
+<p>We can apply dropout after any non-output layer.</p>
+<h1>Dropout as Regularization</h1>
+<p>To observe the effect of dropout, train a model to do image classification. I'll first train an unregularized network, followed by a network regularized through Dropout. The models are trained on the Cifar-10 dataset for 15 epochs each. </p>
+<p>Complete example of adding dropout to a PyTorch model</p>
+<script src="https://gist.github.com/mohcinemadkour/8e6d4a59c9990bf4f65fdf831bcd5e20.js"></script>
+
+<p>To learn more, run the complete code at github <a href="https://github.com/mohcinemadkour/BloggedProjects/blob/main/How_does_adding_dropout_affect_model_performance.ipynb">repo</a>. Here are the result fot both accuracy and loss functions in training and testing stes.</p>
+<table>
+<thead>
+<tr>
+<th align="center"><img alt="dropout illustration" src="/images/dropout/5.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><em>Plots of accuracy and loss functions for 15 epochs</em></td>
+</tr>
+</tbody>
+</table>
+<h1>Observations</h1>
+<p>An unregularized network quickly overfits on the training dataset. Notice how the validation loss for without-dropout run diverges a lot after just a few epochs. This accounts for the higher generalization error.</p>
+<p>Training with two dropout layers with a dropout probability of 25% prevents model from overfitting. However, this brings down the training accuracy, which means a regularized network has to be trained longer.</p>
+<p>Dropout improves the model generalization. Even though the training accuracy is lower than the unregularized network, the overall validation accuracy has improved. This accounts for a lower generalization error.</p>
+<h1>Reference</h1>
+<ul>
+<li><a href="https://arxiv.org/abs/1207.0580">Improving neural networks by preventing co-adaptation of feature detectors</a></li>
+<li><a href="https://arxiv.org/abs/1506.02142">Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning</a></li>
+<li><a href="https://jmlr.org/papers/v15/srivastava14a.html">Dropout: A Simple Way to Prevent Neural Networks from Overfitting</a></li>
+<li>https://wandb.ai/authors/ayusht/reports/Dropout-in-PyTorch-An-Example--VmlldzoxNTgwOTE</li>
+</ul>
+            <div class="hr"></div>
+            <a href="#" class="go-top">Go Top</a>
+<div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div><footer class="footer">
+    <p>&copy; Mohcine Madkour &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+</div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>
