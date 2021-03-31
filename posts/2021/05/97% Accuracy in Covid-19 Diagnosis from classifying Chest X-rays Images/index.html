@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
+
+
+        <title>How I achieved ~ 97% Accuracy in Covid-19 Diagnosis from classifying Chest X-rays Images // Mohcine Madkour // Big Data Architectures and more</title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../../../theme/css/pure.css">
+    <link rel="stylesheet" href="../../../../theme/css/pygments.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
+</head>
+
+<body>
+<div class="pure-g-r" id="layout">
+    <div class="sidebar sidebar-article pure-u">
+        <header class="header-article">
+            <hgroup>
+                <a href="../../../../author/mohcine-madkour.html" title="See posts by Mohcine Madkour">
+                        <img class="avatar" alt="Mohcine Madkour" src="http://www.gravatar.com/avatar/ae08847efc1a85b710f326eb8ee2e907">
+                </a>
+                <h2 class="article-info">Mohcine Madkour</h2>
+                <small class="about-author"></small>
+                <h5>Published</h5>
+                <p>Sat 01 May 2021</p>
+                <a href="/">&larr;Home</a>
+            </hgroup>
+        </header>
+    </div>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>How I achieved ~ 97% Accuracy in Covid-19 Diagnosis from classifying Chest X-rays Images</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="../../../../tag/deep-learning-regularization/">Deep Learning Regularization</a>
+                                <a class="post-category" href="../../../../tag/covid-19-diagnosis/">Covid-19 Diagnosis</a>
+                        </p>
+                </header>
+            </section>
+            <p>The COVID-19 pandemic continues to have a devastating effect on the health and well-being of the global population. Acritical step in the fight against COVID-19 is effective screening of infected patients, with one of the key screening approachesbeing radiology examination using chest radiography. In this study we introduce COVID-Net, a deep convolutional neural network design tailoredfor the detection of COVID-19 cases from chest X-ray (CXR) images that is open source and available to the general public.</p>
+<h1>What is a chest x-ray?</h1>
+<p>X-rays are a form of radiation like light or radio waves. X-rays pass through most objects, including the body, an x-ray machine produces a small burst of radiation that passes through the body, recording an image on photographic film or a special detector. On a chest x-ray, the ribs and spine will absorb much of the radiation and appear white or light gray on the image. Lung tissue absorbs little radiation and will appear dark on the image.
+X-rays based Covid19 Screening</p>
+<table>
+<thead>
+<tr>
+<th align="center"><img alt="ct-scan illustration" src="/images/covid97accyracy/1.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><em>Illustration of x-rays taking bed</em></td>
+</tr>
+</tbody>
+</table>
+<p>There are several advantages to leveraging CXR imaging for COVID-19 screening amid the global COVID-19 pandemic,particularly in resource-constrained areas and heavily-affected areas:
+- Rapid triaging: CXR imaging enables rapid triaging of patients suspected of COVID-19 and can be done in parallel of viral testing (which takes time) to help relief the high volumes of patients especially in areas most affected where theyhave ran out of capacity (e.g., New York, Spain, and Italy), or even as standalone when viral testing isn’t an option (lowsupplies). Furthermore, CXR imaging can be quite effective for triaging in geographic areas where patients are instructedto stay home until the onset of advanced symptoms (e.g., New York City), since abnormalities are often seen at time ofpresentation when patients suspected of COVID-19 arrive at clinical sites.
+- Availability and Accessibility: CXR imaging is readily available and accessible in many clinical sites and imagingcenters as it is considered standard equipment in most healthcare systems. In particular, CXR imaging is much morereadily available than CT imaging, especially in developing countries where CT scanners are cost prohibitive due to highequipment and maintenance costs.
+- Portability: The existence of portable CXR systems means that imaging can be performed within an isolation room,thus significantly reducing the risk of COVID-19 transmission during transport to fixed systems such as CT scanners aswell as within the rooms housing the fixed imaging systems.</p>
+<p>As such, radiography examination can be conducted faster and have greater availability given the prevalence of chestradiology imaging systems in modern healthcare systems and the availability of portable units, making them a good complement to RT-PCR testing particularly since CXR imaging is often performed as part of standard procedure for patients with a respiratory complaint11. Furthermore, some have suggested that as the COVID-19 pandemic progresses, there will be a greater reliance on portable CXR due to the aforementioned advantages. However, one of the biggest bottlenecks faced is the need</p>
+<h1>Why X-rays?</h1>
+<p>There have been promising efforts to apply machine learning to aid in the diagnosis of COVID-19 based on CT scans. Despite the success of these methods, the fact remains that COVID-19 is an infection that is likely to be experienced by communities of all sizes. X-rays are inexpensive and quick to perform; therefore, they are more accessible to healthcare providers working in smaller and/or remote regions. Any insights that may be derived as a result of explainability algorithms applied to a successful model will be invaluable to the global effort of identifying and treating cases of COVID-19. This model is a prototype system and not for medical use and does not offer a diagnosis.</p>
+<h1>Data</h1>
+<p>I used Kaggle environment for completing my experiment, it is a good medium to replicate the result, at the references part of the article, you will find the link to the notebook.</p>
+<p>Our data is represented by training and testing sets, the training consists of a total of a total of 5133 images, 3418 Pneumona images, 1266 Normal images, and 460 COVID19 images, and the testing set consists of 1288 images.</p>
+<table>
+<thead>
+<tr>
+<th align="center"><img alt="ct-scan illustration" src="/images/covid97accyracy/2.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><em>Examples of X-rays images after data augmentation</em></td>
+</tr>
+</tbody>
+</table>
+<h2>Data Preparation</h2>
+<p>The images in their raw format come in different sizes, I convert all the images through the image generator to the target_size of (300,300)</p>
+<p>I use the generator to transform the values in each batch so that their mean is 0 and their standard deviation is 1. This will facilitate model training by standardizing the input distribution. I also converts the single channel X-ray images (gray-scale) to a three-channel format by repeating the values in the image across all channels. We will want this because the pre-trained model that I’ll use requires three-channel inputs</p>
+<p>After the standardization and augmentation, I got the following images</p>
+<h1>Training method</h1>
+<p>I load the DenseNet169 model and I make the layers to Freeze Weights. I also add Full Connected Layers and dropouts to avoid Overfit.
+Data and Notebook : https://github.com/mohcinemadkour/Covid_CXR_Classifictaion</p>
+<table>
+<thead>
+<tr>
+<th align="center"><img alt="ct-scan illustration" src="/images/covid97accyracy/3.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><em>DenseNet169 architecture</em></td>
+</tr>
+</tbody>
+</table>
+<p>DenseNet architecture is new, it is a logical extension of ResNet. ResNet architecture has a fundamental building block (Identity) where you merge (additive) a previous layer into a future layer. Reasoning here is by adding additive merges we are forcing the network to learn residuals (errors i.e. diff between some previous layer and current one). In contrast, DenseNet paper proposes concatenating outputs from the previous layers instead of using the summation.</p>
+<table>
+<thead>
+<tr>
+<th align="center"><img alt="ct-scan illustration" src="/images/covid97accyracy/4.jpeg"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><em>A 5-layer dense block with a growth rate ofk= 4.Each layer takes all preceding feature-maps as input</em></td>
+</tr>
+</tbody>
+</table>
+<h1>Evaluating Model Accuarcy</h1>
+<table>
+<thead>
+<tr>
+<th align="center"><img alt="ct-scan illustration" src="/images/covid97accyracy/5.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><em>Some examples of classification results</em></td>
+</tr>
+</tbody>
+</table>
+<p>I trained the model for a more than 6 hours on GeForce GTX 1060, Memory 5968MiB. The final model evaluation on the testing set is [0.06362051516771317, 0.9704968929290771]</p>
+<p>I visualize the changes in model accuracy and loss during the training process, as this gives us important information to evaluate what we can do to improve accuracy.</p>
+<table>
+<thead>
+<tr>
+<th align="center"><img alt="ct-scan illustration" src="/images/covid97accyracy/6.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><em>Some examples of classification results</em></td>
+</tr>
+</tbody>
+</table>
+<p>This gives as output an accuracy of 97%, which is not bad! But, can we do better? We have a limited amount of data, so how about trying to improve that using image augmentation? Some reseaches indicate that with some augmentation  effort a significant increase in prediction accuracy can be obtained when small data sets are considered. I am planing to try different augmentation techiques to my  original data set in order to increase teh accuracy. I am planing to report on that on my future blogs.</p>
+<table>
+<thead>
+<tr>
+<th align="center"><img alt="ct-scan illustration" src="/images/covid97accyracy/7.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><em>Learning curves: Accuracy and loss plots</em></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Predictions from testing set</strong></p>
+<ul>
+<li>Out of 116 images in the first class ( Normal) the model was successful in identifying 13 of those correctly</li>
+<li>Out of 312 imaged in the second class ( Pneumonia) the model was successful in identifying 74 of those correctly</li>
+<li>Out of 857 points in the third class (Covid19) the model was successful in identifying 582 of those correctly</li>
+</ul>
+<h1>Acknowledgements</h1>
+<p>Images are collected from various publicly available resources. If you use the data for research please give credit to authors:
+Sources:</p>
+<ul>
+<li>https://github.com/ieee8023/covid-chestxray-dataset</li>
+<li>https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia</li>
+<li>https://github.com/agchung</li>
+</ul>
+<h1>References</h1>
+<ul>
+<li>https://towardsdatascience.com/calibration-techniques-of-machine-learning-models-d4f1a9c7a9cf</li>
+<li>https://towardsdatascience.com/deep-transfer-learning-for-image-classification-f3c7e0ec1a14</li>
+<li>DenseNet: https://medium.com/the-advantages-of-densenet/the-advantages-of-densenet-98de3019cdac</li>
+<li>https://medium.com/secure-and-private-ai-writing-challenge/data-augmentation-increases-accuracy-of-your-model-but-how-aa1913468722</li>
+</ul>
+            <div class="hr"></div>
+            <a href="#" class="go-top">Go Top</a>
+<div class="comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = "leafyleap-2"; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div><footer class="footer">
+    <p>&copy; Mohcine Madkour &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>        </div>
+    </div>
+</div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>
