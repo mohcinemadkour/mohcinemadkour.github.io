@@ -6,7 +6,7 @@
     <meta name="description" content="Mohcine Madkour, Big Data Architectures and more">
 
 
-        <title>How I achieved ~ 97% Accuracy in Covid-19 Diagnosis from classifying Chest X-rays Images // Mohcine Madkour // Big Data Architectures and more</title>
+        <title>How I achieved 97 Percent Accuracy in Covid-19 Diagnosis from classifying Chest X rays Images // Mohcine Madkour // Big Data Architectures and more</title>
 
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
@@ -43,7 +43,7 @@
         <div class="content">
             <section class="post">
                 <header class="post-header">
-                    <h1>How I achieved ~ 97% Accuracy in Covid-19 Diagnosis from classifying Chest X-rays Images</h1>
+                    <h1>How I achieved 97 Percent Accuracy in Covid-19 Diagnosis from classifying Chest X rays Images</h1>
                         <p class="post-meta">
                             // under                                 <a class="post-category" href="../../../../tag/deep-learning-regularization/">Deep Learning Regularization</a>
                                 <a class="post-category" href="../../../../tag/covid-19-diagnosis/">Covid-19 Diagnosis</a>
@@ -88,7 +88,6 @@ X-rays based Covid19 Screening</p>
 </tr>
 </tbody>
 </table>
-<h2>Data Preparation</h2>
 <p>The images in their raw format come in different sizes, I convert all the images through the image generator to the target_size of (300,300)</p>
 <p>I use the generator to transform the values in each batch so that their mean is 0 and their standard deviation is 1. This will facilitate model training by standardizing the input distribution. I also converts the single channel X-ray images (gray-scale) to a three-channel format by repeating the values in the image across all channels. We will want this because the pre-trained model that I’ll use requires three-channel inputs</p>
 <p>After the standardization and augmentation, I got the following images</p>
@@ -147,7 +146,12 @@ Data and Notebook : https://github.com/mohcinemadkour/Covid_CXR_Classifictaion</
 </tr>
 </tbody>
 </table>
-<p>This gives as output an accuracy of 97%, which is not bad! But, can we do better? We have a limited amount of data, so how about trying to improve that using image augmentation? Some reseaches indicate that with some augmentation  effort a significant increase in prediction accuracy can be obtained when small data sets are considered. I am planing to try different augmentation techiques to my  original data set in order to increase teh accuracy. I am planing to report on that on my future blogs.</p>
+<p><strong>Predictions from testing set</strong></p>
+<ul>
+<li>Out of 116 images in the first class ( Normal) the model was successful in identifying 13 of those correctly</li>
+<li>Out of 312 imaged in the second class ( Pneumonia) the model was successful in identifying 74 of those correctly</li>
+<li>Out of 857 points in the third class (Covid19) the model was successful in identifying 582 of those correctly</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -160,12 +164,7 @@ Data and Notebook : https://github.com/mohcinemadkour/Covid_CXR_Classifictaion</
 </tr>
 </tbody>
 </table>
-<p><strong>Predictions from testing set</strong></p>
-<ul>
-<li>Out of 116 images in the first class ( Normal) the model was successful in identifying 13 of those correctly</li>
-<li>Out of 312 imaged in the second class ( Pneumonia) the model was successful in identifying 74 of those correctly</li>
-<li>Out of 857 points in the third class (Covid19) the model was successful in identifying 582 of those correctly</li>
-</ul>
+<p>This gives as output an accuracy of 97%, which is not bad! But, can we do better? We have a limited amount of data, so how about trying to improve that using image augmentation? Some reseaches indicate that with some augmentation  effort a significant increase in prediction accuracy can be obtained when small data sets are considered. I am planing to try different augmentation techiques to my original data set in order to increase the accuracy. I am also trying to reduce the false positive and false negative in classifying COVID images. I am planing to report on that on my future blogs.</p>
 <h1>Acknowledgements</h1>
 <p>Images are collected from various publicly available resources. If you use the data for research please give credit to authors:
 Sources:</p>
