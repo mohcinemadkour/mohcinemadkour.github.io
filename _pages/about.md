@@ -35,10 +35,7 @@ latest_posts:
   limit: 3
 ---
 
-
-
 I build and ship production AI • AI/ML Engineer & Architect • PhD Computer Science / Postdoc Biomedical Informatics, <a href="https://www.uth.edu/" target="_blank">University of Texas Health Science at Houston</a> • Previously: healthcare AI, surgical robotics, industrial IoT
-
 
 Currently an AI/ML Engineer and AI Architect consultant focused on agentic AI systems, RAG evaluation, and MLOps at scale.
 I studied Computer Science and completed postdoctoral work in Biomedical Informatics at the <a href="https://www.uth.edu/" target="_blank">University of Texas Health Science at Houston</a>. Previously built predictive maintenance MLOps for surgical robot fleets at <a href="https://www.intuitive.com/" target="_blank">Intuitive Surgical</a>, connected diagnostics at <a href="https://www.cummins.com/" target="_blank">Cummins</a>, and co-developed the MySurgeryRisk clinical AI platform at UTHealth — powering surgery risk prediction across thousands of patients.

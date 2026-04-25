@@ -15,6 +15,7 @@ I speak at conferences, meetups, and workshops on topics including agentic AI sy
 
 {% assign sorted_talks = site.talks | sort: "date" | reverse %}
 {% for talk in sorted_talks %}
+
 <div class="card mt-3">
   <div class="p-3">
     <div class="row">
@@ -59,6 +60,7 @@ I speak at conferences, meetups, and workshops on topics including agentic AI sy
 {% endfor %}
 
 {% if site.talks.size == 0 %}
+
 <p class="text-muted">Talks and presentations coming soon. Check back shortly.</p>
 {% endif %}
 
