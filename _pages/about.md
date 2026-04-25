@@ -33,10 +33,6 @@ latest_posts:
 
 I build and ship production AI • AI/ML Engineer & Architect • PhD Computer Science / Postdoc Biomedical Informatics
 
-Currently an AI/ML Engineer and AI Architect consultant focused on agentic AI systems, RAG evaluation, and MLOps at scale.
-
-Best way to reach me is via DM on <a href="https://linkedin.com/in/mohcine-madkour-83a642b2/" target="_blank">LinkedIn</a> or <a href="https://x.com/MadkourMohcine" target="_blank">X</a>.
-
 ---
 
 ### What I Build
