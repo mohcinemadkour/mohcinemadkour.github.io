@@ -1,0 +1,76 @@
+cv:
+  name: Mohcine Madkour
+  label: Senior AI/ML Engineer & Architect
+  email: mohcine.madkour@gmail.com
+  location: Plano, TX (DFW Area)
+  summary: >
+    PhD in Computer Science with 10+ years delivering production AI systems across healthcare, 
+    medical robotics, and industrial IoT. Expert in agentic AI, LLM/GenAI engineering, RAG 
+    pipelines, MLOps, and computer vision. Mirth Connect certified with deep HL7/FHIR experience.
+
+  social_networks:
+    - network: GitHub
+      username: mohcinemadkour
+    - network: LinkedIn
+      username: mohcine-madkour-83a642b2
+
+  sections:
+    Experience:
+      - company: Intuitive Surgical
+        position: Senior AI/ML Engineer
+        location: Remote
+        start_date: 2021
+        end_date: 2023
+        highlights:
+          - Built predictive maintenance MLOps system for global surgical robot fleet — 25% unplanned downtime reduction and $700K+ annual savings
+          - Designed CI/CD pipelines for ML (GitHub Actions, MLflow, Evidently) with automated quality gates
+          - Real-time telemetry ingestion with PySpark, Azure Databricks; model monitoring with Evidently and Azure ML Monitor
+
+      - company: Cummins
+        position: AI/ML Engineer — Connected Diagnostics
+        location: Indianapolis, IN (Remote)
+        start_date: 2019
+        end_date: 2021
+        highlights:
+          - PreventTech/Connected Diagnostics platform — IoT predictive diagnostics for connected engine fleets
+          - PySpark feature engineering on Azure Databricks; Azure ML for model training and deployment
+          - Fault prediction and remaining useful life estimation across millions of daily telemetry points
+
+      - company: UF Health / UF Shands Hospital
+        position: Research Scientist — Biomedical Informatics
+        location: Gainesville, FL
+        start_date: 2016
+        end_date: 2019
+        highlights:
+          - Built MySurgeryRisk clinical AI platform — surgical complication prediction (AUC 0.82–0.94)
+          - Mirth Connect certified; designed bidirectional HL7 v2/FHIR R4 integration with Epic EHR
+          - HL7 ADT, ORU, ORM message processing; interface specifications with Epic analysts
+
+    Education:
+      - institution: University of Florida
+        area: Computer Science
+        studyType: Postdoctoral Fellowship — Biomedical Informatics
+        start_date: 2016
+        end_date: 2019
+
+      - institution: University of Florida
+        area: Computer Science
+        studyType: PhD
+        start_date: 2012
+        end_date: 2016
+        highlights:
+          - Dissertation in biomedical AI and clinical informatics
+
+    Skills:
+      - label: Agentic AI & LLMs
+        value: LangChain, LangGraph, LangSmith, RAG, ChromaDB, RAGAS, Anthropic API, OpenAI API
+      - label: MLOps
+        value: MLflow, Evidently, Arize Phoenix, Azure ML, GitHub Actions, Docker, CI/CD for ML
+      - label: ML & DL
+        value: PyTorch, XGBoost, scikit-learn, LSTM, YOLOv8, ByteTrack
+      - label: Cloud
+        value: Azure ML, Azure Databricks, AWS SageMaker, GCP, PySpark
+      - label: Healthcare AI
+        value: HL7 v2/FHIR R4, Mirth Connect (certified), Epic EHR, HIPAA compliance
+      - label: Languages
+        value: Python, SQL, Node.js, Bash
