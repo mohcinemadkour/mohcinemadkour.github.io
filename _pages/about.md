@@ -51,10 +51,8 @@ I specialize in the full ML delivery lifecycle — from prototype to production:
 
 ---
 
-
 ### Core Stack
 
 `LangChain` · `LangGraph` · `LangSmith` · `ChromaDB` · `MLflow` · `PyTorch` · `YOLOv8` · `ByteTrack` · `Azure ML` · `Databricks` · `AWS SageMaker` · `PySpark` · `Streamlit` · `FastAPI` · `Python` · `Node.js`
 
 ---
-
