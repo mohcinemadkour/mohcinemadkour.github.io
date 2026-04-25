@@ -1,6 +1,16 @@
 cv_pdf: ""
 email: ""
 scholar_userid: ""
+orcid_id: ""
+twitter_username: ""
+facebook_username: ""
+instagram_username: ""
+youtube_username: ""
+website_url: ""
+google_scholar_id: ""
+researchgate_id: ""
+mastodon_url: ""
+bluesky_url: ""
 github_username: mohcinemadkour
 linkedin_username: mohcine-madkour-83a642b2
 rss_icon: false
