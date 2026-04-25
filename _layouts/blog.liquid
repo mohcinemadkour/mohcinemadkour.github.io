@@ -19,7 +19,7 @@ layout: default
         {% else %}
           {% for post in writing_posts %}
             <tr>
-              <th scope="row" style="width: 20%">{{ post.date | date: '%b %d, %Y' }}</th>
+              <th scope="row" class="post-date" style="width: 20%">{{ post.date | date: '%b %d, %Y' }}</th>
               <td>
                 <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title }}</a>
                 {% if post.description -%}

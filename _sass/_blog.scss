@@ -1,3 +1,8 @@
+// Make blog post dates use main text color
+.post-date {
+  color: var(--global-text-color) !important;
+  font-weight: 500;
+}
 /*******************************************************************************
  * Blog post and listing styles
  ******************************************************************************/
