@@ -9,7 +9,7 @@ subtitle: >
   <br>
   <a href="https://github.com/mohcinemadkour" target="_blank">GitHub</a> ·
   <a href="https://linkedin.com/in/mohcine-madkour-83a642b2/" target="_blank">LinkedIn</a> ·
-  <a href="mailto:mohcine.madkour@gmail.com">Email</a>
+  <a href="https://x.com/MadkourMohcine" target="_blank">X</a>
 
 profile:
   align: right
@@ -35,9 +35,13 @@ latest_posts:
   limit: 3
 ---
 
-I'm a **Senior AI/ML Engineer and Architect** with 10+ years of experience delivering production AI systems across healthcare, medical robotics, and industrial IoT. My work bridges cutting-edge research and real-world deployment — from designing agentic AI pipelines to building MLOps infrastructure that ships.
 
-**Currently** open to **Senior AI/ML Engineer**, **AI Architect**, and **Head of AI** roles in DFW (hybrid) and remote. I'm also building and teaching in the agentic AI space.
+
+I build and ship production AI • AI/ML Engineer & Architect • PhD Computer Science / Postdoc Biomedical Informatics, <a href="https://www.uth.edu/" target="_blank">University of Texas Health Science at Houston</a> • Previously: healthcare AI, surgical robotics, industrial IoT
+
+
+Currently an AI/ML Engineer and AI Architect consultant focused on agentic AI systems, RAG evaluation, and MLOps at scale.
+I studied Computer Science and completed postdoctoral work in Biomedical Informatics at the <a href="https://www.uth.edu/" target="_blank">University of Texas Health Science at Houston</a>. Previously built predictive maintenance MLOps for surgical robot fleets at <a href="https://www.intuitive.com/" target="_blank">Intuitive Surgical</a>, connected diagnostics at <a href="https://www.cummins.com/" target="_blank">Cummins</a>, and co-developed the MySurgeryRisk clinical AI platform at UTHealth — powering surgery risk prediction across thousands of patients.
 
 ---
 
