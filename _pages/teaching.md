@@ -17,7 +17,6 @@ I'm passionate about making advanced AI concepts accessible. My teaching spans u
 
 {% assign sorted_teachings = site.teachings | where: "category", "online" | sort: "importance" %}
 {% for teaching in sorted_teachings %}
-
 <div class="card mt-3">
   <div class="p-3">
     <h4 class="card-title"><a href="{{ teaching.url | prepend: site.baseurl }}">{{ teaching.title }}</a></h4>
@@ -36,7 +35,6 @@ I'm passionate about making advanced AI concepts accessible. My teaching spans u
 
 {% assign sorted_teachings = site.teachings | where: "category", "university" | sort: "importance" %}
 {% for teaching in sorted_teachings %}
-
 <div class="card mt-3">
   <div class="p-3">
     <h4 class="card-title"><a href="{{ teaching.url | prepend: site.baseurl }}">{{ teaching.title }}</a></h4>

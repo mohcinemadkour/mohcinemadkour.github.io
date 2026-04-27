@@ -15,10 +15,3 @@ const openSearchModal = () => {
   }
   ninjaKeys.open();
 };
-
-document.addEventListener("keydown", (event) => {
-  if ((event.ctrlKey || event.metaKey) && event.key === "k") {
-    event.preventDefault();
-    openSearchModal();
-  }
-});

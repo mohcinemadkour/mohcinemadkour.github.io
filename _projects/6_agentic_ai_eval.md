@@ -18,20 +18,17 @@ This framework is also the foundation of my Udemy course: **"Agentic AI Evaluati
 ## What It Evaluates
 
 ### Retrieval Metrics
-
 - **Hit Rate@K** — fraction of queries where the correct document appears in top-K results
 - **MRR (Mean Reciprocal Rank)** — measures ranking quality
 - **NDCG (Normalized Discounted Cumulative Gain)** — position-weighted relevance scoring
 - **RAGAS retrieval metrics** — context precision and context recall
 
 ### Generation Metrics
-
 - **RAGAS generation metrics** — faithfulness, answer relevancy, answer correctness
 - **LLM-as-Judge pipeline** — automated quality scoring with bias mitigation
 - **Hallucination detection** — citation tracking and factual grounding checks
 
 ### System-Level Metrics
-
 - End-to-end latency profiling
 - Cost-per-query tracking
 - Embedding drift detection

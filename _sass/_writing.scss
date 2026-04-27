@@ -1,0 +1,116 @@
+/*******************************************************************************
+ * Writing page — single-column list style (inspired by zainhas.github.io)
+ ******************************************************************************/
+
+.writing-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1rem 5rem;
+}
+
+.writing-header {
+  margin-bottom: 2.5rem;
+}
+
+.writing-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--global-text-color);
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.02em;
+}
+
+.writing-tagline {
+  font-size: 0.95rem;
+  color: var(--global-text-color-light);
+  margin-bottom: 0.5rem;
+}
+
+.writing-intro {
+  font-size: 0.95rem;
+  color: var(--global-text-color);
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+/* ---- List ---- */
+.writing-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Item ---- */
+.writing-item {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--global-divider-color);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.writing-item__title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0 0 0.5rem;
+
+  a {
+    color: var(--global-text-color);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--global-theme-color);
+      text-decoration: none;
+    }
+  }
+}
+
+.writing-item__ext {
+  font-size: 0.8rem;
+  color: var(--global-text-color-light);
+  margin-left: 3px;
+  font-weight: 400;
+  vertical-align: super;
+}
+
+.writing-item__desc {
+  font-size: 0.9rem;
+  color: var(--global-text-color-light);
+  line-height: 1.55;
+  margin: 0 0 0.75rem;
+}
+
+/* ---- Meta row ---- */
+.writing-item__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.writing-item__date {
+  font-size: 0.82rem;
+  color: var(--global-text-color-light);
+  white-space: nowrap;
+}
+
+.writing-item__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.writing-item__tag {
+  font-size: 0.75rem;
+  color: var(--global-text-color-light);
+  background: transparent;
+  padding: 0;
+}
+
+/* separate tags with middle dot */
+.writing-item__tag + .writing-item__tag::before {
+  content: "·";
+  margin-right: 0.4rem;
+  color: var(--global-text-color-light);
+}

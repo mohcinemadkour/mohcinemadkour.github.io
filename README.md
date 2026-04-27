@@ -8,18 +8,18 @@ Built with [Jekyll](https://jekyllrb.com/) and the [al-folio](https://github.com
 
 ## Structure
 
-| Directory                  | Content                                                   |
-| -------------------------- | --------------------------------------------------------- |
-| `_pages/`                  | Main nav pages: About, Writing, Projects, Teaching, Talks |
-| `_projects/`               | Project entries (RAG PM, MySurgeryRisk, MLOps, CV, etc.)  |
-| `_posts/`                  | Writing/blog articles                                     |
-| `_teachings/`              | Courses and mentorship entries                            |
-| `_talks/`                  | Conference and event presentations                        |
-| `_news/`                   | Short announcements on the About page                     |
-| `_bibliography/papers.bib` | Publications (BibTeX)                                     |
-| `_data/cv.yml`             | CV data                                                   |
-| `_data/socials.yml`        | Social links                                              |
-| `assets/img/`              | Images (add `prof_pic.jpg` here)                          |
+| Directory | Content |
+|-----------|---------|
+| `_pages/` | Main nav pages: About, Writing, Projects, Teaching, Talks |
+| `_projects/` | Project entries (RAG PM, MySurgeryRisk, MLOps, CV, etc.) |
+| `_posts/` | Writing/blog articles |
+| `_teachings/` | Courses and mentorship entries |
+| `_talks/` | Conference and event presentations |
+| `_news/` | Short announcements on the About page |
+| `_bibliography/papers.bib` | Publications (BibTeX) |
+| `_data/cv.yml` | CV data |
+| `_data/socials.yml` | Social links |
+| `assets/img/` | Images (add `prof_pic.jpg` here) |
 
 ## Quick Start (Local)
 
@@ -37,7 +37,6 @@ bundle exec jekyll serve --livereload
 Push to `main` — GitHub Actions builds and deploys automatically via `.github/workflows/deploy.yml`.
 
 **Prerequisites (one-time setup):**
-
 1. Go to repo **Settings → Pages**
 2. Set **Source** to `GitHub Actions`
 3. Push — the workflow handles the rest
@@ -45,7 +44,6 @@ Push to `main` — GitHub Actions builds and deploys automatically via `.github/
 ## Adding Content
 
 ### New Project
-
 ```bash
 # Create _projects/8_myproject.md
 # Required front matter:
@@ -60,7 +58,6 @@ category: agentic-ai  # agentic-ai | healthcare-ai | computer-vision | mlops | i
 ```
 
 ### New Blog Post
-
 ```bash
 # Create _posts/YYYY-MM-DD-post-title.md
 ---
@@ -73,7 +70,6 @@ categories: writing
 ```
 
 ### New Talk
-
 ```bash
 # Create _talks/YYYY_event_name.md
 ---

@@ -21,25 +21,21 @@ At **Intuitive Surgical**, I designed and deployed a production MLOps system for
 ## MLOps Architecture
 
 ### Data Pipeline
-
 - Real-time telemetry ingestion from robot IoT sensors (vibration, temperature, motor current, error codes)
 - PySpark-based feature engineering at scale
 - Delta Lake on Azure for reliable data versioning
 
 ### Model Layer
-
 - Failure prediction models: XGBoost, LSTM for temporal patterns
 - Multi-label classification across failure modes (mechanical, electrical, software)
 - MLflow experiment tracking, model registry, and artifact versioning
 
 ### CI/CD for ML
-
 - GitHub Actions pipelines: data validation → training → evaluation → staging → production promotion
 - Automated retraining triggers on data drift detection
 - Quality gates: F1, AUC, and calibration thresholds enforced before any model promotion
 
 ### Monitoring
-
 - **Evidently** for feature drift and data quality monitoring
 - **Azure ML Monitor** for production model performance tracking
 - PagerDuty alerting for threshold violations

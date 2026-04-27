@@ -24,7 +24,7 @@ def hit_rate_at_k(retrieved_docs, relevant_doc_id, k):
     return 1 if relevant_doc_id in top_k_ids else 0
 
 # Average over your test set
-hit_rate = sum(hit_rate_at_k(r, rel, k=5)
+hit_rate = sum(hit_rate_at_k(r, rel, k=5) 
                for r, rel in zip(results, relevant_ids)) / len(results)
 ```
 
@@ -43,7 +43,7 @@ def reciprocal_rank(retrieved_docs, relevant_doc_id):
             return 1 / rank
     return 0
 
-mrr = sum(reciprocal_rank(r, rel)
+mrr = sum(reciprocal_rank(r, rel) 
           for r, rel in zip(results, relevant_ids)) / len(results)
 ```
 
@@ -75,7 +75,7 @@ from langsmith.evaluation import evaluate
 def retrieval_evaluator(run, example):
     retrieved = run.outputs["retrieved_docs"]
     relevant = example.outputs["relevant_doc_ids"]
-
+    
     return {
         "hit_rate_5": hit_rate_at_k(retrieved, relevant[0], k=5),
         "mrr": reciprocal_rank(retrieved, relevant[0]),

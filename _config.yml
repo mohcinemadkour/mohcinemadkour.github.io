@@ -177,28 +177,8 @@ enable_publication_badges:
   google_scholar: true
 
 filtered_bibtex_keywords:
-  [
-    abbr,
-    abstract,
-    additional_info,
-    altmetric,
-    annotation,
-    arxiv,
-    award,
-    award_name,
-    bibtex_show,
-    blog,
-    code,
-    html,
-    pdf,
-    poster,
-    preview,
-    selected,
-    slides,
-    supp,
-    video,
-    website,
-  ]
+  [abbr, abstract, additional_info, altmetric, annotation, arxiv, award, award_name,
+   bibtex_show, blog, code, html, pdf, poster, preview, selected, slides, supp, video, website]
 
 max_author_limit: 3
 more_authors_animation_delay: 10

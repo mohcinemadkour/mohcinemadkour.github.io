@@ -19,28 +19,15 @@ When modifying `_config.yml`, always update these in pairs:
 
 ### Feature Flags in \_config.yml
 
-Look for `enabled: false/true` patterns. These control which sections appear on your site:
+Look for `enabled: false/true` patterns. Common ones:
 
-**Content & Pages**
-
-- `blog.enabled` – Blog/news section visible
-- `news.enabled` – News/announcement feed visible
-- `profile.image_circular` – Circular profile picture (vs. square)
-- `profile.show_social_links` – Show social media icons in profile
-- `projects.enabled` – Projects section visible
-- `publications.enabled` – Publications/bibliography section visible
-- `related_posts.enabled` – Auto-display related blog posts below each post (note: causes "zero vectors" error with minimal content)
-
-**Features & Analytics**
-
-- `blog.pagination` – Enable pagination on blog page
-- `newsletter` – Newsletter signup form
-- `toc.enabled` – Table of contents in blog posts and pages
-- `disqus.enabled` – Disqus comments on posts
-- `giscus.enabled` – Giscus (GitHub-backed) comments on posts
-- Google Analytics, Open Panel, Cronitor flags for analytics integrations
-
-**Note:** Some features (like `related_posts`) appear in both `_config.yml` (global) **and** individual post frontmatter (per-post override) – per-post settings take precedence.
+- `blog.enabled`
+- `news.enabled`
+- `profile.image_circular`
+- `profile.show_social_links`
+- `projects.enabled`
+- `publications.enabled`
+- `related_blog_posts`
 
 ### YAML Syntax Rules
 
@@ -61,50 +48,6 @@ docker compose up
 ```
 
 ## Data Files (\_data/\*.yml)
-
-### cv.yml (RenderCV Format)
-
-The `_data/cv.yml` file uses **RenderCV schema** – not traditional Jekyll data. This YAML file is processed separately by the CV rendering pipeline:
-
-**Top-level sections:**
-
-- `cv` – Main CV object containing:
-  - `name` – Full name
-  - `label` – Professional title/label
-  - `location` – Current location
-  - `email` – Contact email
-  - `phone_number` – Phone (optional)
-  - `website` – Personal website URL
-  - `social_networks` – Array of social profiles
-  - `summary` – Professional summary
-  - `sections` – Content sections (see below)
-
-**Common sections:**
-
-- `summary` – Professional overview
-- `experience` – Work history (with `company`, `position`, `start_date`, `end_date`, `highlights`)
-- `education` – Education history (with `institution`, `area`, `study_type`, `start_date`, `end_date`)
-- `skills` – Skill groups (with `label` and `details` array)
-- `languages` – Languages and proficiency levels
-- `certifications` – Professional certifications
-- `projects` – Notable projects (with `name`, `description`, `highlights`)
-- `awards` – Awards and honors
-- `interests` – Professional interests
-
-**Format rules:**
-
-- Use `YYYY-MM-DD` format for dates
-- `null` or omit fields to leave them blank
-- Indentation: 2 spaces (same as other YAML files)
-- See [CUSTOMIZE.md](../../CUSTOMIZE.md) for detailed RenderCV examples
-
-### Other Data Files
-
-- **socials.yml** – Social media links and icons (display order matters, not alphabetical)
-- **coauthors.yml** – Coauthor information and links for bibliography
-- **venues.yml** – Conference/journal abbreviations for publication lists
-- **citations.yml** – Citation metrics (auto-updated by CI/CD from Google Scholar)
-- **repositories.yml** – GitHub repositories to display with descriptions
 
 Data files provide structured content that templates can access via Liquid. Each file serves a specific purpose.
 

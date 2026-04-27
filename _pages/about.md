@@ -5,34 +5,38 @@ permalink: /
 nav: true
 nav_order: 1
 subtitle: >
-  Senior AI/ML Engineer & Architect · PhD in Computer Science · Plano, TX
-  <br>
-  <a href="https://github.com/mohcinemadkour" target="_blank">GitHub</a> ·
-  <a href="https://linkedin.com/in/mohcine-madkour-83a642b2/" target="_blank">LinkedIn</a> ·
-  <a href="https://x.com/MadkourMohcine" target="_blank">X</a>
+  I build and ship production AI &bull; AI/ML Engineer &amp; Architect &bull;
+  PhD Computer Science / Postdoc Biomedical Informatics,
+  <a href="https://www.uth.edu/" target="_blank">University of Texas Health Science at Houston</a> &bull;
+  Previously: healthcare AI, surgical robotics, industrial IoT
 
 profile:
   align: right
   image: prof_pic.jpg
   image_circular: false
   more_info: >
+    <p>📍 Plano, TX (DFW)</p>
+    <p>🎓 PhD · Computer Science</p>
+    <p>🏥 Postdoc · Biomedical Informatics</p>
 
 selected_papers: false
 social: true
 
 announcements:
-  enabled: false
+  enabled: true
   scrollable: true
   limit: 5
 
 latest_posts:
-  enabled: false
+  enabled: true
   scrollable: true
   limit: 3
 ---
 
-I build and ship production AI • AI/ML Engineer & Architect • PhD Computer Science / Postdoc Biomedical Informatics
+Currently an **AI/ML Engineer and AI Architect consultant** focused on agentic AI systems, RAG evaluation, and MLOps at scale.
 
----
+I studied Computer Science and completed postdoctoral work in Biomedical Informatics at the [University of Texas Health Science at Houston](https://www.uth.edu/). Previously built predictive maintenance MLOps for surgical robot fleets at [Intuitive Surgical](https://www.intuitive.com/), connected diagnostics at [Cummins](https://www.cummins.com/), and co-developed the [MySurgeryRisk](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6629445/) clinical AI platform at UTHealth — powering surgery risk prediction across thousands of patients.
 
-# ...existing code...
+I teach on [Udemy](https://www.udemy.com/) and have spoken at conferences on agentic AI evaluation, RAG systems, MLOps, and production machine learning. Building a course: **"Agentic AI Evaluation: Production-Ready Systems with LangGraph and LangSmith."**
+
+Best way to reach me is via [LinkedIn](https://linkedin.com/in/mohcine-madkour-83a642b2/) or [email](mailto:mohcine.madkour@gmail.com).

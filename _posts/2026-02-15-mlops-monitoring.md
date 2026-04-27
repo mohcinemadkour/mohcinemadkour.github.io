@@ -51,11 +51,11 @@ Used this at Cummins for fleet-level model health monitoring across thousands of
 
 ## My Current Stack
 
-| Use Case         | Tool             |
-| ---------------- | ---------------- |
-| Classic ML drift | Evidently        |
-| LLM/RAG tracing  | LangSmith        |
-| Embedding drift  | Arize Phoenix    |
+| Use Case | Tool |
+|----------|------|
+| Classic ML drift | Evidently |
+| LLM/RAG tracing | LangSmith |
+| Embedding drift | Arize Phoenix |
 | Azure production | Azure ML Monitor |
 
 No single tool covers everything. The combination of Evidently (classical ML) + LangSmith (LLM layer) covers 90% of what most teams need.

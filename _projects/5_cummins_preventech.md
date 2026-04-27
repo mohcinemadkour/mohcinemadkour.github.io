@@ -21,19 +21,16 @@ At **Cummins**, I contributed to the **PreventTech / Connected Diagnostics** pla
 ## Technical Contributions
 
 ### Data Engineering
-
 - **PySpark** feature engineering pipelines on Azure Databricks — processing raw CAN bus telemetry into ML-ready feature sets
 - Streaming ingestion via Azure Event Hubs
 - Data quality validation and schema enforcement at ingestion
 
 ### ML Platform
-
 - **Azure ML** for model training, experiment tracking, and deployment
 - Gradient boosting and LSTM models for fault code prediction and RUL estimation
 - Model versioning and A/B testing framework
 
 ### Orchestration
-
 - **Databricks** job orchestration for daily batch scoring across the full fleet
 - Alerting pipeline: model output → fleet health dashboard → customer-facing recommendations
 

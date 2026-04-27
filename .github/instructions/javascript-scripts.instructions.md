@@ -78,7 +78,7 @@ ninja.data = [
   {%- for page in site.pages -%}
     {
       id: "nav-{{ page.title | slugify }}",
-      title: "{{ page.title | escape }}",
+      title: "{{ page.title }}",
       handler: () => {
         window.location.href = "{{ page.url | relative_url }}";
       },
@@ -87,16 +87,12 @@ ninja.data = [
 ];
 ```
 
-**Key patterns:**
+**Important:**
 
-- Use `{%- -%}` (with hyphens) to strip whitespace before and after Liquid tags — **critical** to keep JSON/JS valid
-- Use `| slugify` to convert titles to valid JavaScript identifiers
-- Use `| escape` to safely embed strings in JavaScript/JSON strings
-- Use `| relative_url` for internal links (prepends baseurl)
-- Use `| absolute_url` for RSS, emails, social sharing (full absolute URL)
-- Never use unescaped user-generated content in JavaScript (XSS risk)
-
-**Important:** Keep JSON structures **valid after Liquid processing** – extra newlines break JavaScript parsing. Always test in development.
+- Use Liquid filters (`| slugify`, `| relative_url`, `| escape`) to process Jekyll variables
+- Curly braces `{{ }}` output variables
+- Use `{%- -%}` (with hyphens) to control whitespace in generated output
+- Keep JSON structures valid after Liquid processing
 
 ### ES6 Modules & Imports
 
