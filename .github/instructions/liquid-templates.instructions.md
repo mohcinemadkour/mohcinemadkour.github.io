@@ -21,8 +21,47 @@ This al-folio repository uses Liquid templating extensively. When modifying `.li
 - `{{ variable }}` – Output variable
 - `{% assign var = value %}` – Assign variable
 - `{% capture %}...{% endcapture %}` – Capture output to variable
-- `| date: format` – Date filtering
+- `| date: format` – Date formatting
 - `| where: "key", "value"` – Collection filtering
+- `| slugify` – Convert to URL-safe slug
+- `| relative_url` – Prepend site.baseurl to URLs
+- `| absolute_url` – Prepend site.url + site.baseurl to URLs (full absolute path)
+
+### Commonly Used Liquid Filters in al-folio
+
+These filters appear throughout al-folio templates and scripts:
+
+**URL/Path Filters:**
+
+- `{{ page.url | relative_url }}` – Returns URL relative to baseurl (e.g., `/my-site/about/` if baseurl is `/my-site`)
+- `{{ page.url | absolute_url }}` – Returns full absolute URL (e.g., `https://example.com/my-site/about/`)
+- Use `relative_url` for internal links; use `absolute_url` for RSS, emails, social sharing
+
+**String Filters:**
+
+- `{{ title | slugify }}` – Convert "My Cool Title" → "my-cool-title" (for IDs, URLs)
+- `{{ title | escape }}` – Escape HTML special characters (use in JSON, HTML attributes)
+- `{{ content | strip_html }}` – Remove HTML tags (useful for previews)
+- `{{ content | truncatewords: 20 }}` – Limit to 20 words with ellipsis
+
+**Date Filters:**
+
+- `{{ date | date: "%Y-%m-%d" }}` – Format: "2023-12-25"
+- `{{ date | date: "%B %d, %Y" }}` – Format: "December 25, 2023"
+- `{{ date | date: "%d %b %Y" }}` – Format: "25 Dec 2023"
+
+**Collection Filters:**
+
+- `{{ site.posts | where: "category", "blog" }}` – Filter posts by category
+- `{{ site.projects | where: "featured", true }}` – Get only featured projects
+- `{{ pages | size }}` – Count items in collection
+
+**Whitespace Control in Liquid:**
+
+- `{{ variable }}` – Renders with surrounding whitespace preserved
+- `{{- variable -}}` – Strips whitespace before and after (hyphens remove spaces)
+- `{%- if condition -%}` – Use in `.liquid.js` files to prevent extra newlines in generated JSON
+- Critical in `.liquid.js` files where extra whitespace corrupts JavaScript/JSON structure
 
 ### Important al-folio Liquid Components
 

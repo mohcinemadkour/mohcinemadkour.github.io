@@ -66,7 +66,7 @@ description: Brief description
 ---
 ```
 
-**Important:** Post filenames MUST follow format: `YYYY-MM-DD-title.md` (hyphen-separated words)
+**Important:** Post filenames MUST follow format: `YYYY-MM-DD-title.md` (hyphen-separated words). Jekyll derives the post date from the filename – if filename date doesn't match the `date:` frontmatter field, Jekyll silently uses the filename date, causing posts to sort incorrectly.
 
 ### Project Frontmatter (\_projects/)
 
@@ -77,8 +77,29 @@ title: Project Name
 description: Short description
 img: /assets/img/project-image.jpg
 importance: 1
+category: mlops
 ---
 ```
+
+**Required fields:**
+
+- `layout: page`
+- `title` – Project display name
+- `importance` – Integer (1, 2, 3...). **IMPORTANT:** Lower = featured first on homepage. Missing or non-numeric values break sort order silently.
+- `img` – Thumbnail image path
+
+**Optional fields:**
+
+- `description` – Brief summary
+- `category` – One of: `mlops`, `healthcare-ai`, `agentic-ai`, `computer-vision`, `industrial-iot` (used for filtering in project layouts)
+- `featured` – Set to `true` to highlight in main projects section
+- `tags` – Comma-separated list for additional organization
+
+**Side effects if fields missing:**
+
+- Missing `importance` → Projects don't sort, appear in random/creation order
+- Missing `img` → No thumbnail displays in project list (layout still renders but appears broken)
+- Unknown `category` → Category filter silently ignores the project
 
 ### Teaching/Course Frontmatter (\_teachings/)
 
@@ -103,13 +124,16 @@ description: Course description
 ### For Blog Posts
 
 - **categories:** Tag for post organization (single word, no spaces)
-- **related_posts:** Set to `false` to disable related posts display (useful for short posts)
+- **related_posts:** Set to `false` to disable related posts display (useful for short posts). **Gotcha:** Setting `related_posts: true` with minimal post content triggers classifier-reborn "zero vectors" error during build.
+- **description:** Brief summary used in post metadata and RSS feeds
 
 ### For Projects
 
-- **importance:** Integer (1, 2, 3...) – higher = featured first
-- **img:** Path to thumbnail image (`/assets/img/...`)
+- **importance:** Integer (1, 2, 3...) – **REQUIRED** – lower = featured first. Missing or non-numeric values silently break sort order.
+- **category:** One of: `mlops`, `healthcare-ai`, `agentic-ai`, `computer-vision`, `industrial-iot` – Used in project layout filtering
+- **img:** Thumbnail image path – **REQUIRED** for proper display
 - **featured:** Set to `true` to display on main projects section
+- **tags:** Comma-separated list for additional organization
 
 ### Date Format
 
