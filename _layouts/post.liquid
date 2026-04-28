@@ -4,79 +4,58 @@ layout: default
 {% assign year = page.date | date: '%Y' %}
 {% assign tags = page.tags | join: '' %}
 {% assign categories = page.categories | join: '' %}
-{% assign url_beginning = page.url | slice: 0, 6 %}
 
 {% if page._styles %}
-  <!-- Page/Post style -->
-  <style type="text/css">
-    {{ page._styles }}
-  </style>
+  <style type="text/css">{{ page._styles }}</style>
 {% endif %}
 
-<div class="post">
-  <header class="post-header">
-    <h1 class="post-title">{{ page.title }}</h1>
-    <p class="post-meta">
-      Created on {{ page.date | date: '%B %d, %Y' }}
-      {% if page.author %}by {{ page.author }}{% endif %}
-      {% assign last_date = page.last_modified_at | default: page.last_updated %}
-      {% if last_date %}, last updated on {{ last_date | date: '%B %d, %Y' }}{% endif %}
-      {% if page.meta %}• {{ page.meta }}{% endif %}
-    </p>
-    <p class="post-tags">
-      {% if url_beginning == '/blog/' %}
-        <a href="{{ year | prepend: '/blog/' | relative_url }}"> <i class="fa-solid fa-calendar fa-sm"></i> {{ year }} </a>
-      {% else %}
-        <i class="fa-solid fa-calendar fa-sm"></i> {{ year }}
-      {% endif %}
-      {% if tags != '' %}
-        &nbsp; &middot; &nbsp;
-        {% for tag in page.tags %}
-          {% if url_beginning == '/blog/' %}
-            <a href="{{ tag | slugify | prepend: '/blog/tag/' | relative_url }}"> <i class="fa-solid fa-hashtag fa-sm"></i> {{ tag }}</a>
-          {% else %}
-            <i class="fa-solid fa-hashtag fa-sm"></i> {{ tag }}
-          {% endif %}
-          {% unless forloop.last %}
-            &nbsp;
-          {% endunless %}
-        {% endfor %}
-      {% endif %}
+<div class="article-page">
+  <!-- ── Header ─────────────────────────────────────────────────────── -->
+  <header class="article-header">
+    <h1 class="article-title">{{ page.title }}</h1>
 
-      {% if categories != '' %}
-        &nbsp; &middot; &nbsp;
-        {% for category in page.categories %}
-          {% if url_beginning == '/blog/' %}
-            <a href="{{ category | slugify | prepend: '/blog/category/' | relative_url }}"> <i class="fa-solid fa-tag fa-sm"></i> {{ category -}}</a>
-          {% else %}
-            <i class="fa-solid fa-tag fa-sm"></i> {{ category }}
-          {% endif %}
-          {% unless forloop.last %}
-            &nbsp;
-          {% endunless %}
-        {% endfor %}
+    <div class="article-meta">
+      <time class="article-date" datetime="{{ page.date | date_to_xmlschema }}">
+        Created on {{ page.date | date: '%B %d, %Y' }}
+      </time>
+
+      {% if tags != '' or categories != '' %}
+        <div class="article-tags">
+          {% for tag in page.tags %}
+            <span class="article-tag">{{ tag }}</span>
+          {% endfor %}
+          {% for category in page.categories %}
+            <span class="article-tag article-tag--category">{{ category }}</span>
+          {% endfor %}
+        </div>
       {% endif %}
-    </p>
+    </div>
+
+    {% if page.description %}
+      <p class="article-description">{{ page.description }}</p>
+    {% endif %}
   </header>
 
-  <article class="post-content">
+  <!-- ── Body ──────────────────────────────────────────────────────── -->
+  <article class="article-body">
     {% if page.toc and page.toc.beginning %}
-      <div id="table-of-contents">
+      <div id="table-of-contents" class="article-toc">
         {% toc %}
       </div>
-      <hr>
+      <hr class="article-divider">
     {% endif %}
     <div id="markdown-content">
       {{ content }}
     </div>
   </article>
 
+  <!-- ── Footer extras ─────────────────────────────────────────────── -->
   {% if page.citation %}
     {% include citation.liquid %}
   {% endif %}
 
   {% if page.related_publications %}
-    <h2>References</h2>
+    <h2 class="article-refs-heading">References</h2>
     <div class="publications">
       {% bibliography --group_by none --cited_in_order %}
     </div>

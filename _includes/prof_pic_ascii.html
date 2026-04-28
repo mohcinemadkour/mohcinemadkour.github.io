@@ -1,0 +1,159 @@
+<style>
+  /* Two-column about layout */
+  .about-flex {
+    display: flex;
+    align-items: flex-start;
+    gap: 3rem;
+    flex-wrap: nowrap;
+  }
+
+  .about-text-col {
+    flex: 1 1 55%;
+    min-width: 0;
+  }
+
+  .about-ascii-col {
+    flex: 0 0 auto;
+    width: 300px;
+    max-width: 40%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  /* Actual photo — styled with ASCII-art frame effect */
+  .profile-photo-wrap {
+    position: relative;
+    width: 100%;
+  }
+
+  .profile-photo {
+    width: 100%;
+    border-radius: 12px;
+    display: block;
+    filter: grayscale(15%) contrast(1.05);
+    transition: filter 0.4s ease;
+  }
+
+  .profile-photo:hover {
+    filter: grayscale(0%) contrast(1.1);
+  }
+
+  /* ASCII overlay toggle — the pre is hidden by default, shown on hover */
+  .ascii-overlay {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    background: var(--global-bg-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .profile-photo-wrap:hover .ascii-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .profile-photo-wrap:hover .profile-photo {
+    opacity: 0;
+  }
+
+  .ascii-profile {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 5.5px;
+    line-height: 1.05;
+    letter-spacing: 0.04em;
+    white-space: pre;
+    display: block;
+    color: var(--global-text-color);
+    user-select: none;
+    overflow: hidden;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    text-align: left;
+  }
+
+  @media (max-width: 767px) {
+    .about-flex {
+      flex-direction: column;
+    }
+    .about-ascii-col {
+      width: 220px;
+      max-width: 70%;
+      margin: 0 auto;
+    }
+    .ascii-overlay { display: none; }
+  }
+</style>
+
+<div class="about-ascii-col">
+  <div class="profile-photo-wrap">
+    <img class="profile-photo img-fluid"
+         src="{{ 'assets/img/prof_pic.jpg' | relative_url }}"
+         alt="Mohcine Madkour">
+    <div class="ascii-overlay">
+      <pre id="ascii-art" class="ascii-profile" aria-hidden="true">{% include prof_pic_ascii.txt %}</pre>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var wrap = document.querySelector('.profile-photo-wrap');
+  var pre = document.getElementById('ascii-art');
+  if (!wrap || !pre) return;
+
+  var fullText = pre.textContent;
+  var animated = false;
+
+  wrap.addEventListener('mouseenter', function () {
+    if (animated) return;
+    animated = true;
+
+    var chars = fullText.split('');
+    var nonSpace = [];
+    for (var i = 0; i < chars.length; i++) {
+      var c = chars[i];
+      if (c !== ' ' && c !== '\n' && c !== '\r') nonSpace.push(i);
+    }
+    for (var i = nonSpace.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = nonSpace[i]; nonSpace[i] = nonSpace[j]; nonSpace[j] = tmp;
+    }
+    var display = chars.map(function(c) { return (c==='\n'||c==='\r') ? c : ' '; });
+    pre.textContent = display.join('');
+
+    var total = nonSpace.length;
+    var revealed = 0;
+    var startTime = null;
+    var duration = 1800;
+
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      var target = Math.floor(((ts - startTime) / duration) * total);
+      while (revealed < target && revealed < total) {
+        display[nonSpace[revealed]] = chars[nonSpace[revealed]];
+        revealed++;
+      }
+      pre.textContent = display.join('');
+      if (revealed < total) requestAnimationFrame(step);
+      else pre.textContent = fullText;
+    }
+    requestAnimationFrame(step);
+  });
+
+  wrap.addEventListener('mouseleave', function () {
+    animated = false;
+    pre.textContent = fullText;
+  });
+})();
+</script>

@@ -1,0 +1,273 @@
+/*******************************************************************************
+ * Article / Blog post page — Zain Hasan style
+ * Clean, narrow, readable single-column prose layout
+ ******************************************************************************/
+
+// --------------------------------------------------------------------------
+// Page shell
+// --------------------------------------------------------------------------
+.article-page {
+  max-width: 740px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 6rem;
+}
+
+// --------------------------------------------------------------------------
+// Header
+// --------------------------------------------------------------------------
+.article-header {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--global-divider-color);
+}
+
+.article-title {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+  color: var(--global-text-color);
+  margin-bottom: 1rem;
+
+  mjx-container[jax="CHTML"][display="true"] {
+    display: unset;
+  }
+}
+
+.article-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.article-date {
+  font-size: 0.875rem;
+  color: var(--global-text-color-light);
+}
+
+.article-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.article-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2em 0.65em;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+  background: rgba(99, 102, 241, 0.18);
+  color: #a5b4fc;
+
+  &--category {
+    background: rgba(16, 185, 129, 0.15);
+    color: #6ee7b7;
+  }
+
+  &:nth-child(3n+2) { background: rgba(245,158,11,0.15);  color: #fcd34d; }
+  &:nth-child(3n)   { background: rgba(14, 165,233,0.15); color: #7dd3fc; }
+}
+
+.article-description {
+  font-size: 1rem;
+  color: var(--global-text-color-light);
+  line-height: 1.6;
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+  font-style: italic;
+}
+
+// --------------------------------------------------------------------------
+// Table of contents
+// --------------------------------------------------------------------------
+.article-toc {
+  background: var(--global-card-bg-color, rgba(255,255,255,0.04));
+  border: 1px solid var(--global-divider-color);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+
+  ul, ol {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  li {
+    font-size: 0.875rem;
+    line-height: 1.7;
+
+    a {
+      color: var(--global-text-color-light);
+      text-decoration: none;
+
+      &:hover { color: var(--global-theme-color); }
+    }
+  }
+}
+
+.article-divider {
+  border: none;
+  border-top: 1px solid var(--global-divider-color);
+  margin: 1.5rem 0;
+}
+
+// --------------------------------------------------------------------------
+// Prose body
+// --------------------------------------------------------------------------
+.article-body {
+  // ── Paragraph ────────────────────────────────────────────────────────
+  p {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--global-text-color);
+    margin-bottom: 1.25rem;
+  }
+
+  // ── Headings ─────────────────────────────────────────────────────────
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--global-text-color);
+    font-weight: 700;
+    line-height: 1.3;
+    margin-top: 2.25rem;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+    scroll-margin-top: 80px;
+  }
+
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.2rem; }
+  h4 { font-size: 1.05rem; }
+
+  // ── Inline code ───────────────────────────────────────────────────────
+  // Zain's style: colored (cyan/teal) inline code on dark bg
+  code:not(pre code) {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: 0.82em;
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    background: rgba(14, 165, 233, 0.12);
+    color: #38bdf8;
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    word-break: break-word;
+  }
+
+  // ── Code blocks ───────────────────────────────────────────────────────
+  pre {
+    background: #0f1117;
+    border: 1px solid var(--global-divider-color);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    font-size: 0.85rem;
+    line-height: 1.65;
+
+    code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: #e2e8f0;
+      font-size: inherit;
+    }
+  }
+
+  // ── Block quotes ──────────────────────────────────────────────────────
+  blockquote {
+    border-left: 3px solid var(--global-theme-color);
+    margin: 1.5rem 0;
+    padding: 0.75rem 1.25rem;
+    background: rgba(99, 102, 241, 0.06);
+    border-radius: 0 6px 6px 0;
+    color: var(--global-text-color-light);
+    font-style: italic;
+
+    p { margin-bottom: 0; }
+  }
+
+  // ── Lists ─────────────────────────────────────────────────────────────
+  ul, ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  li {
+    line-height: 1.75;
+    margin-bottom: 0.3rem;
+    color: var(--global-text-color);
+  }
+
+  // Nested lists
+  li > ul, li > ol {
+    margin-top: 0.35rem;
+    margin-bottom: 0;
+  }
+
+  // ── Links ─────────────────────────────────────────────────────────────
+  a {
+    color: var(--global-theme-color);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  // ── Horizontal rule ───────────────────────────────────────────────────
+  hr {
+    border: none;
+    border-top: 1px solid var(--global-divider-color);
+    margin: 2rem 0;
+  }
+
+  // ── Images ────────────────────────────────────────────────────────────
+  img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    display: block;
+  }
+
+  // ── Tables ────────────────────────────────────────────────────────────
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+
+    th {
+      background: var(--global-card-bg-color, rgba(255,255,255,0.05));
+      color: var(--global-text-color);
+      font-weight: 600;
+      text-align: left;
+      padding: 0.6rem 0.9rem;
+      border-bottom: 2px solid var(--global-divider-color);
+    }
+
+    td {
+      padding: 0.55rem 0.9rem;
+      border-bottom: 1px solid var(--global-divider-color);
+      color: var(--global-text-color);
+    }
+
+    tr:last-child td { border-bottom: none; }
+  }
+
+  // ── Strong / Em ───────────────────────────────────────────────────────
+  strong { font-weight: 700; color: var(--global-text-color); }
+  em     { font-style: italic; }
+}
+
+// --------------------------------------------------------------------------
+// References heading
+// --------------------------------------------------------------------------
+.article-refs-heading {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  color: var(--global-text-color);
+}
