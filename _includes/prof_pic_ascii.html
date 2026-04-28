@@ -65,7 +65,7 @@
   }
 
   .ascii-profile {
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-family: "JetBrains Mono", "Courier New", monospace;
     font-size: 5.5px;
     line-height: 1.05;
     letter-spacing: 0.04em;
@@ -91,15 +91,15 @@
       max-width: 70%;
       margin: 0 auto;
     }
-    .ascii-overlay { display: none; }
+    .ascii-overlay {
+      display: none;
+    }
   }
 </style>
 
 <div class="about-ascii-col">
   <div class="profile-photo-wrap">
-    <img class="profile-photo img-fluid"
-         src="{{ 'assets/img/prof_pic.jpg' | relative_url }}"
-         alt="Mohcine Madkour">
+    <img class="profile-photo img-fluid" src="{{ 'assets/img/prof_pic.jpg' | relative_url }}" alt="Mohcine Madkour" />
     <div class="ascii-overlay">
       <pre id="ascii-art" class="ascii-profile" aria-hidden="true">{% include prof_pic_ascii.txt %}</pre>
     </div>
@@ -107,53 +107,57 @@
 </div>
 
 <script>
-(function () {
-  var wrap = document.querySelector('.profile-photo-wrap');
-  var pre = document.getElementById('ascii-art');
-  if (!wrap || !pre) return;
+  (function () {
+    var wrap = document.querySelector(".profile-photo-wrap");
+    var pre = document.getElementById("ascii-art");
+    if (!wrap || !pre) return;
 
-  var fullText = pre.textContent;
-  var animated = false;
+    var fullText = pre.textContent;
+    var animated = false;
 
-  wrap.addEventListener('mouseenter', function () {
-    if (animated) return;
-    animated = true;
+    wrap.addEventListener("mouseenter", function () {
+      if (animated) return;
+      animated = true;
 
-    var chars = fullText.split('');
-    var nonSpace = [];
-    for (var i = 0; i < chars.length; i++) {
-      var c = chars[i];
-      if (c !== ' ' && c !== '\n' && c !== '\r') nonSpace.push(i);
-    }
-    for (var i = nonSpace.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var tmp = nonSpace[i]; nonSpace[i] = nonSpace[j]; nonSpace[j] = tmp;
-    }
-    var display = chars.map(function(c) { return (c==='\n'||c==='\r') ? c : ' '; });
-    pre.textContent = display.join('');
-
-    var total = nonSpace.length;
-    var revealed = 0;
-    var startTime = null;
-    var duration = 1800;
-
-    function step(ts) {
-      if (!startTime) startTime = ts;
-      var target = Math.floor(((ts - startTime) / duration) * total);
-      while (revealed < target && revealed < total) {
-        display[nonSpace[revealed]] = chars[nonSpace[revealed]];
-        revealed++;
+      var chars = fullText.split("");
+      var nonSpace = [];
+      for (var i = 0; i < chars.length; i++) {
+        var c = chars[i];
+        if (c !== " " && c !== "\n" && c !== "\r") nonSpace.push(i);
       }
-      pre.textContent = display.join('');
-      if (revealed < total) requestAnimationFrame(step);
-      else pre.textContent = fullText;
-    }
-    requestAnimationFrame(step);
-  });
+      for (var i = nonSpace.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = nonSpace[i];
+        nonSpace[i] = nonSpace[j];
+        nonSpace[j] = tmp;
+      }
+      var display = chars.map(function (c) {
+        return c === "\n" || c === "\r" ? c : " ";
+      });
+      pre.textContent = display.join("");
 
-  wrap.addEventListener('mouseleave', function () {
-    animated = false;
-    pre.textContent = fullText;
-  });
-})();
+      var total = nonSpace.length;
+      var revealed = 0;
+      var startTime = null;
+      var duration = 1800;
+
+      function step(ts) {
+        if (!startTime) startTime = ts;
+        var target = Math.floor(((ts - startTime) / duration) * total);
+        while (revealed < target && revealed < total) {
+          display[nonSpace[revealed]] = chars[nonSpace[revealed]];
+          revealed++;
+        }
+        pre.textContent = display.join("");
+        if (revealed < total) requestAnimationFrame(step);
+        else pre.textContent = fullText;
+      }
+      requestAnimationFrame(step);
+    });
+
+    wrap.addEventListener("mouseleave", function () {
+      animated = false;
+      pre.textContent = fullText;
+    });
+  })();
 </script>

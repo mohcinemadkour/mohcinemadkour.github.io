@@ -23,16 +23,19 @@ The system ingests live patient data from the Epic EHR via HL7 v2 and FHIR R4 fe
 ## Technical Architecture
 
 ### EHR Integration
+
 - **Mirth Connect** (certified) for bidirectional HL7 v2 message processing — ADT, ORU, ORM message types
 - **FHIR R4 APIs** for patient demographics, encounters, observations, and care plans
 - Real-time feed from Epic with interface specifications co-designed with Epic analysts
 
 ### ML Pipeline
+
 - Ensemble model stack: Logistic Regression, Random Forest, Gradient Boosting
 - Feature engineering from ICD codes, lab values, vitals, medication history, and surgical history
 - PostgreSQL backend with HIPAA-compliant audit logging and encryption at rest/in transit
 
 ### Compliance
+
 - HIPAA-compliant data handling throughout (encryption in transit, audit logging, RBAC, minimum necessary access)
 - Clinical staff training and ongoing monitoring post-deployment
 

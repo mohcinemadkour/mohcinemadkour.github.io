@@ -16,7 +16,6 @@ layout: default
 
   <article>
     <div class="about-flex">
-
       <!-- Left: bio text + social -->
       <div class="about-text-col">
         <div>{{ content }}</div>
@@ -38,8 +37,8 @@ layout: default
       {% if page.profile %}
         {% include prof_pic_ascii.html %}
       {% endif %}
-
-    </div><!-- /.about-flex -->
+    </div>
+    <!-- /.about-flex -->
 
     <!-- News -->
     {% if page.announcements and page.announcements.enabled %}
@@ -64,6 +63,5 @@ layout: default
       </h2>
       {% include selected_papers.liquid %}
     {% endif %}
-
   </article>
 </div>
