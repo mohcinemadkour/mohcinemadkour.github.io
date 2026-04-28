@@ -179,7 +179,7 @@
 
   // ── Code blocks ───────────────────────────────────────────────────────
   pre {
-    background: #0f1117;
+    background: #f6f8fa;
     border: 1px solid var(--global-divider-color);
     border-radius: 8px;
     padding: 1.25rem 1.5rem;
@@ -192,8 +192,16 @@
       background: none;
       border: none;
       padding: 0;
-      color: #e2e8f0;
+      color: #24292e;
       font-size: inherit;
+    }
+  }
+
+  html[data-theme="dark"] & pre {
+    background: #0f1117;
+
+    code {
+      color: #e2e8f0;
     }
   }
 
