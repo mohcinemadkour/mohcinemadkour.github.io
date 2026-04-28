@@ -3,7 +3,7 @@ layout: page
 title: projects
 permalink: /projects/
 description: Production AI systems, research prototypes, and open-source tools.
-nav: true
+nav: false
 nav_order: 3
 display_categories: [agentic-ai, healthcare-ai, computer-vision, mlops, industrial-iot]
 horizontal: false

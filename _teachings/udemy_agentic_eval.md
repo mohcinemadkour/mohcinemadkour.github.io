@@ -9,6 +9,15 @@ category: online
 importance: 1
 status: In Development
 link: https://www.udemy.com
+modules: 10
+hours: 50
+lessons: 60
+labs: 15
+tags: ["10 Modules", "50 hrs", "Top Instructor"]
+what_youll_build:
+  - Hybrid search pipeline with BM25 and semantic search
+  - Domain-specific chatbot with dynamic pricing
+  - Monitored, production-grade RAG system
 ---
 
 ## Course Overview

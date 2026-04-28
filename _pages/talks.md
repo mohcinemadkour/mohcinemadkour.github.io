@@ -1,6 +1,6 @@
 ---
 layout: page
-title: talks
+title: Talks
 permalink: /talks/
 description: Conference talks, workshops, panels, and invited presentations on AI and machine learning.
 nav: true

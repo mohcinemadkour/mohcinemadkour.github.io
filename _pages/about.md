@@ -1,8 +1,8 @@
 ---
 layout: about
-title: about
+title: About
 permalink: /
-nav: true
+nav: false
 nav_order: 1
 subtitle: >
   I build and ship production AI &bull; AI/ML Engineer &amp; Architect &bull;
