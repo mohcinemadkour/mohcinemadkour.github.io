@@ -45,7 +45,7 @@ Static embeddings like word2vec assign a single vector to each word regardless o
 
 BERT (Bidirectional Encoder Representations from Transformers), introduced by Google in 2018, achieves this through the **self-attention mechanism**. Self-attention computes a weighted combination of all token embeddings in a sequence, where the weights reflect how relevant each other token is to the current one.
 
-Consider the word "band": in *"the blues band played their best songs,"* the contextualized embedding leans toward music; in *"the blue band held her hair,"* it leans toward hair accessories. This disambiguation is what makes modern semantic search and RAG retrieval powerful.
+Consider the word "band": in _"the blues band played their best songs,"_ the contextualized embedding leans toward music; in _"the blue band held her hair,"_ it leans toward hair accessories. This disambiguation is what makes modern semantic search and RAG retrieval powerful.
 
 ---
 
@@ -83,14 +83,14 @@ A RAG pipeline is built on three foundational components:
 
 ### 4.2 The RAG Pipeline: Step by Step
 
-| # | Stage | Description |
-|---|-------|-------------|
-| 1 | **User Query** | User submits a natural language question to the system. |
-| 2 | **Embed Query** | The query is converted to a dense vector using an embedding model (e.g., e5-small, OpenAI embeddings). |
-| 3 | **Retrieve Chunks** | A similarity search finds the top-k most relevant document chunks from the vector store (e.g., ChromaDB, Elasticsearch). |
-| 4 | **Build Prompt** | Retrieved chunks are injected into a structured prompt template alongside the original query. |
-| 5 | **LLM Generation** | The LLM (e.g., Claude, GPT-4) reads the context and generates a grounded, factual response. |
-| 6 | **Return Response** | The answer (with optional source citations) is returned to the user. |
+| #   | Stage               | Description                                                                                                              |
+| --- | ------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 1   | **User Query**      | User submits a natural language question to the system.                                                                  |
+| 2   | **Embed Query**     | The query is converted to a dense vector using an embedding model (e.g., e5-small, OpenAI embeddings).                   |
+| 3   | **Retrieve Chunks** | A similarity search finds the top-k most relevant document chunks from the vector store (e.g., ChromaDB, Elasticsearch). |
+| 4   | **Build Prompt**    | Retrieved chunks are injected into a structured prompt template alongside the original query.                            |
+| 5   | **LLM Generation**  | The LLM (e.g., Claude, GPT-4) reads the context and generates a grounded, factual response.                              |
+| 6   | **Return Response** | The answer (with optional source citations) is returned to the user.                                                     |
 
 ### 4.3 Prompt Engineering in RAG
 
@@ -115,7 +115,7 @@ Question: {question}
 Answer:"""
 ```
 
-> **Pro Tip:** Always include a fallback instruction: *"If the context does not contain enough information to answer, say so. Do not hallucinate."* This is the single most effective way to reduce fabrication in RAG systems.
+> **Pro Tip:** Always include a fallback instruction: _"If the context does not contain enough information to answer, say so. Do not hallucinate."_ This is the single most effective way to reduce fabrication in RAG systems.
 
 ---
 
@@ -173,7 +173,7 @@ def reciprocal_rank_fusion(rankings: list[list[str]], k: int = 60) -> dict[str, 
 
 ### 5.4 Elastic Learned Sparse Encoder (ELSER)
 
-ELSER is Elastic's proprietary sparse encoder built on BERT. Rather than discarding the masked language model (MLM) head after pre-training, ELSER uses it to expand queries with semantically related vocabulary. A query about *"the blues band played their best songs"* activates related terms like "album," "jazz," "concert," and "Artist" — bridging the vocabulary mismatch gap without requiring dense vector storage overhead.
+ELSER is Elastic's proprietary sparse encoder built on BERT. Rather than discarding the masked language model (MLM) head after pre-training, ELSER uses it to expand queries with semantically related vocabulary. A query about _"the blues band played their best songs"_ activates related terms like "album," "jazz," "concert," and "Artist" — bridging the vocabulary mismatch gap without requiring dense vector storage overhead.
 
 ---
 
@@ -185,13 +185,13 @@ LLMs have finite context windows (e.g., 4,096 tokens for GPT-3.5-turbo, 200,000 
 
 ### 6.2 Chunking Strategies
 
-| Strategy | Description | Best For |
-|----------|-------------|----------|
-| **Fixed-size** | Split by token count (e.g., 512 tokens) with overlap | Simple pipelines, speed |
-| **Semantic** | Split at paragraphs, headings, sections | Preserving meaning |
-| **Sentence-level** | Each sentence is a chunk | QA tasks, high precision |
-| **Hierarchical** | Store both fine-grained and coarse chunks | Multi-granularity retrieval |
-| **Document-level + reranker** | Embed full doc, score passages via cross-encoder | High-quality reranking |
+| Strategy                      | Description                                          | Best For                    |
+| ----------------------------- | ---------------------------------------------------- | --------------------------- |
+| **Fixed-size**                | Split by token count (e.g., 512 tokens) with overlap | Simple pipelines, speed     |
+| **Semantic**                  | Split at paragraphs, headings, sections              | Preserving meaning          |
+| **Sentence-level**            | Each sentence is a chunk                             | QA tasks, high precision    |
+| **Hierarchical**              | Store both fine-grained and coarse chunks            | Multi-granularity retrieval |
+| **Document-level + reranker** | Embed full doc, score passages via cross-encoder     | High-quality reranking      |
 
 ```python
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -213,15 +213,15 @@ chunks = splitter.split_text(document_text)
 
 Organizations must choose the right strategy — or combination — for injecting domain knowledge into LLMs:
 
-| Dimension | Pre-training | Fine-tuning | RAG |
-|-----------|-------------|-------------|-----|
-| **Training duration** | Days to months | Minutes to hours | Not required |
-| **Expertise needed** | Very High | Medium | Low |
-| **Updates model weights?** | Yes | Yes | No |
-| **Reduces hallucinations?** | Partially | Partially | Yes (grounded) |
-| **Handles real-time data?** | No | No | Yes |
-| **Cost** | Extremely High | Moderate | Low |
-| **Source traceability** | No | No | Yes |
+| Dimension                   | Pre-training   | Fine-tuning      | RAG            |
+| --------------------------- | -------------- | ---------------- | -------------- |
+| **Training duration**       | Days to months | Minutes to hours | Not required   |
+| **Expertise needed**        | Very High      | Medium           | Low            |
+| **Updates model weights?**  | Yes            | Yes              | No             |
+| **Reduces hallucinations?** | Partially      | Partially        | Yes (grounded) |
+| **Handles real-time data?** | No             | No               | Yes            |
+| **Cost**                    | Extremely High | Moderate         | Low            |
+| **Source traceability**     | No             | No               | Yes            |
 
 Domain-specific pre-training (e.g., BloombergGPT for finance, BioBERT for biomedicine) creates purpose-built foundation models that excel within their domain but remain prone to hallucination on specific factual queries. Fine-tuning adapts a pre-trained model more cheaply but still encodes knowledge parametrically.
 
@@ -352,13 +352,13 @@ rag_app = graph.compile()
 
 Production RAG systems require systematic evaluation across two dimensions: **retrieval quality** and **generation quality**.
 
-| Metric | Dimension | Description |
-|--------|-----------|-------------|
-| **Context Precision** | Retrieval | Of retrieved chunks, what fraction is actually relevant? |
-| **Context Recall** | Retrieval | Of all relevant chunks, what fraction was retrieved? |
-| **Faithfulness** | Generation | Does the answer accurately reflect the retrieved context? |
-| **Answer Relevance** | Generation | Does the answer address the user's question? |
-| **NDCG / Hit Rate / MRR** | Retrieval | Standard IR metrics applied at chunk level |
+| Metric                    | Dimension  | Description                                               |
+| ------------------------- | ---------- | --------------------------------------------------------- |
+| **Context Precision**     | Retrieval  | Of retrieved chunks, what fraction is actually relevant?  |
+| **Context Recall**        | Retrieval  | Of all relevant chunks, what fraction was retrieved?      |
+| **Faithfulness**          | Generation | Does the answer accurately reflect the retrieved context? |
+| **Answer Relevance**      | Generation | Does the answer address the user's question?              |
+| **NDCG / Hit Rate / MRR** | Retrieval  | Standard IR metrics applied at chunk level                |
 
 ```python
 from ragas import evaluate
@@ -397,7 +397,7 @@ As agentic architectures (Agentic RAG, multi-hop RAG) and more capable embedding
 
 ## References & Further Reading
 
-- Elastic Search Labs (2024). *AI Deep Dive: A Technical Guide to the Foundations of Search and Generative AI.*
+- Elastic Search Labs (2024). _AI Deep Dive: A Technical Guide to the Foundations of Search and Generative AI._
 - Lewis, P. et al. (2020). [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.](https://arxiv.org/abs/2005.11401) NeurIPS.
 - Vaswani, A. et al. (2017). [Attention Is All You Need.](https://arxiv.org/abs/1706.03762) NeurIPS.
 - Devlin, J. et al. (2018). [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding.](https://arxiv.org/abs/1810.04805)

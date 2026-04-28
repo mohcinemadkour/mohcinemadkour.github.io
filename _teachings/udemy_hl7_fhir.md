@@ -30,26 +30,26 @@ From raw HL7 v2 feeds to FHIR R4 APIs, Mirth Connect channel engineering, Epic S
 
 **Track A — Healthcare Data Fundamentals (Modules 1–3)**
 
-| Module | Title                             | Focus                                                          |
-| ------ | --------------------------------- | -------------------------------------------------------------- |
-| M1     | HL7 v2 Essentials                 | Message structure, segments, encoding rules, real hospital data |
-| M2     | FHIR R4 Fundamentals              | Resources, RESTful APIs, JSON/XML, clinical data models         |
-| M3     | Mirth Connect Basics              | Channel creation, message flow, transformation scripts          |
+| Module | Title                | Focus                                                           |
+| ------ | -------------------- | --------------------------------------------------------------- |
+| M1     | HL7 v2 Essentials    | Message structure, segments, encoding rules, real hospital data |
+| M2     | FHIR R4 Fundamentals | Resources, RESTful APIs, JSON/XML, clinical data models         |
+| M3     | Mirth Connect Basics | Channel creation, message flow, transformation scripts          |
 
 **Track B — Production Integration (Modules 4–6)**
 
-| Module | Title                            | Focus                                                       |
-| ------ | -------------------------------- | ----------------------------------------------------------- |
-| M4     | Epic EHR & SMART on FHIR        | Epic API authentication, SMART launch, production security |
-| M5     | Clinical Data Validation        | Data quality checks, compliance (HIPAA), error handling     |
-| M6     | Building Real-World Pipelines   | Mirth routing, error recovery, monitoring                  |
+| Module | Title                         | Focus                                                      |
+| ------ | ----------------------------- | ---------------------------------------------------------- |
+| M4     | Epic EHR & SMART on FHIR      | Epic API authentication, SMART launch, production security |
+| M5     | Clinical Data Validation      | Data quality checks, compliance (HIPAA), error handling    |
+| M6     | Building Real-World Pipelines | Mirth routing, error recovery, monitoring                  |
 
 **Track C — AI Integration & Deployment (Modules 7–8)**
 
-| Module | Title                            | Focus                                                      |
-| ------ | -------------------------------- | ---------------------------------------------------------- |
-| M7     | Clinical AI Model Inference     | Real-time prediction, latency optimization, safety checks |
-| M8     | Production Monitoring & MLOps   | Alert systems, drift detection, audit logging              |
+| Module | Title                         | Focus                                                     |
+| ------ | ----------------------------- | --------------------------------------------------------- |
+| M7     | Clinical AI Model Inference   | Real-time prediction, latency optimization, safety checks |
+| M8     | Production Monitoring & MLOps | Alert systems, drift detection, audit logging             |
 
 ### Tech Stack
 
