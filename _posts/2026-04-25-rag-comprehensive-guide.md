@@ -8,9 +8,7 @@ categories: writing
 related_posts: true
 ---
 
-*Based on Elastic Search Labs AI Deep Dive Ebook — Compiled & Expanded by Mohcine Madkour, PhD*
-
-> **Abstract:** Large language models (LLMs) are powerful but suffer from frozen parametric knowledge, hallucinations, and lack of domain specificity. Retrieval-Augmented Generation (RAG) solves these challenges by dynamically grounding LLM responses in external, up-to-date knowledge sources retrieved at inference time. This guide covers the full RAG pipeline, the mechanics of embeddings and semantic search, a comparison with pre-training and fine-tuning, practical implementation patterns, and production-readiness considerations.
+> Large language models (LLMs) are powerful but suffer from frozen parametric knowledge, hallucinations, and lack of domain specificity. Retrieval-Augmented Generation (RAG) solves these challenges by dynamically grounding LLM responses in external, up-to-date knowledge sources retrieved at inference time. This guide covers the full RAG pipeline, the mechanics of embeddings and semantic search, a comparison with pre-training and fine-tuning, practical implementation patterns, and production-readiness considerations.
 
 ---
 
