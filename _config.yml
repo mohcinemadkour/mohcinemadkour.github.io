@@ -84,9 +84,6 @@ collections:
   teachings:
     output: true
     permalink: /teaching/:path/
-  talks:
-    output: true
-    permalink: /talks/:path/
 
 announcements:
   enabled: true
@@ -145,11 +142,6 @@ defaults:
   - scope:
       path: ""
       type: teachings
-    values:
-      layout: page
-  - scope:
-      path: ""
-      type: talks
     values:
       layout: page
 
