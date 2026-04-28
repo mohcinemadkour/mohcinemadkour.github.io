@@ -144,13 +144,13 @@ I also mentor early-career ML engineers through various programs. Topics include
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
-html.dark-mode .course-card {
+html[data-theme="dark"] .course-card {
   background: #1a1a2e;
   border-color: #333;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-html.dark-mode .course-card:hover {
+html[data-theme="dark"] .course-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
@@ -202,7 +202,7 @@ html.dark-mode .course-card:hover {
   background: #ffffff;
 }
 
-html.dark-mode .course-body {
+html[data-theme="dark"] .course-body {
   background: #1a1a2e;
 }
 
@@ -212,7 +212,7 @@ html.dark-mode .course-body {
   line-height: 1.6;
 }
 
-html.dark-mode .course-description {
+html[data-theme="dark"] .course-description {
   color: #d0d0d0;
 }
 
@@ -228,12 +228,12 @@ html.dark-mode .course-description {
   color: #333;
 }
 
-html.dark-mode .what-youll-build {
+html[data-theme="dark"] .what-youll-build {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-html.dark-mode .what-youll-build h6 {
+html[data-theme="dark"] .what-youll-build h6 {
   color: #e0e0e0;
 }
 
@@ -248,11 +248,11 @@ html.dark-mode .what-youll-build h6 {
   font-size: 0.95rem;
 }
 
-html.dark-mode .build-list {
+html[data-theme="dark"] .build-list {
   color: #b0b0b0;
 }
 
-html.dark-mode .build-list li {
+html[data-theme="dark"] .build-list li {
   color: #b0b0b0;
 }
 
@@ -294,12 +294,12 @@ html.dark-mode .build-list li {
   border-color: #764ba2;
 }
 
-html.dark-mode .btn-outline-primary {
+html[data-theme="dark"] .btn-outline-primary {
   color: #7c9ceb;
   border-color: #7c9ceb;
 }
 
-html.dark-mode .btn-outline-primary:hover {
+html[data-theme="dark"] .btn-outline-primary:hover {
   background: rgba(124, 156, 235, 0.15);
   color: #9db5ff;
   border-color: #9db5ff;
