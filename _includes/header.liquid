@@ -147,4 +147,25 @@
       </div>
     </progress>
   {% endif %}
+
+  <!-- Vanilla JS fallback for mobile navbar toggle (in case jQuery/Bootstrap JS is slow or blocked) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var toggler = document.querySelector('.navbar-toggler');
+      var menu = document.getElementById('navbarNav');
+      if (!toggler || !menu) return;
+      toggler.addEventListener('click', function () {
+        var isOpen = menu.classList.contains('show');
+        if (isOpen) {
+          menu.classList.remove('show');
+          toggler.classList.add('collapsed');
+          toggler.setAttribute('aria-expanded', 'false');
+        } else {
+          menu.classList.add('show');
+          toggler.classList.remove('collapsed');
+          toggler.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  </script>
 </header>
