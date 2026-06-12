@@ -7,6 +7,10 @@ importance: 1
 category: portfolio
 tags: [HL7 v2, FHIR R4, Mirth Connect, FastAPI, Python, Azure, HIPAA, Healthcare Interoperability]
 github: https://github.com/mohcinemadkour/epic-hah-integration
+toc:
+  sidebar: left
+mermaid:
+  enabled: true
 ---
 
 <div class="row">
@@ -52,7 +56,9 @@ A working **HL7 v2 + FHIR R4 integration engine** that moves admissions, diagnos
 
 ## Video Walkthrough
 
-{% include video.liquid path="https://www.youtube.com/embed/ApIp756c2C0" class="img-fluid rounded z-depth-1" %}
+<div class="ratio ratio-16x9 mb-2">
+  <iframe src="https://www.youtube.com/embed/ApIp756c2C0" title="Bidirectional Epic Integration for Hospital-at-Home" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+</div>
 
 _Full guided tour — architecture, live inbound/outbound demos, reliability and HIPAA posture, and the path to a live Epic connection._
 
@@ -77,14 +83,11 @@ This project is the layer that solves it — and proves it on a live stack rathe
 
 **Mirth Connect** owns the wire: MLLP framing and the acknowledgment back to Epic. A **Python/FastAPI engine** owns everything clinical and stateful — parsing, FHIR mapping, idempotency, retries, the audit trail, and the care-coordination domain. It deploys as just another service in a Python/Azure stack.
 
-```
-┌─────────────────┐         ┌───────────────────────────────────────┐         ┌──────────────────┐
-│   Epic  (EHR)   │  ⇄ ⇄ ⇄  │         Integration Engine            │  ⇄ ⇄ ⇄  │   HaH Platform   │
-│                 │         │  Mirth Connect + Python/FastAPI        │         │                  │
-│ HL7 v2 / MLLP  │         │  dedup · retry · dead-letter · audit   │         │ Care-coord API   │
-│ FHIR R4 / OAuth │         │  PostgreSQL                            │         │ React clinician  │
-└─────────────────┘         └───────────────────────────────────────┘         │ PostgreSQL/Azure │
-                                                                               └──────────────────┘
+```mermaid
+flowchart LR
+    A["<b>Epic EHR</b><br/>HL7 v2 / MLLP<br/>FHIR R4 / OAuth2"] <--> B["<b>Integration Engine</b><br/>Mirth Connect + Python/FastAPI<br/>dedup · retry · dead-letter · audit<br/>PostgreSQL"]
+    B <--> C["<b>HaH Platform</b><br/>Care-coord API<br/>React clinician UI<br/>PostgreSQL / Azure"]
+    style B fill:#0E7490,color:#fff,stroke:#0E7490
 ```
 
 ---
