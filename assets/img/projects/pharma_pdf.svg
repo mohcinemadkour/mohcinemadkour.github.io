@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0A2540"/>
+      <stop offset="100%" style="stop-color:#111827"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#dc2626"/>
+      <stop offset="50%" style="stop-color:#0E7490"/>
+      <stop offset="100%" style="stop-color:#06B6A4"/>
+    </linearGradient>
+    <linearGradient id="pipe" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0E7490"/>
+      <stop offset="100%" style="stop-color:#065f46"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="450" fill="url(#bg)"/>
+
+  <!-- Accent bar -->
+  <rect width="800" height="5" fill="url(#accent)"/>
+
+  <!-- Subtle decorative circles -->
+  <circle cx="720" cy="-80" r="260" fill="#0E3A52" opacity="0.4"/>
+  <circle cx="60" cy="540" r="200" fill="#0c324a" opacity="0.35"/>
+
+  <!-- Eyebrow -->
+  <text x="56" y="64" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#dc2626" letter-spacing="3">REGULATORY AI · DOCUMENT INTELLIGENCE</text>
+
+  <!-- Title line 1 -->
+  <text x="56" y="104" font-family="Georgia, serif" font-size="26" font-weight="600" fill="#ffffff">Pharma PDF → Word Extraction</text>
+  <!-- Title line 2 -->
+  <text x="56" y="136" font-family="Georgia, serif" font-size="26" font-weight="600" fill="#ffffff">&amp; Audit Traceability Platform</text>
+
+  <!-- Subtitle -->
+  <text x="56" y="168" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#94A3B8">pdfplumber · PyMuPDF · Tesseract OCR · Claude AI · FastAPI · 21 CFR Part 11</text>
+
+  <!-- Pipeline strip -->
+  <rect x="56" y="200" width="688" height="48" rx="8" fill="#0f2133" stroke="#1E3A5F" stroke-width="1"/>
+
+  <!-- Pipeline stages -->
+  <text x="96" y="220" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#06B6A4">INGEST</text>
+  <text x="96" y="235" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#64748B">SHA-256 · Session ID</text>
+
+  <text x="96" y="237" font-family="Inter, system-ui, sans-serif" font-size="14" fill="#334155">  </text>
+  <text x="210" y="219" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#475569">→</text>
+
+  <text x="232" y="220" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#0E7490">10 ENGINES</text>
+  <text x="232" y="235" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#64748B">Extract in parallel</text>
+
+  <text x="356" y="219" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#475569">→</text>
+
+  <text x="378" y="220" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#065f46">PROVENANCE</text>
+  <text x="378" y="235" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#64748B">key · page · bbox · confidence</text>
+
+  <text x="516" y="219" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#475569">→</text>
+
+  <text x="538" y="220" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#7c3aed">MAP + POPULATE</text>
+  <text x="538" y="235" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#64748B">Word + inline citations</text>
+
+  <text x="674" y="219" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#475569">→</text>
+
+  <text x="694" y="220" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#d97706">AUDIT</text>
+  <text x="694" y="235" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#64748B">JSONL · ZIP</text>
+
+  <!-- Citation example box -->
+  <rect x="56" y="268" width="440" height="76" rx="8" fill="#0f2133" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="72" y="286" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#94A3B8" letter-spacing="1">EXAMPLE OUTPUT</text>
+  <text x="72" y="305" font-family="JetBrains Mono, monospace" font-size="10" fill="#06B6A4">Total Impurities:  0.42 %</text>
+  <text x="72" y="320" font-family="JetBrains Mono, monospace" font-size="9" fill="#64748B">  [Src: CoA_Batch2024.pdf, p.3, Sec: 2.2 Impurity Profile]</text>
+  <text x="72" y="336" font-family="JetBrains Mono, monospace" font-size="10" fill="#06B6A4">Retest Date:       2026-08</text>
+  <text x="72" y="334" font-family="JetBrains Mono, monospace" font-size="9" fill="#64748B">  </text>
+
+  <!-- Stats: 4 boxes on the right -->
+  <rect x="516" y="268" width="112" height="76" rx="8" fill="#0d2035" stroke="#1E293B" stroke-width="1"/>
+  <text x="572" y="299" font-family="Georgia, serif" font-size="26" font-weight="600" fill="#0E7490" text-anchor="middle">10+</text>
+  <text x="572" y="315" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#64748B" text-anchor="middle">Extraction</text>
+  <text x="572" y="328" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#64748B" text-anchor="middle">Engines</text>
+
+  <rect x="636" y="268" width="108" height="76" rx="8" fill="#0d2035" stroke="#1E293B" stroke-width="1"/>
+  <text x="690" y="299" font-family="Georgia, serif" font-size="26" font-weight="600" fill="#0E7490" text-anchor="middle">100%</text>
+  <text x="690" y="315" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#64748B" text-anchor="middle">Source</text>
+  <text x="690" y="328" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#64748B" text-anchor="middle">Citations</text>
+
+  <!-- Bottom badges -->
+  <rect x="56" y="362" width="104" height="28" rx="6" fill="#1e1b4b" stroke="#4c1d95" stroke-width="1"/>
+  <text x="108" y="381" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="#a78bfa" text-anchor="middle">21 CFR Part 11</text>
+
+  <rect x="172" y="362" width="80" height="28" rx="6" fill="#052e16" stroke="#14532d" stroke-width="1"/>
+  <text x="212" y="381" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="#4ade80" text-anchor="middle">GMP-Ready</text>
+
+  <rect x="264" y="362" width="96" height="28" rx="6" fill="#0c4a6e" stroke="#0369a1" stroke-width="1"/>
+  <text x="312" y="381" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="#38bdf8" text-anchor="middle">Claude AI + OCR</text>
+
+  <rect x="372" y="362" width="88" height="28" rx="6" fill="#1c1917" stroke="#44403c" stroke-width="1"/>
+  <text x="416" y="381" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="#d6d3d1" text-anchor="middle">FastAPI + React</text>
+
+  <!-- Footer -->
+  <text x="56" y="430" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#64748B">Mohcine Madkour, PhD · AI/ML Engineer · Regulatory Document Intelligence · PDFD v1.0</text>
+</svg>
