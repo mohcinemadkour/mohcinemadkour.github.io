@@ -1,4 +1,5 @@
 # Agentic AI Evaluation: From Development to Production
+
 ### A Practitioner's Guide for Engineers and Technical Leaders
 
 > **Grounded in:** EquipmentIQ — a production multi-agent RAG system for CNC
@@ -38,13 +39,13 @@ Agentic AI systems break this contract at every layer.
 
 ### The Five Sources of Non-Determinism
 
-| Source | Description | Impact on evaluation |
-|---|---|---|
-| **Intent classification** | The same query can be routed to different agents depending on model state, prompt phrasing, and context window content | Routing accuracy must be measured independently of retrieval quality |
-| **Retrieval** | Vector similarity rankings shift when embeddings change, collections are updated, or the query distribution evolves | Retrieval metrics must be re-run after every knowledge base change |
-| **Reranking** | Cross-encoder scores vary with model version, chunk boundaries, and co-occurring context | Reranker model versions must be pinned and change-controlled |
-| **Generation** | LLM output is stochastic — the same prompt produces different answers across calls | Generation quality requires statistical sampling, not single-query testing |
-| **Feedback loops** | The system changes over time as golden sets grow, prompts are tuned, and models are updated | Evaluation itself must be versioned and regression-tested |
+| Source                    | Description                                                                                                            | Impact on evaluation                                                       |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| **Intent classification** | The same query can be routed to different agents depending on model state, prompt phrasing, and context window content | Routing accuracy must be measured independently of retrieval quality       |
+| **Retrieval**             | Vector similarity rankings shift when embeddings change, collections are updated, or the query distribution evolves    | Retrieval metrics must be re-run after every knowledge base change         |
+| **Reranking**             | Cross-encoder scores vary with model version, chunk boundaries, and co-occurring context                               | Reranker model versions must be pinned and change-controlled               |
+| **Generation**            | LLM output is stochastic — the same prompt produces different answers across calls                                     | Generation quality requires statistical sampling, not single-query testing |
+| **Feedback loops**        | The system changes over time as golden sets grow, prompts are tuned, and models are updated                            | Evaluation itself must be versioned and regression-tested                  |
 
 ### The Consequence for Engineering Teams
 
@@ -86,12 +87,12 @@ meaningless, and failures at Layer 2 make Layer 3 measurements misleading.
 
 ### Layer Interaction — Why Order Matters
 
-| Scenario | Layer 1 state | Layer 2 state | What it means |
-|---|---|---|---|
-| Retrieval broken, generation good | NDCG = 0.00 | Faithfulness appears high | Faithfulness is measuring wrong context — false positive |
-| Routing broken, retrieval correct | Hit Rate = 0.00 | Answers empty | Correct agent never runs — routing must be fixed first |
-| Retrieval good, generation broken | NDCG = 1.00 | Faithfulness = 0.10 | Context not reaching synthesiser — code bug, not quality issue |
-| All layers healthy | NDCG ≥ 0.70 | Faithfulness ≥ 0.80 | System is functioning correctly |
+| Scenario                          | Layer 1 state   | Layer 2 state             | What it means                                                  |
+| --------------------------------- | --------------- | ------------------------- | -------------------------------------------------------------- |
+| Retrieval broken, generation good | NDCG = 0.00     | Faithfulness appears high | Faithfulness is measuring wrong context — false positive       |
+| Routing broken, retrieval correct | Hit Rate = 0.00 | Answers empty             | Correct agent never runs — routing must be fixed first         |
+| Retrieval good, generation broken | NDCG = 1.00     | Faithfulness = 0.10       | Context not reaching synthesiser — code bug, not quality issue |
+| All layers healthy                | NDCG ≥ 0.70     | Faithfulness ≥ 0.80       | System is functioning correctly                                |
 
 ### What Each Layer Catches
 
@@ -140,30 +141,30 @@ A golden set is a curated collection of question-answer pairs where the correct
 answer is known independently of what the system produces. For a multi-agent
 RAG system, each entry specifies:
 
-| Field | Description | Example |
-|---|---|---|
-| `query` | The natural language question | "What does error SPN-CR-001 mean?" |
-| `agent` | Which agent should handle this query | `software` |
-| `expected_doc_ids` | IDs of chunks that must appear in retrieval results | `["SPN-CR-001_chunk_0"]` |
-| `ground_truth_answer` | The correct answer from authoritative source | "CRITICAL — spindle bearing failure..." |
+| Field                 | Description                                         | Example                                 |
+| --------------------- | --------------------------------------------------- | --------------------------------------- |
+| `query`               | The natural language question                       | "What does error SPN-CR-001 mean?"      |
+| `agent`               | Which agent should handle this query                | `software`                              |
+| `expected_doc_ids`    | IDs of chunks that must appear in retrieval results | `["SPN-CR-001_chunk_0"]`                |
+| `ground_truth_answer` | The correct answer from authoritative source        | "CRITICAL — spindle bearing failure..." |
 
 #### Golden Set Sizing
 
-| System size | Minimum entries | Entries per agent | Rationale |
-|---|---|---|---|
-| 1-agent system | 20 | 20 | Provides statistical stability for NDCG |
-| 3-agent system | 30 | 10 per agent | One failure moves NDCG by 0.10 — detectable |
-| 5-agent system | 50 | 10 per agent | Cross-domain pairs needed in addition |
-| Production system | 90+ | 30 per agent | Organic growth from user feedback |
+| System size       | Minimum entries | Entries per agent | Rationale                                   |
+| ----------------- | --------------- | ----------------- | ------------------------------------------- |
+| 1-agent system    | 20              | 20                | Provides statistical stability for NDCG     |
+| 3-agent system    | 30              | 10 per agent      | One failure moves NDCG by 0.10 — detectable |
+| 5-agent system    | 50              | 10 per agent      | Cross-domain pairs needed in addition       |
+| Production system | 90+             | 30 per agent      | Organic growth from user feedback           |
 
 #### The Four Golden Set Rules
 
-| Rule | Description | Risk if violated |
-|---|---|---|
+| Rule                        | Description                                                                          | Risk if violated                                                         |
+| --------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
 | **Use live collection IDs** | Extract expected_doc_ids by querying the live vector store — never write from memory | ID format mismatches produce NDCG = 0.00 regardless of retrieval quality |
-| **Grow from failures** | Every production failure with a known correct answer becomes a new golden set entry | Test set becomes increasingly disconnected from real usage |
-| **Version control** | Golden set changes require review — never update to make failing tests pass | Evaluation fraud: tests pass but system quality has not improved |
-| **Minimum density** | At least 10 entries per agent | Fewer entries make metric noise indistinguishable from real signal |
+| **Grow from failures**      | Every production failure with a known correct answer becomes a new golden set entry  | Test set becomes increasingly disconnected from real usage               |
+| **Version control**         | Golden set changes require review — never update to make failing tests pass          | Evaluation fraud: tests pass but system quality has not improved         |
+| **Minimum density**         | At least 10 entries per agent                                                        | Fewer entries make metric noise indistinguishable from real signal       |
 
 ---
 
@@ -198,16 +199,16 @@ Commit
 
 #### Unit Tests vs Evaluation Tests — Critical Distinction
 
-| Dimension | Unit tests | Evaluation tests |
-|---|---|---|
-| **Purpose** | Verify code correctness | Measure system quality |
-| **Output** | Binary pass/fail | Numerical score vs threshold |
-| **Speed** | Milliseconds | Seconds to minutes |
-| **Frequency** | Every commit | Scheduled or triggered |
-| **Dependencies** | All mocked | Real collections and APIs |
-| **Failure action** | Block commit | Diagnose and tune |
-| **Example pass** | NDCG formula returns 0.0 when no match | NDCG ≥ 0.70 on 10 golden queries |
-| **Example fail** | NDCG formula returns 1.28 (overflow bug) | NDCG = 0.27 on support collection |
+| Dimension          | Unit tests                               | Evaluation tests                  |
+| ------------------ | ---------------------------------------- | --------------------------------- |
+| **Purpose**        | Verify code correctness                  | Measure system quality            |
+| **Output**         | Binary pass/fail                         | Numerical score vs threshold      |
+| **Speed**          | Milliseconds                             | Seconds to minutes                |
+| **Frequency**      | Every commit                             | Scheduled or triggered            |
+| **Dependencies**   | All mocked                               | Real collections and APIs         |
+| **Failure action** | Block commit                             | Diagnose and tune                 |
+| **Example pass**   | NDCG formula returns 0.0 when no match   | NDCG ≥ 0.70 on 10 golden queries  |
+| **Example fail**   | NDCG formula returns 1.28 (overflow bug) | NDCG = 0.27 on support collection |
 
 Both are required. Neither replaces the other. In EquipmentIQ, 91 unit tests
 ran in under 60 seconds with all external dependencies mocked. A separate
@@ -222,10 +223,10 @@ that rank relevant documents at the top of the result list. The formula has
 one common implementation error that produces values above 1.0 — a mathematical
 impossibility that signals a bug in the evaluation code itself.
 
-| Implementation | Formula | Result range | Correctness |
-|---|---|---|---|
-| **Incorrect** | relevance / (rank + 1) | [0, ∞) | ❌ Can exceed 1.0 |
-| **Correct** | relevance / log₂(rank + 1) | [0, 1.0] | ✅ Mathematically bounded |
+| Implementation | Formula                    | Result range | Correctness               |
+| -------------- | -------------------------- | ------------ | ------------------------- |
+| **Incorrect**  | relevance / (rank + 1)     | [0, ∞)       | ❌ Can exceed 1.0         |
+| **Correct**    | relevance / log₂(rank + 1) | [0, 1.0]     | ✅ Mathematically bounded |
 
 The correct NDCG computation:
 
@@ -248,13 +249,13 @@ In multi-agent systems, routing accuracy is as consequential as retrieval
 quality. A query routed to the wrong agent produces a confidently-wrong answer —
 often more harmful than an empty response, because it signals false certainty.
 
-| Routing scenario | User experience | Risk level |
-|---|---|---|
-| Correct agent, relevant chunks | Accurate answer with citations | Low |
-| Correct agent, irrelevant chunks | INSUFFICIENT_CONTEXT response | Medium — user knows to ask differently |
-| Wrong agent, relevant chunks | Partial answer from wrong domain | High — misleading but not empty |
-| Wrong agent, irrelevant chunks | INSUFFICIENT_CONTEXT from wrong domain | High — user has no path forward |
-| Cross-domain when ambiguous | Parallel retrieval, merged context | Low — designed for ambiguity |
+| Routing scenario                 | User experience                        | Risk level                             |
+| -------------------------------- | -------------------------------------- | -------------------------------------- |
+| Correct agent, relevant chunks   | Accurate answer with citations         | Low                                    |
+| Correct agent, irrelevant chunks | INSUFFICIENT_CONTEXT response          | Medium — user knows to ask differently |
+| Wrong agent, relevant chunks     | Partial answer from wrong domain       | High — misleading but not empty        |
+| Wrong agent, irrelevant chunks   | INSUFFICIENT_CONTEXT from wrong domain | High — user has no path forward        |
+| Cross-domain when ambiguous      | Parallel retrieval, merged context     | Low — designed for ambiguity           |
 
 **Target: 95% routing accuracy on a labelled test set of 40 queries
 (10 per domain).** This test must run after every change to the intent
@@ -268,11 +269,11 @@ model, but the retrieval layer was querying using a 384-dimensional model.
 Every retrieval call silently returned empty results. The system appeared to
 function — no errors, normal latency — but answers were hallucinated.
 
-| Scenario | Symptom | Root cause |
-|---|---|---|
-| Dimension mismatch | Empty retrieval, random results | Different embedding model used for ingestion vs query |
-| Model version mismatch | Declining NDCG after model update | Stored embeddings incompatible with new query embeddings |
-| Distance metric mismatch | Scores outside expected range | Collection created with L2 distance, queried with cosine |
+| Scenario                 | Symptom                           | Root cause                                               |
+| ------------------------ | --------------------------------- | -------------------------------------------------------- |
+| Dimension mismatch       | Empty retrieval, random results   | Different embedding model used for ingestion vs query    |
+| Model version mismatch   | Declining NDCG after model update | Stored embeddings incompatible with new query embeddings |
+| Distance metric mismatch | Scores outside expected range     | Collection created with L2 distance, queried with cosine |
 
 **The rule: one embedding model, one distance metric, specified in
 configuration, referenced by every component that touches embeddings.**
@@ -288,27 +289,27 @@ numerical gates before deployment proceeds.
 
 #### The Gate Framework
 
-| Gate ID | Metric | Target | What it catches | Failure consequence |
-|---|---|---|---|---|
-| AC-001 | NDCG@5 per collection | ≥ 0.70 | Retrieval degradation from any cause | Deployment blocked |
-| AC-002 | Hit Rate@5 per collection | ≥ 0.85 | Retrieval coverage loss | Deployment blocked |
-| AC-003 | Generation Faithfulness | ≥ 0.80 | Synthesis hallucination regression | Deployment blocked |
-| AC-004 | Routing accuracy | ≥ 95% on 40 queries | Intent classifier regression | Deployment blocked |
-| AC-005 | P95 latency (single agent) | ≤ 10 seconds | Performance regression | Deployment blocked |
-| AC-006 | P95 latency (cross-domain) | ≤ 20 seconds | Parallel retrieval overhead | Advisory |
-| AC-007 | Domain Q&A coverage | ≥ 90% per domain | Knowledge base coverage gaps | Advisory, investigate |
+| Gate ID | Metric                     | Target              | What it catches                      | Failure consequence   |
+| ------- | -------------------------- | ------------------- | ------------------------------------ | --------------------- |
+| AC-001  | NDCG@5 per collection      | ≥ 0.70              | Retrieval degradation from any cause | Deployment blocked    |
+| AC-002  | Hit Rate@5 per collection  | ≥ 0.85              | Retrieval coverage loss              | Deployment blocked    |
+| AC-003  | Generation Faithfulness    | ≥ 0.80              | Synthesis hallucination regression   | Deployment blocked    |
+| AC-004  | Routing accuracy           | ≥ 95% on 40 queries | Intent classifier regression         | Deployment blocked    |
+| AC-005  | P95 latency (single agent) | ≤ 10 seconds        | Performance regression               | Deployment blocked    |
+| AC-006  | P95 latency (cross-domain) | ≤ 20 seconds        | Parallel retrieval overhead          | Advisory              |
+| AC-007  | Domain Q&A coverage        | ≥ 90% per domain    | Knowledge base coverage gaps         | Advisory, investigate |
 
 #### Gate Calibration Strategy
 
 Gates set too high block legitimate deployments. Gates set too low allow
 regressions to reach production. The recommended calibration approach:
 
-| System maturity | NDCG target | Faithfulness target | Routing target |
-|---|---|---|---|
-| Early development | ≥ 0.50 | ≥ 0.60 | ≥ 80% |
-| Stable development | ≥ 0.70 | ≥ 0.80 | ≥ 95% |
-| Production | ≥ 0.80 | ≥ 0.85 | ≥ 95% |
-| Mature production | ≥ 0.90 | ≥ 0.90 | ≥ 97% |
+| System maturity    | NDCG target | Faithfulness target | Routing target |
+| ------------------ | ----------- | ------------------- | -------------- |
+| Early development  | ≥ 0.50      | ≥ 0.60              | ≥ 80%          |
+| Stable development | ≥ 0.70      | ≥ 0.80              | ≥ 95%          |
+| Production         | ≥ 0.80      | ≥ 0.85              | ≥ 95%          |
+| Mature production  | ≥ 0.90      | ≥ 0.90              | ≥ 97%          |
 
 Raise targets as the system matures. Do not start at maximum targets — this
 creates evaluation debt where teams route around gates rather than fixing
@@ -316,14 +317,14 @@ underlying quality.
 
 #### What Triggers a Gate Run
 
-| Trigger | Gates that run | Rationale |
-|---|---|---|
-| Any prompt change | AC-001 to AC-004 | Prompts affect routing and synthesis quality |
-| Chunk size / overlap change | AC-001, AC-002 | Chunking affects what retrieval can find |
-| New documents added | AC-001, AC-002, AC-007 | New content may disturb existing retrieval |
-| Embedding model change | AC-001 to AC-005 | Requires full collection rebuild |
-| LLM model version change | AC-003, AC-004 | New models behave differently |
-| Scheduled weekly | AC-001 to AC-007 | Catch silent degradation |
+| Trigger                     | Gates that run         | Rationale                                    |
+| --------------------------- | ---------------------- | -------------------------------------------- |
+| Any prompt change           | AC-001 to AC-004       | Prompts affect routing and synthesis quality |
+| Chunk size / overlap change | AC-001, AC-002         | Chunking affects what retrieval can find     |
+| New documents added         | AC-001, AC-002, AC-007 | New content may disturb existing retrieval   |
+| Embedding model change      | AC-001 to AC-005       | Requires full collection rebuild             |
+| LLM model version change    | AC-003, AC-004         | New models behave differently                |
+| Scheduled weekly            | AC-001 to AC-007       | Catch silent degradation                     |
 
 ---
 
@@ -335,14 +336,14 @@ production query is prohibitively expensive. The solution is tiered monitoring.
 
 #### The Tiered Monitoring Architecture
 
-| Tier | Trigger | What runs | LLM calls | Approx. cost/run |
-|---|---|---|---|---|
-| **Real-time** | Every query | Latency per node, routing domain, chunk count, similarity scores | 0 | $0.00 |
-| **Sampled online** | 10–15% of traffic | Faithfulness, answer relevance, LLM-as-Judge | 2 | ~$0.004 |
-| **Feedback-triggered** | Every user feedback submission | Failure mode classification, metric correlation | 1 | ~$0.001 |
-| **Nightly batch** | Daily scheduled | Full NDCG/MRR across golden set, drift detection | 4–8 | ~$0.02 |
-| **Weekly regression** | Weekly scheduled | Full golden set evaluation vs prior week baseline | 10–20 | ~$0.10 |
-| **Deployment gate** | Every change | Full golden set + latency + routing accuracy | 15–25 | ~$0.10 |
+| Tier                   | Trigger                        | What runs                                                        | LLM calls | Approx. cost/run |
+| ---------------------- | ------------------------------ | ---------------------------------------------------------------- | --------- | ---------------- |
+| **Real-time**          | Every query                    | Latency per node, routing domain, chunk count, similarity scores | 0         | $0.00            |
+| **Sampled online**     | 10–15% of traffic              | Faithfulness, answer relevance, LLM-as-Judge                     | 2         | ~$0.004          |
+| **Feedback-triggered** | Every user feedback submission | Failure mode classification, metric correlation                  | 1         | ~$0.001          |
+| **Nightly batch**      | Daily scheduled                | Full NDCG/MRR across golden set, drift detection                 | 4–8       | ~$0.02           |
+| **Weekly regression**  | Weekly scheduled               | Full golden set evaluation vs prior week baseline                | 10–20     | ~$0.10           |
+| **Deployment gate**    | Every change                   | Full golden set + latency + routing accuracy                     | 15–25     | ~$0.10           |
 
 At this cost structure, a mature system running 1,000 production queries per
 day spends approximately $0.60–1.00 per day on evaluation infrastructure —
@@ -366,7 +367,7 @@ At collection creation:
 Nightly:
   Compute current mean embedding vector of production query log
   Measure cosine distance between current and baseline centroids
-  
+
   Distance < 0.10 → No action
   Distance 0.10–0.15 → Log and monitor
   Distance > 0.15 → Alert: review query distribution, consider re-indexing
@@ -377,16 +378,16 @@ Nightly:
 For each production query, a structured trace should capture the following
 signals:
 
-| Signal | Where captured | What it indicates when anomalous |
-|---|---|---|
-| Classification domain | Routing node | Shift toward cross_domain → prompt drift |
-| Classification confidence | Routing node | Declining confidence → ambiguity in new query types |
-| Chunks retrieved per agent | Agent nodes | Count dropping → embedding drift or collection issue |
-| Top similarity score | Agent nodes | Score declining → query distribution shift |
-| Synthesis latency | Synthesis node | Rising → context window growing, reduce top-K |
-| Total tokens (in + out) | Synthesis node | Rising → cost management trigger |
-| Citations in answer | Synthesis node | Declining → synthesis prompt regression |
-| Answer length | Output | Declining sharply → INSUFFICIENT_CONTEXT pattern |
+| Signal                     | Where captured | What it indicates when anomalous                     |
+| -------------------------- | -------------- | ---------------------------------------------------- |
+| Classification domain      | Routing node   | Shift toward cross_domain → prompt drift             |
+| Classification confidence  | Routing node   | Declining confidence → ambiguity in new query types  |
+| Chunks retrieved per agent | Agent nodes    | Count dropping → embedding drift or collection issue |
+| Top similarity score       | Agent nodes    | Score declining → query distribution shift           |
+| Synthesis latency          | Synthesis node | Rising → context window growing, reduce top-K        |
+| Total tokens (in + out)    | Synthesis node | Rising → cost management trigger                     |
+| Citations in answer        | Synthesis node | Declining → synthesis prompt regression              |
+| Answer length              | Output         | Declining sharply → INSUFFICIENT_CONTEXT pattern     |
 
 ---
 
@@ -394,21 +395,21 @@ signals:
 
 ### Retrieval Metrics
 
-| Metric | Full name | Formula | Range | Interpretation |
-|---|---|---|---|---|
-| **NDCG@K** | Normalised Discounted Cumulative Gain | DCG / IDCG, where DCG = Σ rel(r) / log₂(r+1) | [0, 1] | Measures ranking quality — rewards relevant documents at top positions. 1.0 = perfect ranking. |
-| **Hit Rate@K** | Hit Rate at K | 1 if any expected doc in top-K, else 0 | [0, 1] | Binary — did the system find at least one relevant document? |
-| **MRR** | Mean Reciprocal Rank | Mean of 1/rank(first relevant doc) | [0, 1] | Measures how high the first correct answer appears. 1.0 = always rank 1. |
-| **Routing Accuracy** | — | Correct routings / total queries | [0, 1] | Fraction of queries sent to the correct agent. |
+| Metric               | Full name                             | Formula                                      | Range  | Interpretation                                                                                 |
+| -------------------- | ------------------------------------- | -------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------- |
+| **NDCG@K**           | Normalised Discounted Cumulative Gain | DCG / IDCG, where DCG = Σ rel(r) / log₂(r+1) | [0, 1] | Measures ranking quality — rewards relevant documents at top positions. 1.0 = perfect ranking. |
+| **Hit Rate@K**       | Hit Rate at K                         | 1 if any expected doc in top-K, else 0       | [0, 1] | Binary — did the system find at least one relevant document?                                   |
+| **MRR**              | Mean Reciprocal Rank                  | Mean of 1/rank(first relevant doc)           | [0, 1] | Measures how high the first correct answer appears. 1.0 = always rank 1.                       |
+| **Routing Accuracy** | —                                     | Correct routings / total queries             | [0, 1] | Fraction of queries sent to the correct agent.                                                 |
 
 ### Generation Metrics
 
-| Metric | What it measures | Interpretation |
-|---|---|---|
-| **Faithfulness** | Are factual claims in the answer grounded in retrieved context? | Low = hallucination risk. High = answer is evidence-based. |
-| **Answer Relevance** | Does the answer directly address the question? | Low = topic drift or incomplete answers. |
-| **LLM-as-Judge (1–5)** | Overall answer quality on a structured rubric | 4+ = acceptable for production. Below 3 = systematic prompt issue. |
-| **Context Precision** | What fraction of retrieved chunks were used in the answer? | Low = retrieval returning noise. High = tight retrieval-synthesis alignment. |
+| Metric                 | What it measures                                                | Interpretation                                                               |
+| ---------------------- | --------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **Faithfulness**       | Are factual claims in the answer grounded in retrieved context? | Low = hallucination risk. High = answer is evidence-based.                   |
+| **Answer Relevance**   | Does the answer directly address the question?                  | Low = topic drift or incomplete answers.                                     |
+| **LLM-as-Judge (1–5)** | Overall answer quality on a structured rubric                   | 4+ = acceptable for production. Below 3 = systematic prompt issue.           |
+| **Context Precision**  | What fraction of retrieved chunks were used in the answer?      | Low = retrieval returning noise. High = tight retrieval-synthesis alignment. |
 
 ### The Faithfulness Contradiction Pattern
 
@@ -416,23 +417,23 @@ A critical diagnostic signal: when faithfulness and LLM-as-Judge scores
 contradict each other, the cause is almost always a bug in the evaluation
 pipeline, not in the system.
 
-| Faithfulness | LLM Judge | Diagnosis | Action |
-|---|---|---|---|
-| High (≥ 0.80) | High (≥ 4.0) | System working correctly | No action |
-| Low (< 0.40) | High (≥ 4.0) | Context not reaching faithfulness scorer | Debug context passing in evaluation code |
-| High (≥ 0.80) | Low (< 3.0) | Answer is grounded but incomplete or poorly structured | Improve synthesis prompt |
-| Low (< 0.40) | Low (< 3.0) | Both retrieval and synthesis have issues | Fix retrieval first, then synthesis |
+| Faithfulness  | LLM Judge    | Diagnosis                                              | Action                                   |
+| ------------- | ------------ | ------------------------------------------------------ | ---------------------------------------- |
+| High (≥ 0.80) | High (≥ 4.0) | System working correctly                               | No action                                |
+| Low (< 0.40)  | High (≥ 4.0) | Context not reaching faithfulness scorer               | Debug context passing in evaluation code |
+| High (≥ 0.80) | Low (< 3.0)  | Answer is grounded but incomplete or poorly structured | Improve synthesis prompt                 |
+| Low (< 0.40)  | Low (< 3.0)  | Both retrieval and synthesis have issues               | Fix retrieval first, then synthesis      |
 
 ### System Health Metrics
 
-| Metric | Normal range | Alert threshold | Response |
-|---|---|---|---|
-| **Embedding drift** (cosine distance) | 0.00 – 0.10 | > 0.15 | Review query distribution, update baselines |
-| **P95 latency — single agent** | < 5 seconds | > 10 seconds | Reduce top-K, check collection size |
-| **P95 latency — cross-domain** | < 10 seconds | > 20 seconds | Parallelism degraded, check async execution |
-| **Routing accuracy** | > 97% | < 95% | Prompt regression, run routing test suite |
-| **Discordant feedback rate** | < 10% | > 20% | Automated metrics miscalibrated |
-| **INSUFFICIENT_CONTEXT rate** | < 5% | > 15% | Knowledge base coverage gap |
+| Metric                                | Normal range | Alert threshold | Response                                    |
+| ------------------------------------- | ------------ | --------------- | ------------------------------------------- |
+| **Embedding drift** (cosine distance) | 0.00 – 0.10  | > 0.15          | Review query distribution, update baselines |
+| **P95 latency — single agent**        | < 5 seconds  | > 10 seconds    | Reduce top-K, check collection size         |
+| **P95 latency — cross-domain**        | < 10 seconds | > 20 seconds    | Parallelism degraded, check async execution |
+| **Routing accuracy**                  | > 97%        | < 95%           | Prompt regression, run routing test suite   |
+| **Discordant feedback rate**          | < 10%        | > 20%           | Automated metrics miscalibrated             |
+| **INSUFFICIENT_CONTEXT rate**         | < 5%         | > 15%           | Knowledge base coverage gap                 |
 
 ---
 
@@ -460,22 +461,22 @@ Thumbs up/down   LLM classifies   Compare human    Negative feedback
 Raw free-text feedback is noisy and inconsistent. Structuring it into
 classified failure modes enables systematic diagnosis.
 
-| Failure mode | Description | System implication |
-|---|---|---|
-| `wrong_answer` | Answer is factually incorrect | Retrieval returning wrong content, or synthesis hallucinating |
-| `incomplete` | Answer addresses part of the question but misses key information | Context window too small, or relevant chunks below similarity floor |
-| `hallucinated` | Answer contains information not in retrieved context | Synthesis prompt not enforcing grounding |
-| `out_of_scope` | System answered a question it should have declined | Similarity floor too low, accepting irrelevant chunks |
-| `correct` | Answer is accurate and complete | System functioning as intended |
+| Failure mode   | Description                                                      | System implication                                                  |
+| -------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `wrong_answer` | Answer is factually incorrect                                    | Retrieval returning wrong content, or synthesis hallucinating       |
+| `incomplete`   | Answer addresses part of the question but misses key information | Context window too small, or relevant chunks below similarity floor |
+| `hallucinated` | Answer contains information not in retrieved context             | Synthesis prompt not enforcing grounding                            |
+| `out_of_scope` | System answered a question it should have declined               | Similarity floor too low, accepting irrelevant chunks               |
+| `correct`      | Answer is accurate and complete                                  | System functioning as intended                                      |
 
 ### Stage 3 — Metric Calibration via Discordant Cases
 
-| Human rating | Automated score | Label | Meaning |
-|---|---|---|---|
-| Positive | High faithfulness | Concordant positive | System working, metrics calibrated |
-| Negative | Low faithfulness | Concordant negative | System failing, metrics correctly detecting |
-| Negative | High faithfulness | **Discordant** | Metrics not measuring what matters to users |
-| Positive | Low faithfulness | **Discordant** | Metrics measuring something wrong |
+| Human rating | Automated score   | Label               | Meaning                                     |
+| ------------ | ----------------- | ------------------- | ------------------------------------------- |
+| Positive     | High faithfulness | Concordant positive | System working, metrics calibrated          |
+| Negative     | Low faithfulness  | Concordant negative | System failing, metrics correctly detecting |
+| Negative     | High faithfulness | **Discordant**      | Metrics not measuring what matters to users |
+| Positive     | Low faithfulness  | **Discordant**      | Metrics measuring something wrong           |
 
 A discordant rate above 20% signals that automated metrics need recalibration.
 The most common cause: faithfulness measures whether answers are grounded
@@ -498,18 +499,18 @@ multi-agent RAG system, its root cause, and the correct fix. The most
 important column is "incorrect fix" — what teams do when they address
 the symptom rather than the cause.
 
-| Symptom | Root cause | Correct fix | Incorrect fix | Risk of incorrect fix |
-|---|---|---|---|---|
-| NDCG = 0.00 across all collections | Golden set IDs don't match live collection IDs | Rebuild golden set by querying live collections | Re-ingest all collections | Ingestion works fine — wasted effort, IDs still wrong |
-| NDCG > 1.00 | DCG formula uses 1/(rank+1) instead of 1/log₂(rank+1) | Correct formula and add clamp | Lower evaluation targets | Metrics permanently untrustworthy |
-| Faithfulness = 0.00, LLM Judge = 4+ | Context not passed to faithfulness scorer (code bug) | Debug context passing in evaluation pipeline | Tune synthesis prompt | Synthesis prompt is not the problem |
-| Support queries route to cross_domain | Intent classifier has insufficient support-domain examples | Add examples + categorical rule to prompt | Lower confidence threshold | Ambiguous queries now route incorrectly to single agents |
-| Software domain scores 30% on coverage test | Parameter/MID queries have vocabulary that sounds mechanical | Add software examples for parameter IDs, MID numbers | Increase top-K retrieval | Retrieval is not the problem — routing is |
-| Empty retrieval despite populated collection | Embedding dimension mismatch (ingestion vs query) | Standardise embedding model across all components | Add more documents | More documents with same mismatch makes nothing better |
-| Retrieval quality degrades after prompt update | New examples broke disambiguation of edge cases | Narrow example scope; add routing regression tests | Revert all prompt changes | Routing regression becomes permanent risk |
-| Knowledge base content gap | Specific topic documented in source but not indexed | Add supplementary content file; re-ingest | Tune retrieval parameters | Parameters cannot retrieve content that was never ingested |
-| Correct domain, INSUFFICIENT_CONTEXT answer | Query phrasing semantically distant from indexed text | Add synonymous phrasing to supplementary content | Lower similarity floor | Lower floor adds irrelevant chunks without helping |
-| Good NDCG, poor user satisfaction | System answers question asked, not question intended | Review query intent; improve synthesis prompt | Tune retrieval | Retrieval is correct — intent interpretation is the issue |
+| Symptom                                        | Root cause                                                   | Correct fix                                          | Incorrect fix              | Risk of incorrect fix                                      |
+| ---------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- | -------------------------- | ---------------------------------------------------------- |
+| NDCG = 0.00 across all collections             | Golden set IDs don't match live collection IDs               | Rebuild golden set by querying live collections      | Re-ingest all collections  | Ingestion works fine — wasted effort, IDs still wrong      |
+| NDCG > 1.00                                    | DCG formula uses 1/(rank+1) instead of 1/log₂(rank+1)        | Correct formula and add clamp                        | Lower evaluation targets   | Metrics permanently untrustworthy                          |
+| Faithfulness = 0.00, LLM Judge = 4+            | Context not passed to faithfulness scorer (code bug)         | Debug context passing in evaluation pipeline         | Tune synthesis prompt      | Synthesis prompt is not the problem                        |
+| Support queries route to cross_domain          | Intent classifier has insufficient support-domain examples   | Add examples + categorical rule to prompt            | Lower confidence threshold | Ambiguous queries now route incorrectly to single agents   |
+| Software domain scores 30% on coverage test    | Parameter/MID queries have vocabulary that sounds mechanical | Add software examples for parameter IDs, MID numbers | Increase top-K retrieval   | Retrieval is not the problem — routing is                  |
+| Empty retrieval despite populated collection   | Embedding dimension mismatch (ingestion vs query)            | Standardise embedding model across all components    | Add more documents         | More documents with same mismatch makes nothing better     |
+| Retrieval quality degrades after prompt update | New examples broke disambiguation of edge cases              | Narrow example scope; add routing regression tests   | Revert all prompt changes  | Routing regression becomes permanent risk                  |
+| Knowledge base content gap                     | Specific topic documented in source but not indexed          | Add supplementary content file; re-ingest            | Tune retrieval parameters  | Parameters cannot retrieve content that was never ingested |
+| Correct domain, INSUFFICIENT_CONTEXT answer    | Query phrasing semantically distant from indexed text        | Add synonymous phrasing to supplementary content     | Lower similarity floor     | Lower floor adds irrelevant chunks without helping         |
+| Good NDCG, poor user satisfaction              | System answers question asked, not question intended         | Review query intent; improve synthesis prompt        | Tune retrieval             | Retrieval is correct — intent interpretation is the issue  |
 
 ---
 
@@ -521,41 +522,41 @@ fix the current one.
 
 ### The Six-Step Cycle
 
-| Step | Action | Output | Common mistake |
-|---|---|---|---|
-| **1. Observe** | Document exactly what the system did vs what it should have done | Precise, falsifiable problem statement | Jumping to a fix before fully characterising the problem |
-| **2. Localise** | Test each layer independently to find where the failure originates | Layer identified: routing / retrieval / synthesis / evaluation | Testing the wrong layer and concluding no problem |
-| **3. Fix** | Make exactly one change targeting the identified root cause | One changed file, one changed configuration value | Making multiple changes simultaneously |
-| **4. Verify** | Run the specific failing query or test | Pass/fail on the originally failing case | Declaring success without running the specific case |
-| **5. Regression** | Run the full golden set and coverage test | Confirmation that no previously-passing tests broke | Skipping regression and shipping a fix that breaks other tests |
-| **6. Document** | Update golden set, change log, and repository history | Permanent record of root cause, fix, and verification | Undocumented fix that is silently broken six months later |
+| Step              | Action                                                             | Output                                                         | Common mistake                                                 |
+| ----------------- | ------------------------------------------------------------------ | -------------------------------------------------------------- | -------------------------------------------------------------- |
+| **1. Observe**    | Document exactly what the system did vs what it should have done   | Precise, falsifiable problem statement                         | Jumping to a fix before fully characterising the problem       |
+| **2. Localise**   | Test each layer independently to find where the failure originates | Layer identified: routing / retrieval / synthesis / evaluation | Testing the wrong layer and concluding no problem              |
+| **3. Fix**        | Make exactly one change targeting the identified root cause        | One changed file, one changed configuration value              | Making multiple changes simultaneously                         |
+| **4. Verify**     | Run the specific failing query or test                             | Pass/fail on the originally failing case                       | Declaring success without running the specific case            |
+| **5. Regression** | Run the full golden set and coverage test                          | Confirmation that no previously-passing tests broke            | Skipping regression and shipping a fix that breaks other tests |
+| **6. Document**   | Update golden set, change log, and repository history              | Permanent record of root cause, fix, and verification          | Undocumented fix that is silently broken six months later      |
 
 ### Localisation: Testing Each Layer Independently
 
 When an answer is wrong, the first task is identifying which layer produced
 the failure. Each layer answers one specific diagnostic question:
 
-| Layer | Diagnostic question | Evidence of layer failure |
-|---|---|---|
-| **Routing** | Was the query sent to the correct agent? | Wrong domain in routing output, or cross_domain with low confidence |
-| **Retrieval** | Did the correct agent return relevant chunks? | Zero chunks, wrong source documents, or similarity scores below 0.15 |
-| **Synthesis** | Did the LLM use the retrieved context faithfully? | Answer contains facts not in any retrieved chunk |
-| **Evaluation** | Is the metric itself computing correctly? | NDCG > 1.0, faithfulness = 0.0 everywhere, golden set IDs mismatched |
+| Layer          | Diagnostic question                               | Evidence of layer failure                                            |
+| -------------- | ------------------------------------------------- | -------------------------------------------------------------------- |
+| **Routing**    | Was the query sent to the correct agent?          | Wrong domain in routing output, or cross_domain with low confidence  |
+| **Retrieval**  | Did the correct agent return relevant chunks?     | Zero chunks, wrong source documents, or similarity scores below 0.15 |
+| **Synthesis**  | Did the LLM use the retrieved context faithfully? | Answer contains facts not in any retrieved chunk                     |
+| **Evaluation** | Is the metric itself computing correctly?         | NDCG > 1.0, faithfulness = 0.0 everywhere, golden set IDs mismatched |
 
 This layered approach was critical in diagnosing the Zone C routing failure
 in EquipmentIQ. The query "What error codes are triggered in Zone C?" routed
 to the software agent at 85% confidence and returned INSUFFICIENT_CONTEXT.
 Layer-by-layer diagnosis in 25 minutes:
 
-| Step | Finding |
-|---|---|
-| Observe | Domain = software, confidence = 85%, answer = INSUFFICIENT_CONTEXT |
-| Localise (routing) | Classifier reasoning: "query asks about error codes → software" — wrong |
-| Localise (retrieval) | Software collection has no ISO zone documentation — retrieval correctly empty |
-| Root cause | Vocabulary collision: "error codes" mapped to software, but ISO 10816-3 zones live in mechanical PDFs |
-| Fix | Added 3 examples + 1 disambiguation rule to intent classification prompt |
-| Verify | Query now routes to mechanical at 87% confidence with correct answer |
-| Regression | All 30 golden set entries still passing — no regressions |
+| Step                 | Finding                                                                                               |
+| -------------------- | ----------------------------------------------------------------------------------------------------- |
+| Observe              | Domain = software, confidence = 85%, answer = INSUFFICIENT_CONTEXT                                    |
+| Localise (routing)   | Classifier reasoning: "query asks about error codes → software" — wrong                               |
+| Localise (retrieval) | Software collection has no ISO zone documentation — retrieval correctly empty                         |
+| Root cause           | Vocabulary collision: "error codes" mapped to software, but ISO 10816-3 zones live in mechanical PDFs |
+| Fix                  | Added 3 examples + 1 disambiguation rule to intent classification prompt                              |
+| Verify               | Query now routes to mechanical at 87% confidence with correct answer                                  |
+| Regression           | All 30 golden set entries still passing — no regressions                                              |
 
 ### The One-Change Rule
 
@@ -564,12 +565,12 @@ cause of evaluation regressions that cannot be explained. When the next
 evaluation run shows a different failure, there is no way to know which
 change caused it.
 
-| Scenario | What happened | Result |
-|---|---|---|
-| One change, problem fixed | Root cause identified and resolved | Trustworthy fix — can be documented and explained |
-| One change, problem persists | Change did not address root cause | Clear signal to re-localise at the correct layer |
-| Two changes, problem fixed | Either change A or B fixed it — unknown which | False confidence; the other change may have introduced a regression |
-| Two changes, problem persists | Unknown interaction | Starting over from scratch is faster than debugging the combination |
+| Scenario                      | What happened                                 | Result                                                              |
+| ----------------------------- | --------------------------------------------- | ------------------------------------------------------------------- |
+| One change, problem fixed     | Root cause identified and resolved            | Trustworthy fix — can be documented and explained                   |
+| One change, problem persists  | Change did not address root cause             | Clear signal to re-localise at the correct layer                    |
+| Two changes, problem fixed    | Either change A or B fixed it — unknown which | False confidence; the other change may have introduced a regression |
+| Two changes, problem persists | Unknown interaction                           | Starting over from scratch is faster than debugging the combination |
 
 ---
 
@@ -581,14 +582,14 @@ will actually ask. Domain coverage testing fills this gap.
 
 ### Golden Set vs Coverage Testing
 
-| Dimension | Golden set evaluation | Domain coverage testing |
-|---|---|---|
-| **Purpose** | Verify retrieval quality on known queries | Verify the system handles the full query space |
-| **Query source** | Carefully curated, verified ground truth | Representative sample of real user queries |
-| **Pass criterion** | NDCG ≥ threshold | Answer contains expected key terms |
-| **Frequency** | Every deployment (gate) | After major content or routing changes |
-| **Failure action** | Block deployment | Diagnose failure type, fix root cause |
-| **Scale** | 30–90 entries | 20+ per domain (80+ for 3-agent systems) |
+| Dimension          | Golden set evaluation                     | Domain coverage testing                        |
+| ------------------ | ----------------------------------------- | ---------------------------------------------- |
+| **Purpose**        | Verify retrieval quality on known queries | Verify the system handles the full query space |
+| **Query source**   | Carefully curated, verified ground truth  | Representative sample of real user queries     |
+| **Pass criterion** | NDCG ≥ threshold                          | Answer contains expected key terms             |
+| **Frequency**      | Every deployment (gate)                   | After major content or routing changes         |
+| **Failure action** | Block deployment                          | Diagnose failure type, fix root cause          |
+| **Scale**          | 30–90 entries                             | 20+ per domain (80+ for 3-agent systems)       |
 
 A system can achieve NDCG = 1.00 on its golden set and still fail 30% of
 domain coverage tests — because the golden set only covers the topics it
@@ -596,12 +597,12 @@ was designed around.
 
 ### The Four Coverage Failure Types
 
-| Failure type | Description | How to diagnose | Fix |
-|---|---|---|---|
-| **Routing failure** | Query goes to wrong agent | Check routing output for correct domain | Add examples to intent classifier prompt |
-| **Retrieval failure (empty)** | Correct agent, zero chunks returned | Inspect similarity scores; check embedding consistency | Fix embedding pipeline; lower similarity floor |
-| **Content gap** | Query topic not in knowledge base | Check source documents for coverage | Add supplementary content; re-ingest |
-| **Semantic mismatch** | Content exists but query phrasing doesn't match indexed text | Run direct collection query; compare phrasing | Add synonymous phrasing to supplementary content |
+| Failure type                  | Description                                                  | How to diagnose                                        | Fix                                              |
+| ----------------------------- | ------------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------ |
+| **Routing failure**           | Query goes to wrong agent                                    | Check routing output for correct domain                | Add examples to intent classifier prompt         |
+| **Retrieval failure (empty)** | Correct agent, zero chunks returned                          | Inspect similarity scores; check embedding consistency | Fix embedding pipeline; lower similarity floor   |
+| **Content gap**               | Query topic not in knowledge base                            | Check source documents for coverage                    | Add supplementary content; re-ingest             |
+| **Semantic mismatch**         | Content exists but query phrasing doesn't match indexed text | Run direct collection query; compare phrasing          | Add synonymous phrasing to supplementary content |
 
 ### EquipmentIQ Coverage Test Results
 
@@ -610,40 +611,40 @@ mechanical domain test and an 80-query full-system test.
 
 #### Test 1: 20-Query Mechanical Domain (DOC-EIQ-005 Vibration Monitoring)
 
-| # | Query topic | Result | Failure type |
-|---|---|---|---|
-| 1 | Vibration classification standard | ✅ PASS | — |
-| 2 | ISO 10816-3 machine group | ✅ PASS | — |
-| 3 | Zone D RMS range and action | ✅ PASS | — |
-| 4 | Error codes triggered in Zone C | ✅ PASS | — |
-| 5 | Zone B vs Zone B Upper | ❌ FAIL | Content gap — "Zone B Upper" not explicitly documented |
-| 6 | Statistical features per axis | ✅ PASS | — |
-| 7 | Best early-fault indicator | ✅ PASS | — |
-| 8 | Kurtosis alarm threshold | ✅ PASS | — |
-| 9 | Crest Factor formula | ❌ FAIL | Semantic mismatch — formula exists but phrasing differs |
-| 10 | Purpose of Mean feature | ✅ PASS | — |
-| 11 | Fault category for tooth-pass frequency | ✅ PASS | — |
-| 12 | Spindle bearing fault parameters | ✅ PASS | — |
-| 13 | Operations affected by tool wear | ✅ PASS | — |
-| 14 | Actuator fault indicators | ❌ FAIL | Routing failure — routed to cross_domain |
-| 15 | Process anomaly signal | ✅ PASS | — |
-| 16 | Normal range for P064 | ✅ PASS | — |
-| 17 | VIB-SR-001 required action | ❌ FAIL | Missing data — error code not ingested |
-| 18 | Critical range for P004 | ✅ PASS | — |
-| 19 | Bosch dataset size | ❌ FAIL | Routing failure — dataset stats routed to cross_domain |
-| 20 | Normal vs fault sample breakdown | ❌ FAIL | Routing failure — same cause as #19 |
+| #   | Query topic                             | Result  | Failure type                                            |
+| --- | --------------------------------------- | ------- | ------------------------------------------------------- |
+| 1   | Vibration classification standard       | ✅ PASS | —                                                       |
+| 2   | ISO 10816-3 machine group               | ✅ PASS | —                                                       |
+| 3   | Zone D RMS range and action             | ✅ PASS | —                                                       |
+| 4   | Error codes triggered in Zone C         | ✅ PASS | —                                                       |
+| 5   | Zone B vs Zone B Upper                  | ❌ FAIL | Content gap — "Zone B Upper" not explicitly documented  |
+| 6   | Statistical features per axis           | ✅ PASS | —                                                       |
+| 7   | Best early-fault indicator              | ✅ PASS | —                                                       |
+| 8   | Kurtosis alarm threshold                | ✅ PASS | —                                                       |
+| 9   | Crest Factor formula                    | ❌ FAIL | Semantic mismatch — formula exists but phrasing differs |
+| 10  | Purpose of Mean feature                 | ✅ PASS | —                                                       |
+| 11  | Fault category for tooth-pass frequency | ✅ PASS | —                                                       |
+| 12  | Spindle bearing fault parameters        | ✅ PASS | —                                                       |
+| 13  | Operations affected by tool wear        | ✅ PASS | —                                                       |
+| 14  | Actuator fault indicators               | ❌ FAIL | Routing failure — routed to cross_domain                |
+| 15  | Process anomaly signal                  | ✅ PASS | —                                                       |
+| 16  | Normal range for P064                   | ✅ PASS | —                                                       |
+| 17  | VIB-SR-001 required action              | ❌ FAIL | Missing data — error code not ingested                  |
+| 18  | Critical range for P004                 | ✅ PASS | —                                                       |
+| 19  | Bosch dataset size                      | ❌ FAIL | Routing failure — dataset stats routed to cross_domain  |
+| 20  | Normal vs fault sample breakdown        | ❌ FAIL | Routing failure — same cause as #19                     |
 
 **Initial score: 14/20 (70%).** After five targeted fixes: **20/20 (100%).**
 
 #### Test 2: 80-Query Full-System Validation
 
-| Domain | Initial score | After Tier 1 fixes | Target |
-|---|---|---|---|
-| Mechanical | 16/20 (80%) | 17/20 (85%) | ≥ 90% |
-| Software | 6/20 (30%) | 14/20 (70%) | ≥ 90% |
-| Support | 14/20 (70%) | 15/20 (75%) | ≥ 90% |
-| Cross-domain | 20/20 (100%) | 20/20 (100%) | ≥ 95% |
-| **Overall** | **56/80 (70%)** | **66/80 (83%)** | **≥ 90%** |
+| Domain       | Initial score   | After Tier 1 fixes | Target    |
+| ------------ | --------------- | ------------------ | --------- |
+| Mechanical   | 16/20 (80%)     | 17/20 (85%)        | ≥ 90%     |
+| Software     | 6/20 (30%)      | 14/20 (70%)        | ≥ 90%     |
+| Support      | 14/20 (70%)     | 15/20 (75%)        | ≥ 90%     |
+| Cross-domain | 20/20 (100%)    | 20/20 (100%)       | ≥ 95%     |
+| **Overall**  | **56/80 (70%)** | **66/80 (83%)**    | **≥ 90%** |
 
 **Key diagnostic insight from the 80-query test:** Cross-domain (parallel
 retrieval across all three agents) scored 100% while software single-agent
@@ -656,13 +657,13 @@ not in retrieval or the knowledge base.
 
 Coverage tests must be re-run after:
 
-| Change | Why re-run |
-|---|---|
-| New documents added to any collection | New content may conflict with existing retrieval, or queries about new content may fail |
-| Intent prompt updated | New examples may break disambiguation of previously-correct queries |
-| Chunk size or overlap changed | Different chunking distributes content differently, affecting semantic matches |
-| Similarity floor adjusted | Threshold changes affect which queries return chunks vs INSUFFICIENT_CONTEXT |
-| New query patterns observed in production logs | Emerging usage patterns may reveal new coverage gaps |
+| Change                                         | Why re-run                                                                              |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------- |
+| New documents added to any collection          | New content may conflict with existing retrieval, or queries about new content may fail |
+| Intent prompt updated                          | New examples may break disambiguation of previously-correct queries                     |
+| Chunk size or overlap changed                  | Different chunking distributes content differently, affecting semantic matches          |
+| Similarity floor adjusted                      | Threshold changes affect which queries return chunks vs INSUFFICIENT_CONTEXT            |
+| New query patterns observed in production logs | Emerging usage patterns may reveal new coverage gaps                                    |
 
 ---
 
@@ -697,14 +698,14 @@ correctness.
 
 ### Principle 4 — Automated Metrics and Human Feedback Serve Different Purposes
 
-| Automated metrics | Human feedback |
-|---|---|
-| Scale to 100% of traffic | Capture real-world usefulness |
-| Consistent and reproducible | Noisy but authentic |
-| Fast and cheap | Slow and expensive |
-| Measure proxy signals | Measure actual user value |
-| Can be fooled by metric gaming | Cannot be fooled |
-| Tell you what changed | Tell you what matters |
+| Automated metrics              | Human feedback                |
+| ------------------------------ | ----------------------------- |
+| Scale to 100% of traffic       | Capture real-world usefulness |
+| Consistent and reproducible    | Noisy but authentic           |
+| Fast and cheap                 | Slow and expensive            |
+| Measure proxy signals          | Measure actual user value     |
+| Can be fooled by metric gaming | Cannot be fooled              |
+| Tell you what changed          | Tell you what matters         |
 
 Run both. When they disagree, human feedback is right and the automated metric
 needs recalibration.
@@ -745,84 +746,84 @@ phase.
 
 ### System Architecture
 
-| Component | Specification |
-|---|---|
-| Orchestration | LangGraph StateGraph, 8 nodes, conditional routing |
-| Agents | 3 specialised (mechanical, software/error codes, customer support) |
-| Vector store | 3 isolated ChromaDB collections |
-| Embedding model | OpenAI text-embedding-3-small (1536 dimensions, cosine distance) |
-| Reranker | Cross-encoder/ms-marco-MiniLM-L-6-v2 (top-8 → top-5) |
-| Synthesis model | Anthropic Claude (Haiku for evaluation, Sonnet for production) |
-| Confidence threshold | 0.75 (cross-domain below this) |
-| Similarity floor | 0.15 (chunks below this score rejected) |
+| Component            | Specification                                                      |
+| -------------------- | ------------------------------------------------------------------ |
+| Orchestration        | LangGraph StateGraph, 8 nodes, conditional routing                 |
+| Agents               | 3 specialised (mechanical, software/error codes, customer support) |
+| Vector store         | 3 isolated ChromaDB collections                                    |
+| Embedding model      | OpenAI text-embedding-3-small (1536 dimensions, cosine distance)   |
+| Reranker             | Cross-encoder/ms-marco-MiniLM-L-6-v2 (top-8 → top-5)               |
+| Synthesis model      | Anthropic Claude (Haiku for evaluation, Sonnet for production)     |
+| Confidence threshold | 0.75 (cross-domain below this)                                     |
+| Similarity floor     | 0.15 (chunks below this score rejected)                            |
 
 ### Knowledge Base
 
-| Collection | Source | Documents | Content type |
-|---|---|---|---|
-| mechanical_collection | 6 technical PDFs + supplementary | 66 chunks | Machine specs, wiring, maintenance, ISO standards |
-| software_collection | 96 error code JSON files | 96 documents | Error codes, severity levels, parameters, diagnostics |
-| support_collection | 150 complaint records CSV | 150 documents | Phone notes, investigation notes, RMA data, remedies |
+| Collection            | Source                           | Documents     | Content type                                          |
+| --------------------- | -------------------------------- | ------------- | ----------------------------------------------------- |
+| mechanical_collection | 6 technical PDFs + supplementary | 66 chunks     | Machine specs, wiring, maintenance, ISO standards     |
+| software_collection   | 96 error code JSON files         | 96 documents  | Error codes, severity levels, parameters, diagnostics |
+| support_collection    | 150 complaint records CSV        | 150 documents | Phone notes, investigation notes, RMA data, remedies  |
 
 ### Retrieval Evaluation Results (Sprint 3 Close)
 
-| Collection | NDCG@5 | Hit Rate@5 | MRR | Gate |
-|---|---|---|---|---|
-| mechanical_collection | 1.00 | 1.00 | 1.00 | ✅ PASS (≥ 0.70) |
-| software_collection | 1.00 | 1.00 | 1.00 | ✅ PASS (≥ 0.70) |
-| support_collection | 1.00 | 1.00 | 1.00 | ✅ PASS (≥ 0.70) |
-| Embedding drift | 0.00 (baseline) | — | — | ✅ OK (< 0.15) |
+| Collection            | NDCG@5          | Hit Rate@5 | MRR  | Gate             |
+| --------------------- | --------------- | ---------- | ---- | ---------------- |
+| mechanical_collection | 1.00            | 1.00       | 1.00 | ✅ PASS (≥ 0.70) |
+| software_collection   | 1.00            | 1.00       | 1.00 | ✅ PASS (≥ 0.70) |
+| support_collection    | 1.00            | 1.00       | 1.00 | ✅ PASS (≥ 0.70) |
+| Embedding drift       | 0.00 (baseline) | —          | —    | ✅ OK (< 0.15)   |
 
 ### Domain Coverage Test Results
 
-| Domain | Queries tested | Initial pass | After fixes | Fix types applied |
-|---|---|---|---|---|
-| Mechanical | 20 | 14/20 (70%) | 20/20 (100%) | 3 routing, 1 content gap, 1 ingestion |
-| Software | 20 | 6/20 (30%) | 14/20 (70%) | 6 routing, ongoing |
-| Support | 20 | 14/20 (70%) | 15/20 (75%) | 2 routing, 4 transient errors |
-| Cross-domain | 20 | 20/20 (100%) | 20/20 (100%) | None required |
-| **Total** | **80** | **54/80 (67%)** | **69/80 (86%)** | |
+| Domain       | Queries tested | Initial pass    | After fixes     | Fix types applied                     |
+| ------------ | -------------- | --------------- | --------------- | ------------------------------------- |
+| Mechanical   | 20             | 14/20 (70%)     | 20/20 (100%)    | 3 routing, 1 content gap, 1 ingestion |
+| Software     | 20             | 6/20 (30%)      | 14/20 (70%)     | 6 routing, ongoing                    |
+| Support      | 20             | 14/20 (70%)     | 15/20 (75%)     | 2 routing, 4 transient errors         |
+| Cross-domain | 20             | 20/20 (100%)    | 20/20 (100%)    | None required                         |
+| **Total**    | **80**         | **54/80 (67%)** | **69/80 (86%)** |                                       |
 
 ### Issues Encountered and Resolved
 
-| Issue | Symptom | Root cause | Resolution |
-|---|---|---|---|
-| NDCG = 0.00 everywhere | All golden set queries scored zero | Golden set used short IDs; collection stored full filename IDs | Rebuilt golden set by querying live collections |
-| NDCG > 1.00 | Score of 1.28 returned | DCG formula used 1/(rank+1) instead of 1/log₂(rank+1) | Corrected formula, added clamp |
-| Faithfulness = 0.015 | Near-zero despite accurate answers | Faithfulness scorer received empty context list | Fixed context extraction in evaluation pipeline |
-| Embedding mismatch | Empty retrieval across all collections | Ingestion used 1536-dim model; retrieval defaulted to 384-dim | Standardised embedding client across all components |
-| Support NDCG = 0.27 | Support queries retrieving wrong content | Support queries routed to cross_domain (confidence 0.65–0.72) | Added complaint-specific examples to intent classifier |
-| Software coverage 30% | Parameter/MID queries routed to mechanical | Classifier lacked software examples for these query patterns | Added 9 software examples + disambiguation rule |
-| Zone C routing failure | "Error codes in Zone C" → software agent | "error codes" keyword overrode vibration context | Added mechanical examples for ISO zone queries |
-| Zone B Upper content gap | No chunks matched Zone B Upper threshold | Specific sub-zone not explicitly named in source PDFs | Created supplementary content file with explicit zone table |
+| Issue                    | Symptom                                    | Root cause                                                     | Resolution                                                  |
+| ------------------------ | ------------------------------------------ | -------------------------------------------------------------- | ----------------------------------------------------------- |
+| NDCG = 0.00 everywhere   | All golden set queries scored zero         | Golden set used short IDs; collection stored full filename IDs | Rebuilt golden set by querying live collections             |
+| NDCG > 1.00              | Score of 1.28 returned                     | DCG formula used 1/(rank+1) instead of 1/log₂(rank+1)          | Corrected formula, added clamp                              |
+| Faithfulness = 0.015     | Near-zero despite accurate answers         | Faithfulness scorer received empty context list                | Fixed context extraction in evaluation pipeline             |
+| Embedding mismatch       | Empty retrieval across all collections     | Ingestion used 1536-dim model; retrieval defaulted to 384-dim  | Standardised embedding client across all components         |
+| Support NDCG = 0.27      | Support queries retrieving wrong content   | Support queries routed to cross_domain (confidence 0.65–0.72)  | Added complaint-specific examples to intent classifier      |
+| Software coverage 30%    | Parameter/MID queries routed to mechanical | Classifier lacked software examples for these query patterns   | Added 9 software examples + disambiguation rule             |
+| Zone C routing failure   | "Error codes in Zone C" → software agent   | "error codes" keyword overrode vibration context               | Added mechanical examples for ISO zone queries              |
+| Zone B Upper content gap | No chunks matched Zone B Upper threshold   | Specific sub-zone not explicitly named in source PDFs          | Created supplementary content file with explicit zone table |
 
 ### Test Infrastructure
 
-| Component | Count | Coverage |
-|---|---|---|
-| Unit tests | 91 | Config, ingestion, agents, orchestrator, evaluation, feedback |
-| Integration tests | 12 | End-to-end with live API calls |
-| Golden set entries | 37 | 10+ per agent, grown from failures |
-| Coverage test queries | 80 | 20 per domain |
-| Evaluation tiers | 6 | Real-time through weekly regression |
+| Component             | Count | Coverage                                                      |
+| --------------------- | ----- | ------------------------------------------------------------- |
+| Unit tests            | 91    | Config, ingestion, agents, orchestrator, evaluation, feedback |
+| Integration tests     | 12    | End-to-end with live API calls                                |
+| Golden set entries    | 37    | 10+ per agent, grown from failures                            |
+| Coverage test queries | 80    | 20 per domain                                                 |
+| Evaluation tiers      | 6     | Real-time through weekly regression                           |
 
 ---
 
 ## Appendix A — Metric Quick Reference
 
-| Metric | Layer | Formula summary | Target | Alert threshold |
-|---|---|---|---|---|
-| NDCG@5 | Retrieval | Σ rel(r)/log₂(r+1) normalised | ≥ 0.70 | < 0.50 |
-| Hit Rate@5 | Retrieval | Any relevant in top-5 | ≥ 0.85 | < 0.70 |
-| MRR | Retrieval | Mean 1/rank(first relevant) | ≥ 0.60 | < 0.40 |
-| Routing accuracy | Retrieval | Correct routings / total | ≥ 95% | < 90% |
-| Faithfulness | Generation | Claims grounded in context | ≥ 0.80 | < 0.60 |
-| Answer relevance | Generation | Answer addresses question | ≥ 0.75 | < 0.55 |
-| LLM Judge | Generation | 1–5 rubric score | ≥ 3.5/5 | < 2.5/5 |
-| Embedding drift | System | Cosine distance vs baseline | < 0.10 | > 0.15 |
-| P95 latency (single) | System | 95th percentile ms | < 10,000 ms | > 15,000 ms |
-| Domain coverage | Coverage | Pass rate on domain Q&A test | ≥ 90% | < 75% |
-| Discordant rate | Feedback | Human-metric disagreement % | < 10% | > 20% |
+| Metric               | Layer      | Formula summary               | Target      | Alert threshold |
+| -------------------- | ---------- | ----------------------------- | ----------- | --------------- |
+| NDCG@5               | Retrieval  | Σ rel(r)/log₂(r+1) normalised | ≥ 0.70      | < 0.50          |
+| Hit Rate@5           | Retrieval  | Any relevant in top-5         | ≥ 0.85      | < 0.70          |
+| MRR                  | Retrieval  | Mean 1/rank(first relevant)   | ≥ 0.60      | < 0.40          |
+| Routing accuracy     | Retrieval  | Correct routings / total      | ≥ 95%       | < 90%           |
+| Faithfulness         | Generation | Claims grounded in context    | ≥ 0.80      | < 0.60          |
+| Answer relevance     | Generation | Answer addresses question     | ≥ 0.75      | < 0.55          |
+| LLM Judge            | Generation | 1–5 rubric score              | ≥ 3.5/5     | < 2.5/5         |
+| Embedding drift      | System     | Cosine distance vs baseline   | < 0.10      | > 0.15          |
+| P95 latency (single) | System     | 95th percentile ms            | < 10,000 ms | > 15,000 ms     |
+| Domain coverage      | Coverage   | Pass rate on domain Q&A test  | ≥ 90%       | < 75%           |
+| Discordant rate      | Feedback   | Human-metric disagreement %   | < 10%       | > 20%           |
 
 ## Appendix B — Diagnostic Decision Tree
 
@@ -866,6 +867,6 @@ WRONG OR EMPTY ANSWER
 
 ---
 
-*Mohcine Madkour, PhD — Senior AI/ML Engineer & Architect*
-*EquipmentIQ Project — Multi-Agent RAG for Industrial Predictive Maintenance*
-*Bosch CNC Machining Dataset (CC-BY-4.0) — Tnani et al. Procedia CIRP 2022, 107, 131–136*
+_Mohcine Madkour, PhD — Senior AI/ML Engineer & Architect_
+_EquipmentIQ Project — Multi-Agent RAG for Industrial Predictive Maintenance_
+_Bosch CNC Machining Dataset (CC-BY-4.0) — Tnani et al. Procedia CIRP 2022, 107, 131–136_

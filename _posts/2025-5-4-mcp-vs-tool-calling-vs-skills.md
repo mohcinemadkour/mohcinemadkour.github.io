@@ -16,12 +16,12 @@ Here's how they differ, when each one wins, and how they fit together.
 
 ## The Mental Model
 
-| Layer | What it is | What it defines |
-|---|---|---|
-| **Tool Calling** | A function | *What* the model can do |
-| **MCP** | A protocol | *Where* to find what it can do |
-| **Skill** | A playbook | *How* to do it well |
-| **RAG** | A memory layer | *What to know* before acting |
+| Layer            | What it is     | What it defines                |
+| ---------------- | -------------- | ------------------------------ |
+| **Tool Calling** | A function     | _What_ the model can do        |
+| **MCP**          | A protocol     | _Where_ to find what it can do |
+| **Skill**        | A playbook     | _How_ to do it well            |
+| **RAG**          | A memory layer | _What to know_ before acting   |
 
 These aren't competitors. A production agent in 2026 uses all four.
 
@@ -75,7 +75,7 @@ Servers expose tools, resources, and prompt templates. Transport is flexible: st
 
 ## Skills — The Playbook
 
-A Skill is a folder: `SKILL.md` + scripts + reference material + examples. It bundles everything the model needs to do a complex task *well* — not just the ability to do it, but the expertise.
+A Skill is a folder: `SKILL.md` + scripts + reference material + examples. It bundles everything the model needs to do a complex task _well_ — not just the ability to do it, but the expertise.
 
 ```
 skills/
@@ -97,7 +97,7 @@ The model reads `SKILL.md` first — triggered by task type — and pulls in the
 
 **The cost:** Filesystem-dependent. Less cross-vendor portable than MCP today. The quality of behavior is directly tied to the quality of authoring — a bad `SKILL.md` means bad output.
 
-**Best for:** Workflows where *how* matters as much as *what*. Any task with non-obvious conventions or multi-step execution logic.
+**Best for:** Workflows where _how_ matters as much as _what_. Any task with non-obvious conventions or multi-step execution logic.
 
 ---
 
@@ -117,13 +117,14 @@ Query → Embed → Vector Search → Retrieved Chunks → LLM → Response
 **What it solves:** Knowledge staleness. Domain specificity. Hallucination on factual questions. Any task where the answer lives in a corpus, not in weights.
 
 **How it combines with the others:**
+
 - **RAG + Tool Calling:** The model retrieves context, then calls a tool to act on it. Example: retrieve a patient record, then call `schedule_appointment()`.
 - **RAG + MCP:** A RAG server exposed as an MCP resource — any client can retrieve from your knowledge base without embedding the retrieval logic in each app.
 - **RAG + Skills:** A Skill's `SKILL.md` can instruct the model to retrieve domain-specific references before executing. Example: retrieve the relevant regulatory guideline before filling a compliance form.
 
 **The cost:** Retrieval quality is everything. Poor chunking, weak embeddings, or missing reranking will silently degrade every downstream response. You need evaluation — Hit Rate, MRR, NDCG — not just vibes.
 
-**Best for:** Any agent that needs to *know things* it wasn't trained on. This is most production agents.
+**Best for:** Any agent that needs to _know things_ it wasn't trained on. This is most production agents.
 
 ---
 
@@ -151,13 +152,13 @@ Each layer handles what it's good at. None of them handles everything.
 
 ## Picking the Right Layer
 
-| Situation | Reach for |
-|---|---|
-| Need the model to call your API | Tool Calling |
-| Need tools reusable across apps or teams | MCP |
-| Complex task with non-obvious conventions | Skill |
-| Model needs to know things beyond its training | RAG |
-| Production agent | All four |
+| Situation                                      | Reach for    |
+| ---------------------------------------------- | ------------ |
+| Need the model to call your API                | Tool Calling |
+| Need tools reusable across apps or teams       | MCP          |
+| Complex task with non-obvious conventions      | Skill        |
+| Model needs to know things beyond its training | RAG          |
+| Production agent                               | All four     |
 
 ---
 

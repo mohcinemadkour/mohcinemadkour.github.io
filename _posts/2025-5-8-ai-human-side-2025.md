@@ -1,6 +1,14 @@
-# The Human Side of AI: What the Data Reveals — and What Businesses Are Getting Wrong
+---
+layout: post
+title: "The Human Side of AI: What the Data Reveals — and What Businesses Are Getting Wrong"
+description: "The Human Side of AI explores the critical gap between skyrocketing AI awareness and low actual adoption, using data from the 2025 AI Impact Report. Written from the perspective of an enterprise AI architect, it highlights why current workplace rollouts are struggling due to a lack of structured training, a widening generational adoption divide, and growing consumer trust issues regarding un-disclosed AI interactions. Ultimately, the piece argues that successful AI implementation is 40% technical architecture and 60% change management—requiring businesses to focus heavily on trust architecture, system legibility, and robust human-in-the-loop design before shifting from read-only tools to fully autonomous AI agents."
+tags: [AIStrategy, ResponsibleAI, PredictiveMaintenance, HumanInTheLoop, AIAdoption, IndustrialAI, HealthTech]
+categories: writing
+related_posts: true
+---
 
-*By Mohcine Madkour, PhD | Senior AI/ML Engineer & Architect*
+
+_By Mohcine Madkour, PhD | Senior AI/ML Engineer & Architect_
 
 ---
 
@@ -12,7 +20,7 @@ That gap — between awareness and real adoption, between leadership enthusiasm 
 
 ## Problem 1: High Visibility, Low Literacy — and a Trust Crisis Waiting to Happen
 
-The report surfaces something subtle but critical: people interact with AI constantly without knowing it. Recommendation engines, customer support bots, fraud detection — it's everywhere, invisible. But when you ask people if they've *knowingly* used Generative AI, the number drops sharply.
+The report surfaces something subtle but critical: people interact with AI constantly without knowing it. Recommendation engines, customer support bots, fraud detection — it's everywhere, invisible. But when you ask people if they've _knowingly_ used Generative AI, the number drops sharply.
 
 This creates a dangerous asymmetry. Businesses are deploying AI across customer touchpoints while their users don't understand what they're interacting with. The report finds that **75% of people want to know when content is AI-generated** — not obsessively, but meaningfully, especially when stakes are high.
 
@@ -56,7 +64,7 @@ The top concerns: data collection and ownership (54%), security and manipulation
 
 These aren't abstract philosophical worries. They're concrete, operational concerns — and most of them are addressable with good engineering and honest communication.
 
-**What this means for your business:** Your AI governance conversation needs to happen in the open, not just in the boardroom. Users want to know not just *that* your AI is safe, but *how* you've thought about fairness, what happens when it's wrong, and who is accountable when it causes harm. The companies that treat AI ethics as a marketing checkbox will be exposed. The ones that build it into their product architecture — explainability, bias monitoring, human oversight loops — will earn durable trust.
+**What this means for your business:** Your AI governance conversation needs to happen in the open, not just in the boardroom. Users want to know not just _that_ your AI is safe, but _how_ you've thought about fairness, what happens when it's wrong, and who is accountable when it causes harm. The companies that treat AI ethics as a marketing checkbox will be exposed. The ones that build it into their product architecture — explainability, bias monitoring, human oversight loops — will earn durable trust.
 
 ---
 
@@ -86,4 +94,4 @@ If you're working on a problem where AI could make a real difference — or wher
 
 ---
 
-*Mohcine Madkour, PhD, is a Senior AI/ML Engineer and Architect with 16+ years of experience building production AI systems in surgical robotics, industrial IoT, and clinical healthcare. He is based in the Dallas–Fort Worth area and available for consulting, fractional AI leadership, and advisory engagements.*
+_Mohcine Madkour, PhD, is a Senior AI/ML Engineer and Architect with 16+ years of experience building production AI systems in surgical robotics, industrial IoT, and clinical healthcare. He is based in the Dallas–Fort Worth area and available for consulting, fractional AI leadership, and advisory engagements._
