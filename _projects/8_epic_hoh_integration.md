@@ -6,6 +6,7 @@ img: assets/img/projects/epic_hoh.svg
 importance: 1
 category: portfolio
 tags: [HL7 v2, FHIR R4, Mirth Connect, FastAPI, Python, Azure, HIPAA, Healthcare Interoperability]
+github: https://github.com/mohcinemadkour/epic-hah-integration
 ---
 
 <div class="row">
@@ -43,7 +44,7 @@ A working **HL7 v2 + FHIR R4 integration engine** that moves admissions, diagnos
 <div class="row mt-3">
   <div class="col-sm-12">
     <a class="btn btn-sm btn-primary me-2" href="https://youtu.be/ApIp756c2C0" target="_blank" rel="noopener">▶ Watch the walkthrough</a>
-    <a class="btn btn-sm btn-outline-secondary" href="https://github.com/mohcinemadkour" target="_blank" rel="noopener">View the code</a>
+    <a class="btn btn-sm btn-outline-secondary" href="https://github.com/mohcinemadkour/epic-hah-integration" target="_blank" rel="noopener">View the code</a>
   </div>
 </div>
 
@@ -136,7 +137,7 @@ Reliability and HIPAA technical safeguards are built into the core. The engine w
       <div class="card-body">
         <h5 class="card-title">◆ Source Code</h5>
         <p class="card-text small text-muted">The runnable engine, Mirth channel, tests, and Docker stack.</p>
-        <a href="https://github.com/mohcinemadkour" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener">Open the repo →</a>
+        <a href="https://github.com/mohcinemadkour/epic-hah-integration" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener">Open the repo →</a>
       </div>
     </div>
   </div>
@@ -145,7 +146,7 @@ Reliability and HIPAA technical safeguards are built into the core. The engine w
       <div class="card-body">
         <h5 class="card-title">▣ Presentation Deck</h5>
         <p class="card-text small text-muted">Architecture, data flows, and the path to a live Epic connection.</p>
-        <a href="/assets/Epic_HoH_Integration.pptx" class="btn btn-sm btn-outline-secondary">Download slides →</a>
+        <a href="https://github.com/mohcinemadkour/epic-hah-integration/blob/main/Presentation/Epic_HoH_Integration%20(1).pptx" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener">View slides →</a>
       </div>
     </div>
   </div>
