@@ -149,7 +149,7 @@ Reliability and HIPAA technical safeguards are built into the core. The engine w
       <div class="card-body">
         <h5 class="card-title">▣ Presentation Deck</h5>
         <p class="card-text small text-muted">Architecture, data flows, and the path to a live Epic connection.</p>
-        <a href="https://github.com/mohcinemadkour/epic-hah-integration/blob/main/Presentation/Epic_HoH_Integration%20(1).pptx" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener">View slides →</a>
+        <a href="https://github.com/mohcinemadkour/epic-hah-integration/raw/refs/heads/main/Presentation/Epic_HoH_Integration%20(1).pptx" class="btn btn-sm btn-outline-secondary" download>Download slides →</a>
       </div>
     </div>
   </div>
