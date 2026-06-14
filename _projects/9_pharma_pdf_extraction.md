@@ -6,6 +6,7 @@ img: assets/img/projects/pharma_pdf.svg
 importance: 2
 category: portfolio
 tags: [Python, FastAPI, Claude AI, pdfplumber, OCR, 21 CFR Part 11, Regulatory AI, Document Intelligence, GMP]
+github: https://github.com/mohcinemadkour/PDF-AS-DATA
 toc:
   sidebar: left
 mermaid:
@@ -56,9 +57,18 @@ An end-to-end Python platform that extracts structured data from regulatory PDFs
 
 <div class="row mt-3 mb-2">
   <div class="col-sm-12">
-    <a class="btn btn-sm btn-primary me-2" href="mailto:mohcine.madkour@gmail.com?subject=PDFD%20Platform%20Inquiry">Contact me about this project</a>
-    <a class="btn btn-sm btn-outline-secondary" href="https://www.linkedin.com/in/mohcine-madkour-83a642b2" target="_blank" rel="noopener">Connect on LinkedIn</a>
+    <a class="btn btn-sm btn-primary me-2" href="https://youtu.be/pKZQgWofWwc" target="_blank" rel="noopener">▶ Watch the walkthrough</a>
+    <a class="btn btn-sm btn-outline-secondary me-2" href="https://github.com/mohcinemadkour/PDF-AS-DATA" target="_blank" rel="noopener">View the code</a>
+    <a class="btn btn-sm btn-outline-secondary" href="mailto:mohcine.madkour@gmail.com?subject=PDFD%20Platform%20Inquiry">Contact me</a>
   </div>
+</div>
+
+---
+
+## Video Walkthrough
+
+<div class="ratio ratio-16x9 mb-2">
+  <iframe src="https://www.youtube.com/embed/pKZQgWofWwc" title="Pharma PDF Extraction & Audit Traceability Platform" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 </div>
 
 ---
