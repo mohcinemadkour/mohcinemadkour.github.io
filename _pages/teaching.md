@@ -67,10 +67,8 @@ I build courses that bridge the gap between AI research and real-world implement
       {% endif %}
     </div>
   </div>
-  
   <div class="course-body">
     <p class="course-description">{{ teaching.description }}</p>
-    
     {% if teaching.what_youll_build %}
     <div class="what-youll-build">
       <h6 class="fw-bold">What You'll Build:</h6>
@@ -81,7 +79,6 @@ I build courses that bridge the gap between AI research and real-world implement
       </ul>
     </div>
     {% endif %}
-    
     <div class="course-footer">
       {% if teaching.link %}
         <a href="{{ teaching.link }}" class="btn btn-sm btn-primary" target="_blank">View on Udemy</a>
@@ -97,7 +94,6 @@ I build courses that bridge the gap between AI research and real-world implement
     </div>
   </div>
 </div>
-
 {% endfor %}
 
 ---
@@ -105,6 +101,30 @@ I build courses that bridge the gap between AI research and real-world implement
 ## Mentorship & University Teaching
 
 I also mentor early-career ML engineers through various programs. Topics include production ML, career strategy, and research-to-industry transition.
+
+{% assign university_courses = site.teachings | where: "category", "university" | sort: "importance" %}
+{% for teaching in university_courses %}
+
+<div class="course-card mt-4 mb-4">
+  <div class="course-header course-secondary">
+    <div class="course-meta">
+      <h4 class="course-title">{{ teaching.title }}</h4>
+      <p class="course-platform">{{ teaching.institution }} &middot; {{ teaching.year }}</p>
+    </div>
+    <div class="course-stats">
+      {% if teaching.year %}
+        <span class="badge">{{ teaching.year }}</span>
+      {% endif %}
+    </div>
+  </div>
+  <div class="course-body">
+    <p class="course-description">{{ teaching.description }}</p>
+    <div class="course-footer">
+      <a href="{{ teaching.url | relative_url }}" class="btn btn-sm btn-outline-primary">Course Details</a>
+    </div>
+  </div>
+</div>
+{% endfor %}
 
 </div>
 
