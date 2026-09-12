@@ -7,7 +7,6 @@ categories: writing
 related_posts: true
 ---
 
-
 _By Mohcine Madkour, PhD | Senior AI/ML Engineer & Architect_
 
 ---
