@@ -12,6 +12,8 @@ toc:
 
 > **TL;DR.** AI agents fail in ways that never trigger an alert: a tool errors and the model works around it, the agent loops, a dependency slows down, or the model confidently contradicts the data it just read. This article walks through an open-source reference implementation that makes those failures visible. A LangChain agent is instrumented with OpenTelemetry; an OpenTelemetry Collector redacts PII, derives metrics from traces and routes everything to Prometheus, Tempo and Loki; and Grafana shows it all on one dashboard. On top of that sits an **online evaluation layer** that scores every answer, because a perfectly healthy trace can still carry a wrong answer. Finally, I show how to deploy the dashboard securely so clients can log in, and how the same design scales from one agent to many.
 >
+> **Live dashboard (read-only, no login):** [dashboard.evaltrust.cloud](https://dashboard.evaltrust.cloud/d/agent-observability). **For leaders:** the business case is in [Your AI Agent Is Working. Is It Right?]({% post_url 2026-10-27-ai-agent-readiness-leaders-guide %}).
+>
 > **Code:** [github.com/mohcinemadkour/agent-observability-demo](https://github.com/mohcinemadkour/agent-observability-demo). `docker compose up` and you have the whole thing running locally, offline, in about five minutes.
 
 ---
