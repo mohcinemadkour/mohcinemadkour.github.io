@@ -121,6 +121,8 @@ Answer yes or no:
 - **Explore the live dashboard** (read-only, no login): [dashboard.evaltrust.cloud](https://dashboard.evaltrust.cloud/d/agent-observability). Start with the panel _"Run success vs. evaluation pass rate"_ and look at the gap.
 - **For your engineers:** the full technical walkthrough is in [Green Is Not Correct: Production Observability for AI Agents with OpenTelemetry]({% post_url 2026-10-27-agent-observability-opentelemetry %}), and the open-source code is on [GitHub](https://github.com/mohcinemadkour/agent-observability-demo).
 
+**Download the playbook (PDF, 14 pages):** [The Agent Reliability Playbook]({{ site.baseurl }}/assets/pdf/agent-reliability-playbook.pdf): gates, signals, guardrails, a dashboard tour and the readiness checklist in one document.
+
 **Free 30-minute Agent Readiness Review.** Tell us what your agent does and how it is monitored today. We will tell you which gates, signals and guardrails you are missing, and what to fix first. Email [mohcine@evaltrust.cloud](mailto:mohcine@evaltrust.cloud?subject=Agent%20Readiness%20Review) with the subject _Agent Readiness Review_.
 
 [EvalTrust](https://evaltrust.cloud) helps teams in healthcare, finance, pharma and industry evaluate, monitor and govern AI agents and multi-agent systems on their way to production.
