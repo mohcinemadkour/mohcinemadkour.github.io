@@ -8,9 +8,6 @@ categories: writing
 related_posts: true
 toc:
   beginning: true
-mermaid:
-  enabled: true
-  zoomable: true
 ---
 
 > **TL;DR.** AI agents fail in ways that never trigger an alert: a tool errors and the model works around it, the agent loops, a dependency slows down, or the model confidently contradicts the data it just read. This article walks through an open-source reference implementation that makes those failures visible. A LangChain agent is instrumented with OpenTelemetry; an OpenTelemetry Collector redacts PII, derives metrics from traces and routes everything to Prometheus, Tempo and Loki; and Grafana shows it all on one dashboard. On top of that sits an **online evaluation layer** that scores every answer, because a perfectly healthy trace can still carry a wrong answer. Finally, I show how to deploy the dashboard securely so clients can log in, and how the same design scales from one agent to many.
@@ -39,23 +36,7 @@ The first three are _operational_ problems that good telemetry can surface. The 
 
 ## 2. The architecture
 
-```mermaid
-flowchart LR
-  subgraph App["Agent service (knows only one URL: the Collector)"]
-    A[LangChain agent loop] --> CB[OTel callback handler<br/>gen_ai.* spans + metrics]
-    A --> EV[Online evaluator<br/>quality checks]
-    A --> LG[Python logging → OTLP]
-  end
-  CB & EV & LG -- OTLP/HTTP --> C
-  subgraph C["OpenTelemetry Collector"]
-    R[Redact PII] --> SM[spanmetrics:<br/>RED metrics from traces]
-  end
-  C -- traces --> T[(Tempo)]
-  C -- metrics --> P[(Prometheus)]
-  C -- logs --> L[(Loki)]
-  C -. "swap or add backends,<br/>no app change" .-> V[(Jaeger · Splunk · any OTLP vendor)]
-  T & P & L --> G[Grafana<br/>metric ⇄ trace ⇄ log]
-```
+<div class="row"><div class="col-sm mt-3 mt-md-0"><img src="{{ site.baseurl }}/assets/img/posts/agent-observability-architecture.png" class="img-fluid rounded z-depth-1" alt="Architecture: the agent sends traces, metrics and logs over OTLP to the OpenTelemetry Collector, which redacts PII, derives span metrics, and routes to Tempo, Prometheus and Loki, all visualized in Grafana"></div></div>
 
 Every component is open source and vendor-neutral:
 

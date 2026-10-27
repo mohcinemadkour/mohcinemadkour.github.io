@@ -271,6 +271,14 @@
     border-collapse: collapse;
     margin: 1.5rem 0;
     font-size: 0.9rem;
+    // wide tables scroll inside the narrow column instead of overflowing it
+    display: block;
+    overflow-x: auto;
+
+    // long identifiers (metric names, file names) may wrap inside cells
+    td code {
+      overflow-wrap: anywhere;
+    }
 
     th {
       background: var(--global-card-bg-color, rgba(255, 255, 255, 0.05));
