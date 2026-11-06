@@ -311,6 +311,17 @@ Reach out on [LinkedIn](https://www.linkedin.com/in/mohcine-madkour-83a642b2) or
 
 ---
 
+### The FDE skills series
+
+1. **Think like a product manager** (this article)
+2. [From business KPI to F1 score](/writing/2026/fde-business-metrics-to-ai-metrics/)
+3. [The people stack](/writing/2026/fde-people-skills-techniques/)
+4. [Integration and rapid prototyping](/writing/2026/fde-integration-and-prototyping/)
+5. [Evaluation, guardrails and observability](/writing/2026/fde-evaluation-guardrails-observability/)
+6. [Security, privacy and compliance](/writing/2026/fde-security-privacy-compliance/)
+7. [Domain expertise and scoping](/writing/2026/fde-domain-expertise-and-scoping/)
+8. [Communication and ownership](/writing/2026/fde-communication-and-ownership/)
+
 ### Sources
 
 - Aater Suleman, talk on forward deployed engineering, Dallas, November 5, 2026. Figures attributed to him (the 7.5-billion-dollar commitment, the 300,000 FDE estimate, 9–17 new hiring companies per week, the 1-in-8 ratio, the Dintash case and the PM ratios) are as he presented them.

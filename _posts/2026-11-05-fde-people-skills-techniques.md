@@ -327,6 +327,17 @@ Reach me on [LinkedIn](https://www.linkedin.com/in/mohcine-madkour-83a642b2) or 
 
 ---
 
+### The FDE skills series
+
+1. [Think like a product manager](/writing/2026/fde-think-like-a-product-manager/)
+2. [From business KPI to F1 score](/writing/2026/fde-business-metrics-to-ai-metrics/)
+3. **The people stack** (this article)
+4. [Integration and rapid prototyping](/writing/2026/fde-integration-and-prototyping/)
+5. [Evaluation, guardrails and observability](/writing/2026/fde-evaluation-guardrails-observability/)
+6. [Security, privacy and compliance](/writing/2026/fde-security-privacy-compliance/)
+7. [Domain expertise and scoping](/writing/2026/fde-domain-expertise-and-scoping/)
+8. [Communication and ownership](/writing/2026/fde-communication-and-ownership/)
+
 ### Sources and notes
 
 - Aater Suleman, talk on forward deployed engineering, Dallas, November 5, 2026: the 1-in-8 figure, the five patterns, the Dintash case, "listen to understand, not to respond," what he looks for in a junior FDE, forward deployed pods, and the references to _Switch_ and bright spots.

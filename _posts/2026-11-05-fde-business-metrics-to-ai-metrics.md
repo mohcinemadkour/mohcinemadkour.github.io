@@ -321,6 +321,17 @@ How do you choose metrics on your AI projects? Have you seen a high F1 score hid
 
 ---
 
+### The FDE skills series
+
+1. [Think like a product manager](/writing/2026/fde-think-like-a-product-manager/)
+2. **From business KPI to F1 score** (this article)
+3. [The people stack](/writing/2026/fde-people-skills-techniques/)
+4. [Integration and rapid prototyping](/writing/2026/fde-integration-and-prototyping/)
+5. [Evaluation, guardrails and observability](/writing/2026/fde-evaluation-guardrails-observability/)
+6. [Security, privacy and compliance](/writing/2026/fde-security-privacy-compliance/)
+7. [Domain expertise and scoping](/writing/2026/fde-domain-expertise-and-scoping/)
+8. [Communication and ownership](/writing/2026/fde-communication-and-ownership/)
+
 ### Sources and notes
 
 - Aater Suleman, talk on forward deployed engineering, Dallas, November 5, 2026: the Dintash case (15% to 40%), "meet people where they work," "don't be a workflow hugger," time to value in weeks, and "earn the right to write."
